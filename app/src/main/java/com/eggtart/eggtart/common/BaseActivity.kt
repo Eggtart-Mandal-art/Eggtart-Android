@@ -14,25 +14,25 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.ViewModel
 import org.orbitmvi.orbit.compose.collectSideEffect
 
 /**
  *  Created by wonjin on 2024/03/21
  **/
 abstract class BaseActivity : ComponentActivity() {
-    abstract val viewModel: BaseViewModel<BaseState, BaseSideEffect>
-    lateinit var state: BaseState
+    abstract val viewModel: ViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        initData()
+
         setContent {
             EggtartTheme {
-                initData()
+                Scaffold(topBar = appBar(), bottomBar = navigationBar(), content = body())
 
-                Scaffold(topBar = appBar(), bottomBar = navigationBar(), content = { body(it) })
-
-                viewModel.collectSideEffect {
+                (viewModel as BaseViewModel<*, *>).collectSideEffect {
                     when (it) {
                         is BaseSideEffect.ShowToast -> {
                             Toast.makeText(this, it.text, Toast.LENGTH_SHORT).show()
@@ -70,7 +70,7 @@ abstract class BaseActivity : ComponentActivity() {
     }
 
     abstract fun initData()
-    abstract fun body(paddingValues: PaddingValues): @Composable () -> Unit
+    abstract fun body(): @Composable (PaddingValues) -> Unit
     abstract fun appBar(): @Composable () -> Unit
     abstract fun navigationBar(): @Composable () -> Unit
 }
