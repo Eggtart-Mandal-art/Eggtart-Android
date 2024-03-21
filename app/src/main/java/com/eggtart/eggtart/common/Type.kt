@@ -1,4 +1,4 @@
-package com.eggtart.eggtart.ui.theme
+package com.eggtart.eggtart.common
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
