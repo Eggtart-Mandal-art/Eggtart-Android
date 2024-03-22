@@ -1,4 +1,4 @@
-package com.eggtart.eggtart.common
+package com.eggtart.eggtart.common.ui
 
 import android.app.Activity
 import android.os.Build

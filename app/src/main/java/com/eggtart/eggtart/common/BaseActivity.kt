@@ -6,15 +6,16 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.ViewModel
+import com.eggtart.eggtart.common.ui.BaseSideEffectPopup
+import com.eggtart.eggtart.common.ui.EggtartTheme
+import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 
 /**
@@ -30,7 +31,17 @@ abstract class BaseActivity : ComponentActivity() {
 
         setContent {
             EggtartTheme {
-                Scaffold(topBar = appBar(), bottomBar = navigationBar(), content = body())
+                Scaffold(topBar = appBar(), bottomBar = navigationBar()) { paddingValues ->
+                    Surface(modifier = Modifier.padding(paddingValues)) {
+                        body()
+
+                        val sideEffectPopup = ((viewModel as BaseViewModel<*, *>).collectAsState().value as BaseState).sideEffectPopup
+
+                        if (sideEffectPopup != null) {
+                            BaseSideEffectPopup(sideEffectPopup = sideEffectPopup, (viewModel as BaseViewModel<*, *>)::dismissSideEffectPopup)
+                        }
+                    }
+                }
 
                 (viewModel as BaseViewModel<*, *>).collectSideEffect {
                     when (it) {
@@ -39,29 +50,7 @@ abstract class BaseActivity : ComponentActivity() {
                         }
 
                         is BaseSideEffect.ShowPopup -> {
-                            addContentView(
-                                ComposeView(this).apply {
-
-                                    setContent {
-                                        Dialog(onDismissRequest = { /*TODO*/ }) {
-                                            Text(text = "abcdefg")
-                                        }
-                                    }
-                                }, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-                            )
-                        }
-
-                        is BaseSideEffect.ShowSnackBar -> {
-                            addContentView(
-                                ComposeView(this).apply {
-                                    setContent {
-                                        SnackbarHost(hostState = SnackbarHostState(), snackbar = { snackbarData ->
-                                            Snackbar(snackbarData = snackbarData)
-                                        })
-                                    }
-                                },
-                                ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-                            )
+                            (viewModel as BaseViewModel<*, *>).showSideEffectPopup(it)
                         }
                     }
                 }

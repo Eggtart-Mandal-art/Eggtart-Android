@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinAndroid)
+    alias(libs.plugins.kotlinKapt)
 }
 
 android {
@@ -33,6 +34,12 @@ dependencies {
     implementation(project(":domain"))
 
     implementation(libs.core.ktx)
+
+    // Hilt
+    implementation(libs.hilt.navigation)
+
+    // Retrofit
+    implementation(libs.retrofit)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
