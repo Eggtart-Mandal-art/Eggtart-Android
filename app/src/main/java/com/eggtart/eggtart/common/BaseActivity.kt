@@ -1,17 +1,14 @@
 package com.eggtart.eggtart.common
 
 import android.os.Bundle
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.ComposeView
 import androidx.lifecycle.ViewModel
 import com.eggtart.eggtart.common.ui.BaseSideEffectPopup
 import com.eggtart.eggtart.common.ui.EggtartTheme
@@ -31,11 +28,11 @@ abstract class BaseActivity : ComponentActivity() {
 
         setContent {
             EggtartTheme {
-                Scaffold(topBar = appBar(), bottomBar = navigationBar()) { paddingValues ->
+                Scaffold(topBar = { AppBar() }, bottomBar = { NavigationBar() }) { paddingValues ->
                     Surface(modifier = Modifier.padding(paddingValues)) {
-                        body()
+                        Body()
 
-                        val sideEffectPopup = ((viewModel as BaseViewModel<*, *>).collectAsState().value as BaseState).sideEffectPopup
+                        val sideEffectPopup = (viewModel as BaseViewModel<*, *>).collectAsState().value.sideEffectPopup
 
                         if (sideEffectPopup != null) {
                             BaseSideEffectPopup(sideEffectPopup = sideEffectPopup, (viewModel as BaseViewModel<*, *>)::dismissSideEffectPopup)
@@ -59,7 +56,16 @@ abstract class BaseActivity : ComponentActivity() {
     }
 
     abstract fun initData()
-    abstract fun body(): @Composable (PaddingValues) -> Unit
-    abstract fun appBar(): @Composable () -> Unit
-    abstract fun navigationBar(): @Composable () -> Unit
+
+    @Composable
+    protected open fun Body() {
+    }
+
+    @Composable
+    protected open fun AppBar() {
+    }
+
+    @Composable
+    protected open fun NavigationBar() {
+    }
 }

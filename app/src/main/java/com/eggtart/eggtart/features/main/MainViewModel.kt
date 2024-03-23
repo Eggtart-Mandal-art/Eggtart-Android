@@ -14,8 +14,4 @@ import org.orbitmvi.orbit.viewmodel.container
 @HiltViewModel
 class MainViewModel : BaseViewModel<MainState, BaseSideEffect>() {
     override val container = container<MainState, BaseSideEffect>(MainState())
-
-    fun testSideEffectPopup() = intent {
-        postSideEffect(BaseSideEffect.ShowPopup(title = "title", content = "content", positiveButton = "확인", negativeButton = "취소", positiveClicked = {}, negativeClicked = {}))
-    }
 }

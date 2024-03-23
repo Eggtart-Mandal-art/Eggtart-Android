@@ -16,11 +16,11 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.eggtart.eggtart.R
 import com.eggtart.eggtart.common.BaseSideEffect
 import kotlinx.coroutines.Job
 
@@ -39,24 +39,18 @@ fun BaseSideEffectPopup(sideEffectPopup: BaseSideEffect.ShowPopup, dismissReques
                 .background(MaterialTheme.colorScheme.surface)
                 .padding(24.dp)
         ) {
-            if (sideEffectPopup.title != null) {
-                Text(text = sideEffectPopup.title, style = TextStyle(color = MaterialTheme.colorScheme.onSurface, fontSize = 20.sp, fontWeight = FontWeight.SemiBold))
-                Spacer(modifier = Modifier.height(10.dp))
-            }
-            Text(text = sideEffectPopup.content, style = TextStyle(color = MaterialTheme.colorScheme.onSurface))
+            Text(text = sideEffectPopup.message, style = TextStyle(color = MaterialTheme.colorScheme.onSurface))
             Spacer(modifier = Modifier.height(10.dp))
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                if (sideEffectPopup.negativeButton != null) TextButton(onClick = {
-                    sideEffectPopup.negativeClicked()
+                TextButton(onClick = {
                     dismissRequest()
                 }) {
-                    Text(text = sideEffectPopup.negativeButton)
+                    Text(text = LocalContext.current.resources.getString(R.string.com_cancel))
                 }
                 TextButton(onClick = {
-                    sideEffectPopup.positiveClicked()
                     dismissRequest()
                 }) {
-                    Text(text = sideEffectPopup.positiveButton)
+                    Text(text = LocalContext.current.resources.getString(R.string.com_confirm))
                 }
             }
         }
