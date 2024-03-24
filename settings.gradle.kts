@@ -15,4 +15,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "Eggtart"
 include(":app")
- 
+include(":data")
+include(":domain")
