@@ -10,6 +10,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.eggtart.eggtart.common.ui.BaseSideEffectPopup
 import com.eggtart.eggtart.common.ui.EggtartTheme
 import org.orbitmvi.orbit.compose.collectAsState
@@ -28,9 +30,11 @@ abstract class BaseActivity : ComponentActivity() {
 
         setContent {
             EggtartTheme {
-                Scaffold(topBar = { AppBar() }, bottomBar = { NavigationBar() }) { paddingValues ->
+                val navHostController = rememberNavController()
+
+                Scaffold(topBar = { AppBar() }, bottomBar = { NavigationBar(navHostController) }) { paddingValues ->
                     Surface(modifier = Modifier.padding(paddingValues)) {
-                        Body()
+                        Body(navHostController)
 
                         val sideEffectPopup = (viewModel as BaseViewModel<*, *>).collectAsState().value.sideEffectPopup
 
@@ -58,7 +62,7 @@ abstract class BaseActivity : ComponentActivity() {
     abstract fun initData()
 
     @Composable
-    protected open fun Body() {
+    protected open fun Body(navHostController: NavHostController) {
     }
 
     @Composable
@@ -66,6 +70,6 @@ abstract class BaseActivity : ComponentActivity() {
     }
 
     @Composable
-    protected open fun NavigationBar() {
+    protected open fun NavigationBar(navHostController: NavHostController) {
     }
 }
