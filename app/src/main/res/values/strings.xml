@@ -1,6 +1,12 @@
 <resources>
-    <string name="app_name">Eggtart</string>
+    <string name="app_name">에그타르트</string>
 
     <string name="com_cancel">취소</string>
     <string name="com_confirm">확인</string>
+
+    <!--  MainActivity  -->
+    <string name="nav_mandalart">만다라트</string>
+    <string name="nav_calendar">달력</string>
+    <string name="nav_timer">타이머</string>
+    <string name="nav_settings">설정</string>
 </resources>
