@@ -2,6 +2,8 @@ package com.eggtart.eggtart.di
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.room.Room
+import com.eggtart.eggtart.database.AppDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,4 +22,8 @@ object LocalSourceModule {
     @Singleton
     @Provides
     fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
+
+    @Singleton
+    @Provides
+    fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase = Room.databaseBuilder(context, AppDatabase::class.java, "MandalartDatabase.db").build()
 }
