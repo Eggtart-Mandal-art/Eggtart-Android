@@ -16,14 +16,14 @@ import kotlinx.coroutines.flow.Flow
 interface MandalartCellDao {
 
     @Insert
-    suspend fun insertCell(vararg cell: MandalartCellEntity)
+    fun insertCell(vararg cell: MandalartCellEntity)
 
     @Delete
-    suspend fun deleteCell(vararg cell: MandalartCellEntity)
+    fun deleteCell(vararg cell: MandalartCellEntity)
 
     @Update
-    suspend fun updateCell(vararg cell: MandalartCellEntity)
+    fun updateCell(vararg cell: MandalartCellEntity)
 
     @Query("SELECT * FROM mandalartCell WHERE sheetId=:sheetId AND depth=:depth")
-    suspend fun getCell(sheetId: Long, depth: Int = 0): Flow<MandalartCellEntity?>
+    fun getCell(sheetId: Long, depth: Int = 0): Flow<MandalartCellEntity?>
 }

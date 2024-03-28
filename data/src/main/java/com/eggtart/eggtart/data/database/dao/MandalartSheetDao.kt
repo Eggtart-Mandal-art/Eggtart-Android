@@ -15,14 +15,14 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface MandalartSheetDao {
     @Insert
-    suspend fun insertSheet(vararg sheet: MandalartSheetEntity)
+    fun insertSheet(vararg sheet: MandalartSheetEntity)
 
     @Delete
-    suspend fun deleteSheet(vararg sheet: MandalartSheetEntity)
+    fun deleteSheet(vararg sheet: MandalartSheetEntity)
 
     @Update
-    suspend fun updateSheet(vararg sheet: MandalartSheetEntity)
+    fun updateSheet(vararg sheet: MandalartSheetEntity)
 
     @Query("SELECT * FROM mandalartSheet")
-    suspend fun getSheets(): Flow<List<MandalartSheetEntity>>
+    fun getSheets(): Flow<List<MandalartSheetEntity>>
 }

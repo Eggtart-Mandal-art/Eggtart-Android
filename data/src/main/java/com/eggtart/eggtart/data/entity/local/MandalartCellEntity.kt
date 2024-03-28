@@ -15,7 +15,7 @@ import androidx.room.ForeignKey
 data class MandalartCellEntity(
     val sheetId: Long,
     val cellId: Long,
-    val color: Int,
+    val color: Long,
     val goal: String,
     val order: Int,
     val depth: Int,

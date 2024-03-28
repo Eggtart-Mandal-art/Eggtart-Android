@@ -6,7 +6,7 @@ package com.eggtart.eggtart.domain.model.local
 data class MandalartCellModel(
     val sheetId: Long,
     val cellId: Long,
-    val color: Int,
+    val color: Long,
     val goal: String,
     val order: Int,
     val depth: Int,

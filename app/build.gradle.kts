@@ -2,7 +2,8 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
-    alias(libs.plugins.kotlinKapt)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hiltAndroid)
 }
 
 android {
@@ -70,8 +71,9 @@ dependencies {
     implementation(libs.orbit.compose)
 
     // Hilt
-    kapt(libs.hilt.compiler)
-    implementation(libs.hilt.navigation)
+    implementation(libs.hilt.navigation.compose)
+    implementation(libs.dagger.hilt.android)
+    ksp(libs.dagger.hilt.compiler)
 
     // Retrofit
     implementation(libs.retrofit)
