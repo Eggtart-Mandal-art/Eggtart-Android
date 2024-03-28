@@ -3,7 +3,13 @@ package com.eggtart.eggtart.di
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.room.Room
-import com.eggtart.eggtart.database.AppDatabase
+import com.eggtart.eggtart.data.database.AppDatabase
+import com.eggtart.eggtart.data.database.dao.MandalartCellDao
+import com.eggtart.eggtart.data.database.dao.MandalartSheetDao
+import com.eggtart.eggtart.data.source.local.MandalartCellLocalSource
+import com.eggtart.eggtart.data.source.local.MandalartCellLocalSourceImpl
+import com.eggtart.eggtart.data.source.local.MandalartSheetLocalSource
+import com.eggtart.eggtart.data.source.local.MandalartSheetLocalSourceImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,4 +32,20 @@ object LocalSourceModule {
     @Singleton
     @Provides
     fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase = Room.databaseBuilder(context, AppDatabase::class.java, "MandalartDatabase.db").build()
+
+    @Singleton
+    @Provides
+    fun provideMandalartCellDao(appDatabase: AppDatabase): MandalartCellDao = appDatabase.mandalartCellDao()
+
+    @Singleton
+    @Provides
+    fun provideMandalartSheetDao(appDatabase: AppDatabase): MandalartSheetDao = appDatabase.mandalartSheetDao()
+
+    @Singleton
+    @Provides
+    fun provideMandalartCellLocalSource(mandalartCellDao: MandalartCellDao): MandalartCellLocalSource = MandalartCellLocalSourceImpl(mandalartCellDao)
+
+    @Singleton
+    @Provides
+    fun provideMandalartSheetLocalSource(mandalartSheetDao: MandalartSheetDao): MandalartSheetLocalSource = MandalartSheetLocalSourceImpl(mandalartSheetDao)
 }

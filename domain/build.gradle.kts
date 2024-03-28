@@ -27,10 +27,18 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 dependencies {
     implementation(libs.core.ktx)
+    implementation(libs.kotlinx.coroutines)
+
+    // Hilt
+    implementation(libs.hilt.navigation)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
