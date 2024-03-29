@@ -1,13 +1,9 @@
-package com.eggtart.eggtart.features.main.screens.mandalart
+package com.eggtart.eggtart.features.home.mandalart
 
-import androidx.lifecycle.viewModelScope
-import com.eggtart.eggtart.common.BaseSideEffect
-import com.eggtart.eggtart.common.BaseViewModel
+import androidx.lifecycle.ViewModel
 import com.eggtart.eggtart.domain.usecase.remote.TestGetRemoteMandalartCellsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import org.orbitmvi.orbit.Container
+import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
@@ -18,12 +14,11 @@ import javax.inject.Inject
  **/
 
 @HiltViewModel
-class MandalartViewModel @Inject constructor() : BaseViewModel<MandalartScreenState, BaseSideEffect>() {
+class MandalartViewModel @Inject constructor() : ContainerHost<MandalartScreenState, MandalartSideEffect>, ViewModel() {
     private val getMandalartCellsUseCase: TestGetRemoteMandalartCellsUseCase = TestGetRemoteMandalartCellsUseCase()
 
-    override val container: Container<MandalartScreenState, BaseSideEffect> = container(
+    override val container = container<MandalartScreenState, MandalartSideEffect>(
         MandalartScreenState(
-            sideEffectPopup = null,
             mandalartLoading = false,
             mandalartCellList = listOf(),
         )
