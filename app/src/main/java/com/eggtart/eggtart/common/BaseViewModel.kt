@@ -11,12 +11,14 @@ import org.orbitmvi.orbit.syntax.simple.reduce
 abstract class BaseViewModel<STATE : BaseState, SIDE_EFFECT : BaseSideEffect> : ContainerHost<STATE, SIDE_EFFECT>, ViewModel() {
     fun showSideEffectPopup(sideEffectPopup: BaseSideEffect.ShowPopup) = intent {
         reduce {
+            @Suppress("UNCHECKED_CAST")
             state.copy(sideEffectPopup = sideEffectPopup) as STATE
         }
     }
 
     fun dismissSideEffectPopup() = intent {
         reduce {
+            @Suppress("UNCHECKED_CAST")
             state.copy(null) as STATE
         }
     }

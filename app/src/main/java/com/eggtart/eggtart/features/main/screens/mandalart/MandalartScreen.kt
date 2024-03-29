@@ -12,20 +12,21 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.eggtart.eggtart.R
 import org.orbitmvi.orbit.compose.collectAsState
 
 /**
@@ -34,8 +35,11 @@ import org.orbitmvi.orbit.compose.collectAsState
 
 @Composable
 fun MandalartScreen(viewModel: MandalartViewModel = hiltViewModel()) {
+    remember { viewModel.getMandalartCells() }
+
     val viewModelState = viewModel.collectAsState().value
-    val sheet = viewModelState.mandalartSheetList.collectAsState(initial = listOf()).value.firstOrNull()
+
+    val rootCell = viewModelState.mandalartCellList.getOrNull(4)
 
     Box(
         modifier = Modifier
@@ -51,23 +55,23 @@ fun MandalartScreen(viewModel: MandalartViewModel = hiltViewModel()) {
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(9) { index ->
-                if (index != 4) {
-                    val cell = sheet?.depth1Cell?.children?.firstOrNull { it.order == index }
+                val cell = viewModelState.mandalartCellList.getOrNull(index)
 
+                if (cell?.id != rootCell?.id) {
                     Box(
                         modifier = Modifier
                             .aspectRatio(1f)
                             .clip(RoundedCornerShape(12.dp))
                             .background(
-                                if (sheet == null)
+                                if (rootCell?.color == null)
                                     MaterialTheme.colorScheme.onBackground.copy(alpha = 0.04f)
-                                else if (cell == null)
+                                else if (cell?.color == null)
                                     MaterialTheme.colorScheme.onBackground.copy(alpha = 0.08f)
                                 else
-                                    Color(cell.color)
+                                    Color(cell.color!!)
                             )
                             .clickable(
-                                enabled = sheet != null
+                                enabled = rootCell?.color != null
                             ) {
                                 if (cell == null) {
                                     //TODO 생성페이지 이동
@@ -77,22 +81,20 @@ fun MandalartScreen(viewModel: MandalartViewModel = hiltViewModel()) {
                             },
                         contentAlignment = Alignment.Center
                     ) {
-                        if (sheet != null && cell == null) {
-                            Icon(imageVector = Icons.Outlined.Add, contentDescription = "추가하기")
-                        } else if (cell != null) {
-                            Text(text = "목표")
+                        if (rootCell?.color != null && cell?.color == null) {
+                            Icon(painter = painterResource(id = R.drawable.ic_add), contentDescription = "")
+                        } else if (cell?.color != null) {
+                            Text(text = cell.goal.toString())
                         }
                     }
                 } else {
-                    val rootCell = sheet?.depth1Cell
-
                     Box(
                         modifier = Modifier
                             .aspectRatio(1f)
                             .clip(RoundedCornerShape(12.dp))
-                            .background(if (rootCell == null) Color.Black.copy(alpha = 0.1f) else Color(rootCell.color))
+                            .background(if (rootCell?.color == null) Color.Black.copy(alpha = 0.1f) else Color(rootCell.color!!))
                             .clickable {
-                                if (rootCell == null) {
+                                if (rootCell?.color == null) {
                                     // TODO 생성 페이지
                                 } else {
                                     // TODO 상세 페이지
@@ -104,7 +106,7 @@ fun MandalartScreen(viewModel: MandalartViewModel = hiltViewModel()) {
                             modifier = Modifier
                                 .padding(horizontal = 8.dp)
                                 .wrapContentSize(),
-                            text = if (rootCell == null) "먼저 최종 목표를 입력해주세요" else "목표",
+                            text = if (rootCell?.goal == null) stringResource(id = R.string.enter_final_goal_first) else rootCell.goal.toString(),
                             textAlign = TextAlign.Center,
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.45f)
