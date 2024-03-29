@@ -10,5 +10,5 @@ import javax.inject.Inject
  **/
 
 class GetMandalartSheetsUseCase @Inject constructor(private val mandalartSheetRepository: MandalartSheetRepository) {
-    suspend operator fun invoke(vararg mandalartSheet: MandalartSheetModel): Flow<List<MandalartSheetModel>> = mandalartSheetRepository.getSheets()
+    suspend operator fun invoke(): Flow<List<MandalartSheetModel>> = mandalartSheetRepository.getSheets()
 }

@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinAndroid)
-    alias(libs.plugins.kotlinKapt)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -36,13 +36,17 @@ dependencies {
     implementation(libs.core.ktx)
 
     // Hilt
-    implementation(libs.hilt.navigation)
+    implementation(libs.dagger.hilt.android)
+    ksp(libs.dagger.hilt.compiler)
 
     // Retrofit
     implementation(libs.retrofit)
+    implementation(libs.retrofit.gson.converter)
 
     // Room
+    implementation(libs.room.runtime)
     implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)

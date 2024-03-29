@@ -11,11 +11,13 @@ lifecycle-runtime-ktx = "2.7.0"
 activity-compose = "1.8.2"
 compose-bom = "2024.03.00"
 orbit = "6.1.1"
+android-hilt = "2.51"
 hilt = "1.2.0"
 retrofit = "2.10.0"
 okhttp = "4.12.0"
 coil = "2.6.0"
 room = "2.6.1"
+ksp = "1.9.23-1.0.19"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -33,7 +35,7 @@ ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview
 ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 material3 = { group = "androidx.compose.material3", name = "material3" }
-kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx-coroutines"}
+kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 
 # Orbit
 orbit-core = { group = 'org.orbit-mvi', name = 'orbit-core', version.ref = "orbit" }
@@ -41,8 +43,9 @@ orbit-viewmodel = { group = 'org.orbit-mvi', name = 'orbit-viewmodel', version.r
 orbit-compose = { group = 'org.orbit-mvi', name = 'orbit-compose', version.ref = "orbit" }
 
 # Hilt
-hilt-navigation = { group = "androidx.hilt", name = "hilt-navigation", version.ref = "hilt" }
-hilt-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "hilt" }
+dagger-hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "android-hilt" }
+dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "android-hilt" }
+hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hilt" }
 
 # Retrofit
 retrofit-gson-converter = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
@@ -61,5 +64,5 @@ room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
-kotlinKapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
-
+hiltAndroid = { id = "com.google.dagger.hilt.android", version.ref = "android-hilt" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
