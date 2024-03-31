@@ -1,4 +1,4 @@
-package com.eggtart.eggtart.features.main.screens.calendar
+package com.eggtart.eggtart.features.home.settings
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,8 +12,8 @@ import androidx.compose.ui.Modifier
  */
 
 @Composable
-fun CalendarScreen() {
+fun SettingsScreen() {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(text = "Calendar")
+        Text(text = "SettingsScreen")
     }
 }
