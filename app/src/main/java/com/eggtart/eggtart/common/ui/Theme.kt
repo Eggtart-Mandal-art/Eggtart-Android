@@ -2,12 +2,17 @@ package com.eggtart.eggtart.common.ui
 
 import android.app.Activity
 import android.os.Build
+import androidx.compose.material.ripple.LocalRippleTheme
+import androidx.compose.material.ripple.RippleAlpha
+import androidx.compose.material.ripple.RippleTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.ProvidedValue
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -22,9 +27,12 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40,
+    primary = Color_F4AB1D,
+    onPrimary = Color.White,
+    secondary = Color_A3A9BA,
+    onSecondary = Color.White,
+    tertiary = Color.Transparent,
+    onTertiary = Color.Black,
     outlineVariant = Color_F2F2F2,
     background = Color.White,
     onBackground = Color.Black
@@ -39,6 +47,19 @@ private val LightColorScheme = lightColorScheme(
     onSurface = Color(0xFF1C1B1F),
     */
 )
+
+private val rippleTheme = object : RippleTheme {
+    @Composable
+    override fun defaultColor(): Color = Color.Black
+
+    @Composable
+    override fun rippleAlpha(): RippleAlpha = RippleAlpha(
+        draggedAlpha = 0.05f,
+        focusedAlpha = 0.05f,
+        pressedAlpha = 0.05f,
+        hoveredAlpha = 0.05f
+    )
+}
 
 @Composable
 fun EggtartTheme(
@@ -72,6 +93,8 @@ fun EggtartTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
-        content = content
+        content = {
+            CompositionLocalProvider(value = LocalRippleTheme provides rippleTheme, content = content)
+        }
     )
 }
