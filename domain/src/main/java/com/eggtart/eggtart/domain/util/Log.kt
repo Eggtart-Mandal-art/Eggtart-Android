@@ -7,7 +7,7 @@ import com.eggtart.eggtart.domain.BuildConfig
  *  Created by wonjin on 2024/03/22
  **/
 object Log {
-    private val TAG = "EGGTART"
+    private val TAG = "Eggtart"
 
     fun d(msg: String) = d(TAG, msg)
     fun d(tag: String, msg: String) {

@@ -3,6 +3,8 @@ package com.eggtart.eggtart.common.components
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -27,6 +29,7 @@ fun EggtartSelectionBox(
     enabled: Boolean = true,
     placeHolder: String = "",
     value: String? = null,
+    leading: @Composable (() -> Unit)? = null,
 ) {
     OutlinedButton(
         onClick = onClick, shape = RoundedCornerShape(8.dp),
@@ -40,6 +43,10 @@ fun EggtartSelectionBox(
                 MaterialTheme.colorScheme.onBackground.copy(0.05f)
         )
     ) {
+        if (value.isNullOrEmpty().not() && leading != null) {
+            leading()
+            Spacer(modifier = Modifier.width(8.dp))
+        }
         Text(
             modifier = Modifier.weight(1f),
             text = if (value.isNullOrEmpty()) placeHolder else value,

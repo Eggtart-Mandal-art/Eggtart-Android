@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.eggtart.eggtart.R
+import com.eggtart.eggtart.ScreenRoutes
 import org.orbitmvi.orbit.compose.collectAsState
 
 /**
@@ -87,7 +88,7 @@ fun MandalartScreen(navHostController: NavHostController, viewModel: MandalartVi
                                         enabled = rootCell?.color != null
                                     ) {
                                         if (cell == null) {
-                                            //TODO 생성페이지 이동
+                                            navHostController.navigate(ScreenRoutes.WriteGoal.route)
                                         } else {
                                             //TODO 상세페이지 이동
                                         }
@@ -108,7 +109,7 @@ fun MandalartScreen(navHostController: NavHostController, viewModel: MandalartVi
                                     .background(if (rootCell?.color == null) Color.Black.copy(alpha = 0.1f) else Color(rootCell.color!!))
                                     .clickable {
                                         if (rootCell?.color == null) {
-                                            // TODO 생성 페이지
+                                            navHostController.navigate(ScreenRoutes.WriteGoal.route)
                                         } else {
                                             // TODO 상세 페이지
                                         }
