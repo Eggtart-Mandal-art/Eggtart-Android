@@ -3,6 +3,18 @@
 
     <string name="com_cancel">취소</string>
     <string name="com_confirm">확인</string>
+    <string name="com.save">저장</string>
+    <string name="com_goal">목표</string>
+
+    <!--  Color Name  -->
+    <string name="color_egg_tart">에그타르트</string>
+    <string name="color_sausage">소세지</string>
+    <string name="color_lemon">레몬</string>
+    <string name="color_soda">소다</string>
+    <string name="color_grape">포도</string>
+    <string name="color_blueberry">블루베리</string>
+    <string name="color_melon">메론</string>
+    <string name="color_olive">올리브</string>
 
     <!--  MainActivity  -->
     <string name="nav_mandalart">만다라트</string>
@@ -12,4 +24,10 @@
     
     <!--  Mandalart  -->
     <string name="enter_final_goal_first">먼저 최종 목표를 입력해주세요</string>
+
+    <!--  WriteGoal  -->
+    <string name="write_goal_title">목표 작성</string>
+    <string name="select_color">컬러 선택</string>
+    <string name="select_color_hint">컬러를 선택하세요</string>
+    <string name="enter_goal_hint">이루고 싶은 목표를 28자 이내로 입력하세요</string>
 </resources>
