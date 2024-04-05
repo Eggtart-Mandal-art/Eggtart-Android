@@ -34,9 +34,11 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             EggtartTheme {
-                Surface(modifier = Modifier
-                    .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Vertical))
-                    .imePadding()) {
+                Surface(
+                    modifier = Modifier
+                        .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Vertical))
+                        .imePadding()
+                ) {
                     RootGraph(navHostController = rememberNavController(), startDestination = Graph.HOME)
                 }
             }

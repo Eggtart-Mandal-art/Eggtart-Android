@@ -6,41 +6,26 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imeAnimationTarget
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.material3.BottomSheetDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -48,7 +33,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.eggtart.eggtart.R
-import com.eggtart.eggtart.common.constants.Constants
 import com.eggtart.eggtart.common.ui.components.EggtartButton
 import com.eggtart.eggtart.common.ui.components.EggtartButtonSize
 import com.eggtart.eggtart.common.ui.components.EggtartButtonStyle
@@ -56,6 +40,8 @@ import com.eggtart.eggtart.common.ui.components.EggtartSelectionBox
 import com.eggtart.eggtart.common.ui.components.EggtartTextField
 import com.eggtart.eggtart.common.ui.theme.EggtartTheme
 import com.eggtart.eggtart.domain.util.Log
+import com.eggtart.eggtart.features.goal.write.components.SelectColorBottomSheet
+import com.eggtart.eggtart.features.goal.write.components.WriteGoalAppBar
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 
@@ -73,31 +59,7 @@ fun WriteGoalScreen(navHostController: NavHostController, viewModel: WriteGoalVi
 
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
-                modifier = Modifier.heightIn(max = 56.dp),
-                title = {
-                    Text(
-                        text = stringResource(id = R.string.write_goal_title),
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navHostController.popBackStack() }) {
-                        Icon(painter = painterResource(id = R.drawable.ic_arrow_back), contentDescription = "")
-                    }
-                },
-//                actions = {
-//                    IconButton(onClick = { navHostController.popBackStack() }) {
-//                        Icon(painter = painterResource(id = R.drawable.ic_close), contentDescription = "")
-//                    }
-//                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
-                    titleContentColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
-                    actionIconContentColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
-                )
-            )
+            WriteGoalAppBar(navHostController = navHostController)
         }
     ) { paddingValues ->
         Box(modifier = Modifier
@@ -167,51 +129,9 @@ fun WriteGoalScreen(navHostController: NavHostController, viewModel: WriteGoalVi
                     })
             }
         }
-        val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
         if (viewModelState.isShowBottomSheet)
-            ModalBottomSheet(
-                sheetState = bottomSheetState,
-                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-                dragHandle = {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(20.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(width = 48.dp, height = 4.dp)
-                                .clip(shape = RoundedCornerShape(100.dp))
-                                .background(MaterialTheme.colorScheme.onBackground.copy(0.25f))
-                        )
-                    }
-                },
-                onDismissRequest = { viewModel.intentShowBottomSheet(false) },
-                windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Bottom),
-                containerColor = MaterialTheme.colorScheme.background
-            ) {
-                Constants.GOAL_COLORS.forEach {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                viewModel.intentSetGoalColorModel(it)
-                            }
-                            .padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(24.dp)
-                                .clip(shape = RoundedCornerShape(4.dp))
-                                .background(it.color)
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(text = stringResource(id = it.colorNameId), style = MaterialTheme.typography.bodyMedium)
-                    }
-                }
-            }
+            SelectColorBottomSheet()
     }
 
     viewModel.collectSideEffect {

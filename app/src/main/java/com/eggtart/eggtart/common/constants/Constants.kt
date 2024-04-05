@@ -6,6 +6,7 @@ import com.eggtart.eggtart.common.ui.theme.ColorBlueBerry
 import com.eggtart.eggtart.common.ui.theme.ColorEggtart
 import com.eggtart.eggtart.common.ui.theme.ColorGrape
 import com.eggtart.eggtart.common.ui.theme.ColorLemon
+import com.eggtart.eggtart.common.ui.theme.ColorLime
 import com.eggtart.eggtart.common.ui.theme.ColorMelon
 import com.eggtart.eggtart.common.ui.theme.ColorOlive
 import com.eggtart.eggtart.common.ui.theme.ColorSausage
@@ -19,6 +20,7 @@ object Constants {
         GoalColorModel(R.string.color_egg_tart, ColorEggtart),
         GoalColorModel(R.string.color_sausage, ColorSausage),
         GoalColorModel(R.string.color_lemon, ColorLemon),
+        GoalColorModel(R.string.color_lime, ColorLime),
         GoalColorModel(R.string.color_soda, ColorSoda),
         GoalColorModel(R.string.color_grape, ColorGrape),
         GoalColorModel(R.string.color_blueberry, ColorBlueBerry),

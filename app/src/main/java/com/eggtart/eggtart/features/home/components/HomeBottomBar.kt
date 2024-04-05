@@ -1,10 +1,13 @@
 package com.eggtart.eggtart.features.home.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -43,7 +46,7 @@ fun HomeBottomBar(navHostController: NavHostController) {
 
     val bottomVisibilityState = currentRoute in items.map { it.route }
 
-    if (bottomVisibilityState) {
+    AnimatedVisibility(visible = bottomVisibilityState, enter = slideInVertically { it } + fadeIn(), exit = slideOutVertically { it } + fadeOut()) {
         Column {
             HorizontalDivider()
             NavigationBar(containerColor = MaterialTheme.colorScheme.background, tonalElevation = 0.dp) {
@@ -80,7 +83,4 @@ fun HomeBottomBar(navHostController: NavHostController) {
             }
         }
     }
-//    AnimatedVisibility(visible = bottomVisibilityState) {
-//
-//    }
 }
