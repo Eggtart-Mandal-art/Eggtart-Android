@@ -1,4 +1,4 @@
-package com.eggtart.eggtart.common.ui
+package com.eggtart.eggtart.common.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
@@ -17,6 +17,7 @@ val Color_A3A9BA = Color(0xFFA3A9BA)
 val ColorEggtart = Color(0xFFFFCF72)
 val ColorSausage = Color(0xFFFFBDBD)
 val ColorLemon = Color(0xFFFFF496)
+val ColorLime = Color(0xFFD9F273)
 val ColorSoda = Color(0xFFB4E8FF)
 val ColorGrape = Color(0xFFDCC0FF)
 val ColorBlueBerry = Color(0xFFC2D6FD)

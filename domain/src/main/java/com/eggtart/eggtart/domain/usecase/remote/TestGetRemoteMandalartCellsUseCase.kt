@@ -1,5 +1,6 @@
 package com.eggtart.eggtart.domain.usecase.remote
 
+import android.graphics.Color
 import com.eggtart.eggtart.domain.model.remote.ResponseMandalartCellModel
 import kotlinx.coroutines.coroutineScope
 
@@ -43,8 +44,8 @@ class TestGetRemoteMandalartCellsUseCase {
                 step = 1,
                 order = 0,
                 id = 1,
-                color = null,
-                goal = null,
+                color = 0xFFD9F273,
+                goal = "성공할거야",
             ),
             ResponseMandalartCellModel(
                 step = 2,

@@ -22,7 +22,9 @@ class MandalartViewModel @Inject constructor() : ContainerHost<MandalartScreenSt
             mandalartLoading = false,
             mandalartCellList = listOf(),
         )
-    )
+    ) {
+        getMandalartCells()
+    }
 
     fun getMandalartCells() = intent {
         reduce { state.copy(mandalartLoading = true) }
