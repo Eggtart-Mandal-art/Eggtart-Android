@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.eggtart.eggtart.R
-import com.eggtart.eggtart.ScreenRoutes
+import com.eggtart.eggtart.navigation.home.HomeRoute
 import org.orbitmvi.orbit.compose.collectAsState
 
 /**
@@ -88,7 +88,7 @@ fun MandalartScreen(navHostController: NavHostController, viewModel: MandalartVi
                                         enabled = rootCell?.color != null
                                     ) {
                                         if (cell == null) {
-                                            navHostController.navigate(ScreenRoutes.WriteGoal.route)
+                                            navHostController.navigate(HomeRoute.WriteGoal.route)
                                         } else {
                                             //TODO 상세페이지 이동
                                         }
@@ -109,7 +109,7 @@ fun MandalartScreen(navHostController: NavHostController, viewModel: MandalartVi
                                     .background(if (rootCell?.color == null) Color.Black.copy(alpha = 0.1f) else Color(rootCell.color!!))
                                     .clickable {
                                         if (rootCell?.color == null) {
-                                            navHostController.navigate(ScreenRoutes.WriteGoal.route)
+                                            navHostController.navigate(HomeRoute.WriteGoal.route)
                                         } else {
                                             // TODO 상세 페이지
                                         }
@@ -140,13 +140,13 @@ fun MandalartScreen(navHostController: NavHostController, viewModel: MandalartVi
 private fun MandalartAppBar() {
     TopAppBar(
         modifier = Modifier.height(56.dp), title = {
-            Text(modifier = Modifier.padding(vertical = 16.dp), text = stringResource(id = R.string.app_name), fontSize = 22.sp, lineHeight = 24.sp)
+            Text(modifier = Modifier.padding(vertical = 16.dp), text = stringResource(id = R.string.app_name), style = MaterialTheme.typography.titleMedium)
         }, actions = {
-            IconButton(modifier = Modifier
-                .padding(all = 8.dp)
-                .size(40.dp), onClick = { /*TODO*/ }) {
-                Icon(painter = painterResource(id = R.drawable.ic_star_n), contentDescription = "")
-            }
+//            IconButton(modifier = Modifier
+//                .padding(all = 8.dp)
+//                .size(40.dp), onClick = { /*TODO*/ }) {
+//                Icon(painter = painterResource(id = R.drawable.ic_star_n), contentDescription = "")
+//            }
         }
     )
 }

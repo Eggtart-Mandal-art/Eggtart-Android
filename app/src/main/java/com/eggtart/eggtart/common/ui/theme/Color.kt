@@ -1,4 +1,4 @@
-package com.eggtart.eggtart.common.ui
+package com.eggtart.eggtart.common.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

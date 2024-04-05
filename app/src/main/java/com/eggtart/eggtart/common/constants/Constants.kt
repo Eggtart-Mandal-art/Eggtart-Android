@@ -2,14 +2,14 @@ package com.eggtart.eggtart.common.constants
 
 import com.eggtart.eggtart.R
 import com.eggtart.eggtart.common.model.GoalColorModel
-import com.eggtart.eggtart.common.ui.ColorBlueBerry
-import com.eggtart.eggtart.common.ui.ColorEggtart
-import com.eggtart.eggtart.common.ui.ColorGrape
-import com.eggtart.eggtart.common.ui.ColorLemon
-import com.eggtart.eggtart.common.ui.ColorMelon
-import com.eggtart.eggtart.common.ui.ColorOlive
-import com.eggtart.eggtart.common.ui.ColorSausage
-import com.eggtart.eggtart.common.ui.ColorSoda
+import com.eggtart.eggtart.common.ui.theme.ColorBlueBerry
+import com.eggtart.eggtart.common.ui.theme.ColorEggtart
+import com.eggtart.eggtart.common.ui.theme.ColorGrape
+import com.eggtart.eggtart.common.ui.theme.ColorLemon
+import com.eggtart.eggtart.common.ui.theme.ColorMelon
+import com.eggtart.eggtart.common.ui.theme.ColorOlive
+import com.eggtart.eggtart.common.ui.theme.ColorSausage
+import com.eggtart.eggtart.common.ui.theme.ColorSoda
 
 /**
  *  Created by wonjin on 2024/04/01

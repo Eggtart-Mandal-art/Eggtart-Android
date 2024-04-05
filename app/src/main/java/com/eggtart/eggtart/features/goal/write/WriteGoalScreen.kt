@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imeAnimationTarget
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
@@ -46,13 +48,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.eggtart.eggtart.R
-import com.eggtart.eggtart.common.components.EggtartButton
-import com.eggtart.eggtart.common.components.EggtartButtonSize
-import com.eggtart.eggtart.common.components.EggtartButtonStyle
-import com.eggtart.eggtart.common.components.EggtartSelectionBox
-import com.eggtart.eggtart.common.components.EggtartTextField
 import com.eggtart.eggtart.common.constants.Constants
-import com.eggtart.eggtart.common.ui.EggtartTheme
+import com.eggtart.eggtart.common.ui.components.EggtartButton
+import com.eggtart.eggtart.common.ui.components.EggtartButtonSize
+import com.eggtart.eggtart.common.ui.components.EggtartButtonStyle
+import com.eggtart.eggtart.common.ui.components.EggtartSelectionBox
+import com.eggtart.eggtart.common.ui.components.EggtartTextField
+import com.eggtart.eggtart.common.ui.theme.EggtartTheme
 import com.eggtart.eggtart.domain.util.Log
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -63,7 +65,7 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-fun WriteGoalScreen(navController: NavHostController, viewModel: WriteGoalViewModel = hiltViewModel()) {
+fun WriteGoalScreen(navHostController: NavHostController, viewModel: WriteGoalViewModel = hiltViewModel()) {
     val viewModelState = viewModel.collectAsState().value
     val focusManager = LocalFocusManager.current
 
@@ -72,6 +74,7 @@ fun WriteGoalScreen(navController: NavHostController, viewModel: WriteGoalViewMo
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
+                modifier = Modifier.heightIn(max = 56.dp),
                 title = {
                     Text(
                         text = stringResource(id = R.string.write_goal_title),
@@ -79,15 +82,15 @@ fun WriteGoalScreen(navController: NavHostController, viewModel: WriteGoalViewMo
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = { navHostController.popBackStack() }) {
                         Icon(painter = painterResource(id = R.drawable.ic_arrow_back), contentDescription = "")
                     }
                 },
-                actions = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(painter = painterResource(id = R.drawable.ic_close), contentDescription = "")
-                    }
-                },
+//                actions = {
+//                    IconButton(onClick = { navHostController.popBackStack() }) {
+//                        Icon(painter = painterResource(id = R.drawable.ic_close), contentDescription = "")
+//                    }
+//                },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background,
                     navigationIconContentColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),

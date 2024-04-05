@@ -1,0 +1,49 @@
+package com.eggtart.eggtart.navigation.home
+
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import com.eggtart.eggtart.R
+import com.eggtart.eggtart.features.goal.write.WriteGoalScreen
+import com.eggtart.eggtart.features.home.calendar.CalendarScreen
+import com.eggtart.eggtart.features.home.mandalart.MandalartScreen
+import com.eggtart.eggtart.features.home.settings.SettingsScreen
+import com.eggtart.eggtart.navigation.root.Graph
+
+/**
+ *  Created by wonjin on 2024/04/04
+ **/
+
+@Composable
+fun HomeGraph(navHostController: NavHostController, paddingValues: PaddingValues) {
+    NavHost(modifier = Modifier.padding(paddingValues), navController = navHostController, startDestination = HomeRoute.Mandalart.route, route = Graph.HOME) {
+        composable(HomeRoute.Mandalart.route) {
+            MandalartScreen(navHostController = navHostController)
+        }
+
+        composable(HomeRoute.Calendar.route) {
+            CalendarScreen()
+        }
+
+        composable(HomeRoute.Settings.route) {
+            SettingsScreen()
+        }
+
+        composable(HomeRoute.WriteGoal.route) {
+            WriteGoalScreen(navHostController = navHostController)
+        }
+    }
+}
+
+sealed class HomeRoute(val route: String, @StringRes val labelId: Int = -1, @DrawableRes val unselectedIconId: Int = -1, @DrawableRes val selectedIconId: Int = -1) {
+    data object Mandalart : HomeRoute("mandalart", R.string.nav_mandalart, R.drawable.ic_grid_n, R.drawable.ic_grid_s)
+    data object Calendar : HomeRoute("calendar", R.string.nav_calendar, R.drawable.ic_calendar_n, R.drawable.ic_calendar_s)
+    data object Settings : HomeRoute("settings", R.string.nav_settings, R.drawable.ic_settings_n, R.drawable.ic_settings_s)
+    data object WriteGoal : HomeRoute("writeGoal")
+}
