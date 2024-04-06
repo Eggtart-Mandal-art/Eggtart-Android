@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.eggtart.eggtart.domain"
+    namespace = "com.teamegg.eggtart.domain"
     compileSdk = 34
 
     defaultConfig {

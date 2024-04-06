@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.eggtart.eggtart"
+    namespace = "com.teamegg.eggtart"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.eggtart.eggtart"
+        applicationId = "com.teamegg.eggtart"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
