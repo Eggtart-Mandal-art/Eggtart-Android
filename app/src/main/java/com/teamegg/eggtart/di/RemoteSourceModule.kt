@@ -33,7 +33,7 @@ object RemoteSourceModule {
         writeTimeout(timeOut, TimeUnit.SECONDS)
         addInterceptor(
             HttpLoggingInterceptor { message ->
-                Log.d("EGGTART_SERVER", message)
+                Logger.d("EGGTART_SERVER: $message")
             }.apply {
                 level = HttpLoggingInterceptor.Level.BODY
             }

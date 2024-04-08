@@ -15,7 +15,7 @@
         android:theme="@style/Theme.Eggtart"
         tools:targetApi="tiramisu">
         <activity
-            android:name=".MainActivity"
+            android:name=".features.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.Eggtart">
@@ -26,5 +26,4 @@
             </intent-filter>
         </activity>
     </application>
-
 </manifest>
