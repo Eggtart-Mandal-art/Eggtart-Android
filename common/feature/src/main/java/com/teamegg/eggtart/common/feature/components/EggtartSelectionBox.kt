@@ -15,8 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.teamegg.eggtart.common.feature.R
 import com.teamegg.eggtart.common.feature.theme.EggtartTheme
+import com.teamegg.eggtart.common.feature.types.DrawableResource
 
 /**
  * Created by 노원진 on 2024.03.31
@@ -59,7 +59,7 @@ fun EggtartSelectionBox(
                 MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
             }
         )
-        Icon(painter = painterResource(id = R.drawable.ic_expand_more), contentDescription = "", tint = MaterialTheme.colorScheme.onBackground.copy(if (enabled) 0.45f else 0.25f))
+        Icon(painter = painterResource(id = DrawableResource.ic_expand_more), contentDescription = "", tint = MaterialTheme.colorScheme.onBackground.copy(if (enabled) 0.45f else 0.25f))
     }
 }
 

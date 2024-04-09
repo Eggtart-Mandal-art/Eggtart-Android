@@ -2,7 +2,6 @@ package com.teamegg.eggtart.core.room.source
 
 import com.teamegg.eggtart.core.room.database.dao.MandalartCellDao
 import com.teamegg.eggtart.core.room.entity.MandalartCellEntity
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 /**
@@ -15,7 +14,7 @@ interface MandalartCellLocalSource {
 
     suspend fun updateCell(vararg mandalartCell: MandalartCellEntity)
 
-    suspend fun getMandalartCell(sheetId: Long, depth: Int): Flow<MandalartCellEntity?>
+    suspend fun getMandalartCell(sheetId: Long, step: Int): List<MandalartCellEntity>
 }
 
 class MandalartCellLocalSourceImpl @Inject constructor(private val mandalartCellDao: MandalartCellDao) : MandalartCellLocalSource {
@@ -25,5 +24,5 @@ class MandalartCellLocalSourceImpl @Inject constructor(private val mandalartCell
 
     override suspend fun updateCell(vararg mandalartCell: MandalartCellEntity) = mandalartCellDao.updateCell(*mandalartCell)
 
-    override suspend fun getMandalartCell(sheetId: Long, depth: Int): Flow<MandalartCellEntity?> = mandalartCellDao.getCell(sheetId, depth)
+    override suspend fun getMandalartCell(sheetId: Long, step: Int): List<MandalartCellEntity> = mandalartCellDao.getCell(sheetId, step)
 }

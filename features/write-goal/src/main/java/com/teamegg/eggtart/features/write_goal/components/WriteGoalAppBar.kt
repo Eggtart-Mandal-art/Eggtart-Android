@@ -14,7 +14,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.teamegg.eggtart.common.feature.R
+import com.teamegg.eggtart.common.feature.types.DrawableResource
+import com.teamegg.eggtart.common.feature.types.StringResource
 
 /**
  *  Created by wonjin on 2024/04/05
@@ -27,13 +28,13 @@ fun WriteGoalAppBar(navHostController: NavHostController) {
         modifier = Modifier.heightIn(max = 56.dp),
         title = {
             Text(
-                text = stringResource(id = R.string.write_goal_title),
+                text = stringResource(id = StringResource.write_goal_title),
                 style = MaterialTheme.typography.titleMedium,
             )
         },
         navigationIcon = {
             IconButton(onClick = { navHostController.popBackStack() }) {
-                Icon(painter = painterResource(id = R.drawable.ic_arrow_back), contentDescription = "")
+                Icon(painter = painterResource(id = DrawableResource.ic_arrow_back), contentDescription = "")
             }
         },
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(

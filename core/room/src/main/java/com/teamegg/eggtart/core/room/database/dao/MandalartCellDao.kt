@@ -6,7 +6,6 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.teamegg.eggtart.core.room.entity.MandalartCellEntity
-import kotlinx.coroutines.flow.Flow
 
 /**
  * Created by 노원진 on 2024.03.27
@@ -24,6 +23,6 @@ interface MandalartCellDao {
     @Update
     fun updateCell(vararg cell: MandalartCellEntity)
 
-    @Query("SELECT * FROM mandalartCell WHERE sheetId=:sheetId AND depth=:depth")
-    fun getCell(sheetId: Long, depth: Int = 0): Flow<MandalartCellEntity?>
+    @Query("SELECT * FROM mandalartCell WHERE sheetId=:sheetId AND step=:step")
+    fun getCell(sheetId: Long, step: Int = 0): List<MandalartCellEntity>
 }

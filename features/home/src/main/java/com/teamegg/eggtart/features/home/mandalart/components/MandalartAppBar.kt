@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.teamegg.eggtart.R
+import com.teamegg.eggtart.common.feature.types.StringResource
 
 /**
  *  Created by wonjin on 2024/04/05
@@ -21,7 +21,7 @@ import com.teamegg.eggtart.R
 fun MandalartAppBar() {
     TopAppBar(
         modifier = Modifier.height(56.dp), title = {
-            Text(modifier = Modifier.padding(vertical = 16.dp), text = stringResource(id = R.string.app_name), style = MaterialTheme.typography.titleMedium)
+            Text(modifier = Modifier.padding(vertical = 16.dp), text = stringResource(id = StringResource.app_name), style = MaterialTheme.typography.titleMedium)
         }
     )
 }

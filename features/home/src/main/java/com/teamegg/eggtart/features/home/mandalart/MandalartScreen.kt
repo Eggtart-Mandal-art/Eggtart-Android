@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -16,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.teamegg.eggtart.features.home.mandalart.components.MandalartAppBar
 import com.teamegg.eggtart.features.home.mandalart.components.MandalartItem
 import org.orbitmvi.orbit.compose.collectAsState
@@ -26,7 +24,7 @@ import org.orbitmvi.orbit.compose.collectAsState
  */
 
 @Composable
-fun MandalartScreen(navHostController: NavHostController, homePaddingValues: PaddingValues = PaddingValues(), viewModel: MandalartViewModel = hiltViewModel()) {
+fun MandalartScreen(navigateWriteGoal: (Int) -> Unit, homePaddingValues: PaddingValues = PaddingValues(), viewModel: MandalartViewModel = hiltViewModel()) {
     val viewModelState = viewModel.collectAsState().value
 
     Scaffold(
@@ -51,8 +49,8 @@ fun MandalartScreen(navHostController: NavHostController, homePaddingValues: Pad
                 ) {
                     val rootCell = viewModelState.mandalartCellList.getOrNull(4)
 
-                    items(viewModelState.mandalartCellList) { cell ->
-                        MandalartItem(navHostController = navHostController, rootCellData = rootCell, cellData = cell)
+                    items(9) { index ->
+                        MandalartItem(navigateWriteGoal = navigateWriteGoal, rootCellData = rootCell, cellData = viewModelState.mandalartCellList.getOrNull(index), index = index)
                     }
                 }
             }

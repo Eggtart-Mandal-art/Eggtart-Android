@@ -28,8 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.teamegg.eggtart.common.feature.theme.Typography
-import com.teamegg.eggtart.navigation.home.HomeRoute
+import com.teamegg.eggtart.common.feature.routes.home.HomeRoutes
 
 /**
  *  Created by wonjin on 2024/04/04
@@ -38,7 +37,7 @@ import com.teamegg.eggtart.navigation.home.HomeRoute
 @Composable
 fun HomeBottomBar(navHostController: NavHostController) {
     val items = remember {
-        listOf(HomeRoute.Mandalart, HomeRoute.Calendar, HomeRoute.Settings)
+        listOf(HomeRoutes.Mandalart, HomeRoutes.Calendar, HomeRoutes.Settings)
     }
 
     val navBackStackEntry by navHostController.currentBackStackEntryAsState()
@@ -64,7 +63,7 @@ fun HomeBottomBar(navHostController: NavHostController) {
                             navHostController.navigate(it.route) {
                                 launchSingleTop = true
 
-                                popUpTo(HomeRoute.Mandalart.route)
+                                popUpTo(HomeRoutes.Mandalart.route)
                             }
                         }
                         .padding(top = 12.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top) {

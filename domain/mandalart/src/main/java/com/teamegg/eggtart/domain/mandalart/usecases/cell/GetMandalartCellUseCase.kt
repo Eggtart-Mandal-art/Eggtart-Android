@@ -10,5 +10,5 @@ import javax.inject.Inject
  **/
 
 class GetMandalartCellUseCase @Inject constructor(private val mandalartCellRepository: MandalartCellRepository) {
-    suspend operator fun invoke(sheetId: Long, depth: Int = 0): Flow<MandalartCellModel?> = mandalartCellRepository.getMandalartCell(sheetId, depth)
+    suspend operator fun invoke(sheetId: Long, step: Int = 0): List<MandalartCellModel> = mandalartCellRepository.getMandalartCell(sheetId, step)
 }

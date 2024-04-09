@@ -16,6 +16,7 @@ graph TB
     util
   end
   subgraph core
+    network
     room
   end
   subgraph domain
@@ -27,13 +28,14 @@ graph TB
     write-goal
   end
   login --> feature
-  features --> feature
-  features --> home
-  features --> login
-  features --> write-goal
   home --> feature
   home --> mandalart
   app --> features
+  app --> di
+  di --> util
+  di --> room
+  di --> network
+  di --> mandalart
   room --> mandalart
   write-goal --> feature
   write-goal --> util

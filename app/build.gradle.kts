@@ -29,7 +29,9 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
 
-        debug {}
+        debug {
+            applicationIdSuffix = ".dev"
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -53,6 +55,7 @@ android {
 
 dependencies {
     implementation(project(":features"))
+    implementation(project(":di"))
 
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)

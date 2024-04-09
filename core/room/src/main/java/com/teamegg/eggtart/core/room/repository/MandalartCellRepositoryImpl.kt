@@ -4,8 +4,6 @@ import com.teamegg.eggtart.core.room.mapper.convert
 import com.teamegg.eggtart.core.room.source.MandalartCellLocalSource
 import com.teamegg.eggtart.domain.mandalart.model.MandalartCellModel
 import com.teamegg.eggtart.domain.mandalart.repository.MandalartCellRepository
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 /**
@@ -19,5 +17,5 @@ class MandalartCellRepositoryImpl @Inject constructor(private val mandalartCellL
 
     override suspend fun updateCell(vararg mandalartCell: MandalartCellModel, sheetId: Long) = mandalartCellLocalSource.updateCell(*(mandalartCell.map { it.convert(sheetId) }.toTypedArray()))
 
-    override suspend fun getMandalartCell(sheetId: Long, depth: Int): Flow<MandalartCellModel?> = mandalartCellLocalSource.getMandalartCell(sheetId, depth).map { it?.convert() }
+    override suspend fun getMandalartCell(sheetId: Long, step: Int): List<MandalartCellModel> = mandalartCellLocalSource.getMandalartCell(sheetId, step).map { it.convert() }
 }

@@ -20,6 +20,7 @@ room = "2.6.1"
 ksp = "1.9.23-1.0.19"
 module-graph = "0.6.0"
 gson = "2.10.1"
+ktor = "2.3.10"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -63,7 +64,15 @@ room-compiler = { group = "androidx.room", name = "room-compiler", version.ref =
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 
 # Gson
-gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson"}
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+
+# Ktor
+ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
+ktor-client-android = { group = "io.ktor", name = "ktor-client-android", version.ref = "ktor" }
+ktor-client-logging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor" }
+ktor-serialization = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
+ktor-client-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
+
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -71,4 +80,4 @@ kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
 hiltAndroid = { id = "com.google.dagger.hilt.android", version.ref = "android-hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-moduleGraph = { id = "dev.iurysouza.modulegraph", version.ref = "module-graph"}
+moduleGraph = { id = "dev.iurysouza.modulegraph", version.ref = "module-graph" }

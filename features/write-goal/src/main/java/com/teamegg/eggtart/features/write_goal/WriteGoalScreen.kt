@@ -32,12 +32,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.teamegg.eggtart.common.feature.R
 import com.teamegg.eggtart.common.feature.components.EggtartButton
 import com.teamegg.eggtart.common.feature.components.EggtartButtonSize
 import com.teamegg.eggtart.common.feature.components.EggtartButtonStyle
 import com.teamegg.eggtart.common.feature.components.EggtartSelectionBox
 import com.teamegg.eggtart.common.feature.components.EggtartTextField
+import com.teamegg.eggtart.common.feature.types.StringResource
 import com.teamegg.eggtart.common.util.Logger
 import com.teamegg.eggtart.features.write_goal.components.SelectColorBottomSheet
 import com.teamegg.eggtart.features.write_goal.components.WriteGoalAppBar
@@ -72,7 +72,7 @@ fun WriteGoalScreen(navHostController: NavHostController, viewModel: WriteGoalVi
                 viewModel.intentSetImeBottom(0)
             }) {
             Column(modifier = Modifier.padding(top = 24.dp, start = 16.dp, end = 16.dp, bottom = 28.dp)) {
-                Text(text = stringResource(id = R.string.com_goal), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.45f))
+                Text(text = stringResource(id = StringResource.com_goal), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.45f))
 
                 Spacer(modifier = Modifier.height(8.dp))
 
@@ -85,19 +85,19 @@ fun WriteGoalScreen(navHostController: NavHostController, viewModel: WriteGoalVi
                     keyboardActions = KeyboardActions {
                         Logger.d("keyboardActions")
                     },
-                    placeHolder = stringResource(id = R.string.enter_goal_hint),
+                    placeHolder = stringResource(id = StringResource.enter_goal_hint),
                     value = viewModelState.goalString,
                     onValueChanged = { viewModel.intentSetGoalString(it) }
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                Text(text = stringResource(id = R.string.select_color), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.45f))
+                Text(text = stringResource(id = StringResource.select_color), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.45f))
 
                 Spacer(modifier = Modifier.height(8.dp))
 
                 EggtartSelectionBox(
-                    placeHolder = stringResource(id = R.string.select_color_hint),
+                    placeHolder = stringResource(id = StringResource.select_color_hint),
                     onClick = {
                         viewModel.intentShowBottomSheet(true)
                     },
@@ -122,7 +122,7 @@ fun WriteGoalScreen(navHostController: NavHostController, viewModel: WriteGoalVi
                         .padding(horizontal = 4.dp),
                     buttonSize = EggtartButtonSize.LARGE,
                     buttonStyle = EggtartButtonStyle.PRIMARY,
-                    contentString = stringResource(id = R.string.com_save),
+                    contentString = stringResource(id = StringResource.com_save),
                     onClick = {
                         /*TODO*/
                     })

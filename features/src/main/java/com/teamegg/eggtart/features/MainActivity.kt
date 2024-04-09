@@ -12,9 +12,12 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
+import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import com.teamegg.eggtart.common.feature.navigation.root.Graph
-import com.teamegg.eggtart.common.feature.navigation.root.RootGraph
+import com.teamegg.eggtart.common.feature.routes.root.RootRoutes
+import com.teamegg.eggtart.common.feature.theme.EggtartTheme
+import com.teamegg.eggtart.features.home.navigation.homeScreen
+import com.teamegg.eggtart.features.write_goal.navigation.writeGoalScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
@@ -28,14 +31,24 @@ class MainActivity : ComponentActivity() {
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
+
         setContent {
-            com.teamegg.eggtart.common.feature.theme.EggtartTheme {
+            EggtartTheme {
+                val navController = rememberNavController()
+
                 Surface(
                     modifier = Modifier
                         .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Vertical))
                         .imePadding()
                 ) {
-                    RootGraph(navHostController = rememberNavController(), startDestination = Graph.HOME)
+                    NavHost(navController = navController, startDestination = RootRoutes.HOME, route = RootRoutes.ROOT) {
+                        homeScreen(
+                            navigateWriteGoal = { index ->
+                                navController.navigate(RootRoutes.WRITE_GOAL)
+                            }
+                        )
+                        writeGoalScreen(navController)
+                    }
                 }
             }
         }

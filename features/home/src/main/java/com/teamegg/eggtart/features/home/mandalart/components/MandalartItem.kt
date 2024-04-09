@@ -19,18 +19,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import com.teamegg.eggtart.R
-import com.teamegg.eggtart.domain.model.remote.ResponseMandalartCellModel
-import com.teamegg.eggtart.navigation.home.HomeRoute
+import com.teamegg.eggtart.common.feature.types.DrawableResource
+import com.teamegg.eggtart.common.feature.types.StringResource
+import com.teamegg.eggtart.domain.mandalart.model.MandalartCellModel
 
 /**
  *  Created by wonjin on 2024/04/05
  **/
 
 @Composable
-fun MandalartItem(navHostController: NavHostController, rootCellData: ResponseMandalartCellModel?, cellData: ResponseMandalartCellModel) {
-    val isRootCell = rootCellData?.id == cellData.id
+fun MandalartItem(navigateWriteGoal: (Int) -> Unit, rootCellData: MandalartCellModel?, cellData: MandalartCellModel?, index: Int) {
+    val isRootCell = index == 4
 
     Box(
         modifier = Modifier
@@ -38,40 +37,40 @@ fun MandalartItem(navHostController: NavHostController, rootCellData: ResponseMa
             .clip(RoundedCornerShape(12.dp))
             .background(
                 if (isRootCell) {
-                    if (cellData.color == null)
+                    if (cellData?.color == null)
                         Color.Black.copy(alpha = 0.1f)
                     else
                         Color(cellData.color!!)
                 } else {
                     if (rootCellData?.color == null)
                         MaterialTheme.colorScheme.onBackground.copy(alpha = 0.04f)
-                    else if (cellData.color == null)
+                    else if (cellData?.color == null)
                         MaterialTheme.colorScheme.onBackground.copy(alpha = 0.08f)
                     else
                         Color(cellData.color!!)
                 }
             )
             .clickable(enabled = isRootCell || rootCellData?.color != null) {
-                if (cellData.color == null) {
-                    navHostController.navigate(HomeRoute.WriteGoal.route)
+                if (cellData?.color == null) {
+                    navigateWriteGoal(index)
                 } else {
                     // TODO 상세 페이지
                 }
             },
         contentAlignment = Alignment.Center
     ) {
-        if (isRootCell || cellData.goal.isNullOrEmpty().not()) {
+        if (isRootCell || cellData?.goal.isNullOrEmpty().not()) {
             Text(
                 modifier = Modifier
                     .padding(horizontal = 8.dp)
                     .wrapContentSize(),
-                text = if (cellData.goal.isNullOrEmpty()) stringResource(id = R.string.enter_final_goal_first) else cellData.goal.toString(),
+                text = if (cellData?.goal.isNullOrEmpty()) stringResource(id = StringResource.enter_final_goal_first) else cellData?.goal.toString(),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.45f)
             )
         } else if (rootCellData?.goal.isNullOrEmpty().not()) {
-            Icon(painter = painterResource(id = R.drawable.ic_add), contentDescription = "")
+            Icon(painter = painterResource(id = DrawableResource.ic_add), contentDescription = "")
         }
     }
 }
