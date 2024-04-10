@@ -23,3 +23,5 @@ val ColorGrape = Color(0xFFDCC0FF)
 val ColorBlueBerry = Color(0xFFC2D6FD)
 val ColorMelon = Color(0xFFBCF0AF)
 val ColorOlive = Color(0xFFD1D7AE)
+
+val ColorKakao = Color(0xFFFEE500)
