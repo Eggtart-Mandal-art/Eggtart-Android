@@ -62,7 +62,9 @@ fun LoginScreen(navigateHomeScreen: () -> Unit) {
             ),
             contentPadding = PaddingValues(vertical = 16.dp),
             shape = RoundedCornerShape(12.dp),
-            onClick = { /*TODO: KakaoLogin*/ }
+            onClick = {
+                /*TODO: KakaoLogin*/
+            }
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically

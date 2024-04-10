@@ -2,6 +2,7 @@ package com.teamegg.eggtart
 
 import android.app.Application
 import android.content.Context
+import com.kakao.sdk.common.KakaoSdk
 import dagger.hilt.android.HiltAndroidApp
 
 /**
@@ -12,6 +13,12 @@ import dagger.hilt.android.HiltAndroidApp
 class EggtartApplication : Application() {
     init {
         application = this
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+
+        KakaoSdk.init(applicationContext, BuildConfig.KAKAO_NATIVE_APP_KEY)
     }
 
     companion object {
