@@ -29,7 +29,9 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
 
-        debug {}
+        debug {
+            applicationIdSuffix = ".dev"
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -52,8 +54,8 @@ android {
 }
 
 dependencies {
-    implementation(project(":domain"))
-    implementation(project(":data"))
+    implementation(project(":features"))
+    implementation(project(":di"))
 
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
@@ -64,11 +66,6 @@ dependencies {
     implementation(libs.ui.graphics)
     implementation(libs.ui.tooling.preview)
     implementation(libs.material3)
-
-    // Orbit (MVI)
-    implementation(libs.orbit.core)
-    implementation(libs.orbit.viewmodel)
-    implementation(libs.orbit.compose)
 
     // Hilt
     implementation(libs.hilt.navigation.compose)
