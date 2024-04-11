@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinAndroid)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hiltAndroid)
 }
 
 android {
@@ -39,9 +41,23 @@ android {
 
 dependencies {
     implementation(project(":common:feature"))
+    implementation(project(":common:util"))
 
     implementation(libs.core.ktx)
+    implementation(libs.navigation.compose)
     implementation(libs.material3)
+    implementation(libs.ui.tooling)
+    implementation(libs.ui.tooling.preview)
+
+    // Hilt
+    implementation(libs.hilt.navigation.compose)
+    implementation(libs.dagger.hilt.android)
+    ksp(libs.dagger.hilt.compiler)
+
+    // Orbit (MVI)
+    implementation(libs.orbit.core)
+    implementation(libs.orbit.viewmodel)
+    implementation(libs.orbit.compose)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)

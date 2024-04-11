@@ -10,7 +10,14 @@ plugins {
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.hiltAndroid) apply false
     alias(libs.plugins.moduleGraph) apply true
+    alias(libs.plugins.secretsGradle) apply false
 } // Needed to make the Suppress annotation work for the plugins block
+
+//buildscript {
+//    dependencies {
+//        classpath(libs.secrets.gradle)
+//    }
+//}
 
 moduleGraphConfig {
     heading.set("EggTart Module Dependency Graph")

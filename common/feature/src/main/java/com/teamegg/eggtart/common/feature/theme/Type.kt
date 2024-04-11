@@ -28,7 +28,12 @@ val Typography = Typography(
     displayLarge = DefaultTypography.displayLarge.copy(fontFamily = DefaultFontFamily),
     displayMedium = DefaultTypography.displayMedium.copy(fontFamily = DefaultFontFamily),
     displaySmall = DefaultTypography.displaySmall.copy(fontFamily = DefaultFontFamily),
-    headlineLarge = DefaultTypography.headlineLarge.copy(fontFamily = DefaultFontFamily),
+    headlineLarge = DefaultTypography.headlineLarge.copy(
+        fontFamily = DefaultFontFamily,
+        fontSize = 28.sp,
+        lineHeight = 35.sp,
+        fontWeight = FontWeight.Bold
+    ),
     headlineMedium = DefaultTypography.headlineMedium.copy(fontFamily = DefaultFontFamily),
     headlineSmall = DefaultTypography.headlineSmall.copy(fontFamily = DefaultFontFamily),
     titleLarge = DefaultTypography.titleLarge.copy(
