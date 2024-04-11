@@ -1,4 +1,11 @@
-@Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
+import java.io.FileInputStream
+import java.util.Properties
+
+val secretsPropertiesFile = rootProject.file("secrets.properties")
+val secretsProperties = Properties()
+
+secretsProperties.load(FileInputStream(secretsPropertiesFile))
+
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
@@ -24,14 +31,29 @@ android {
         }
     }
 
+    signingConfigs {
+        getByName("debug") {
+            storeFile = file("../keystore/eggtart_debug.keystore")
+        }
+
+        create("release") {
+            storeFile = file("../keystore/eggtart_release.keystore")
+            storePassword = "${secretsProperties["KEYSTORE_PASSWORD"]}"
+            keyAlias = "eggtart"
+            keyPassword = "${secretsProperties["KEYSTORE_PASSWORD"]}"
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = signingConfigs.getByName("release")
         }
 
         debug {
             applicationIdSuffix = ".dev"
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {

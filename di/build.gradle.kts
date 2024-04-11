@@ -37,9 +37,12 @@ android {
 
 dependencies {
     implementation(project(":common:util"))
+
     implementation(project(":core:room"))
     implementation(project(":core:network"))
+
     implementation(project(":domain:mandalart"))
+    implementation(project(":domain:kakao"))
 
     implementation(libs.core.ktx)
 

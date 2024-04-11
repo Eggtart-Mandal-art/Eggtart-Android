@@ -46,6 +46,8 @@ dependencies {
     implementation(project(":features:login"))
     implementation(project(":features:write-goal"))
 
+    implementation(project(":domain:kakao"))
+
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.activity.compose)
@@ -62,15 +64,11 @@ dependencies {
     implementation(libs.orbit.compose)
 
     // Hilt
-    implementation(libs.hilt.navigation.compose)
     implementation(libs.dagger.hilt.android)
     ksp(libs.dagger.hilt.compiler)
 
-    // Coil
-    implementation(libs.coil.compose)
-
-    // Room
-    implementation(libs.room.ktx)
+    // Kakao
+    implementation(libs.kakao.user)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)

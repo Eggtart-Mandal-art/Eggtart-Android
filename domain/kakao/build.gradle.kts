@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.teamegg.eggtart.core.network"
+    namespace = "com.teamegg.eggtart.domain.kakao"
     compileSdk = 34
 
     defaultConfig {
@@ -31,18 +31,14 @@ android {
 }
 
 dependencies {
-    implementation(project(":domain:kakao"))
-
-    implementation(project(":common:util"))
-
     implementation(libs.core.ktx)
+
+    // Kakao
+    implementation(libs.kakao.user)
 
     // Hilt
     implementation(libs.dagger.hilt.android)
     ksp(libs.dagger.hilt.compiler)
-
-    // Kakao
-    implementation(libs.kakao.user)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)

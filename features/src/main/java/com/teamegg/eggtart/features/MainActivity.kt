@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.imePadding
@@ -21,12 +22,16 @@ import androidx.core.view.WindowCompat
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.google.gson.Gson
 import com.teamegg.eggtart.common.feature.routes.root.RootRoutes
 import com.teamegg.eggtart.common.feature.theme.EggtartTheme
+import com.teamegg.eggtart.domain.kakao.usecase.KakaoLoginUseCase
 import com.teamegg.eggtart.features.home.navigation.homeScreen
 import com.teamegg.eggtart.features.login.navigation.loginScreen
 import com.teamegg.eggtart.features.write_goal.navigation.writeGoalScreen
 import dagger.hilt.android.AndroidEntryPoint
+import org.orbitmvi.orbit.compose.collectSideEffect
+import javax.inject.Inject
 
 /**
  *  Created by wonjin on 2024/04/08
@@ -34,6 +39,16 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject
+    lateinit var mainViewModelFactory: MainViewModel.MainViewModelFactory
+
+    @Inject
+    lateinit var kakaoLoginUseCase: KakaoLoginUseCase
+
+    private val viewModel by viewModels<MainViewModel> {
+        MainViewModel.create(mainViewModelFactory, kakaoLoginUseCase)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -78,11 +93,25 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                         writeGoalScreen(navController)
-                        loginScreen {
+                        loginScreen(
+                            startKakaoLogin = {
+                                viewModel.intentKakaoLogin()
+                            }
+                        ) {
                             navController.navigate(RootRoutes.HOME) {
                                 popUpTo(RootRoutes.LOGIN) {
                                     inclusive = true
                                 }
+                            }
+                        }
+                    }
+                }
+
+                viewModel.collectSideEffect {
+                    when (it) {
+                        is MainSideEffect.NavigateLoginWithKakaoResult -> {
+                            navController.navigate(RootRoutes.LOGIN.replace("{tokenData}", Gson().toJson(it.kakaoLoginData.getOrNull()))) {
+                                launchSingleTop = true
                             }
                         }
                     }

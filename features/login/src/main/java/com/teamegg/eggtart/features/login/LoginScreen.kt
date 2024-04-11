@@ -16,6 +16,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
@@ -29,15 +30,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.kakao.sdk.auth.model.OAuthToken
 import com.teamegg.eggtart.common.feature.theme.ColorKakao
 import com.teamegg.eggtart.common.feature.theme.EggtartTheme
+import com.teamegg.eggtart.common.util.Logger
+import kotlinx.coroutines.launch
 
 /**
  * Created by 노원진 on 2024.04.10
  */
 
+
 @Composable
-fun LoginScreen(navigateHomeScreen: () -> Unit) {
+fun LoginScreen(tokenData: OAuthToken? = null, startKakaoLogin: suspend () -> Unit, navigateHomeScreen: () -> Unit) {
+    Logger.d("tokenData: $tokenData")
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -45,6 +52,8 @@ fun LoginScreen(navigateHomeScreen: () -> Unit) {
             .padding(horizontal = 16.dp)
             .padding(top = 80.dp, bottom = 104.dp),
     ) {
+        val coroutine = rememberCoroutineScope()
+
         Text(text = stringResource(id = R.string.login_start), style = MaterialTheme.typography.headlineLarge, color = MaterialTheme.colorScheme.background)
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -64,6 +73,9 @@ fun LoginScreen(navigateHomeScreen: () -> Unit) {
             shape = RoundedCornerShape(12.dp),
             onClick = {
                 /*TODO: KakaoLogin*/
+                coroutine.launch {
+                    startKakaoLogin()
+                }
             }
         ) {
             Row(
@@ -126,7 +138,9 @@ fun LoginScreen(navigateHomeScreen: () -> Unit) {
 @Composable
 private fun PreviewLoginScreen() {
     EggtartTheme {
-        LoginScreen {
+        LoginScreen(startKakaoLogin = {
+
+        }) {
 
         }
     }

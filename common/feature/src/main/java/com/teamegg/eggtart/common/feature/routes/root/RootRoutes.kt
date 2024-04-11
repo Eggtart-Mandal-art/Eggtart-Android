@@ -8,5 +8,5 @@ object RootRoutes {
     const val ROOT = "root_route"
     const val HOME = "home"
     const val WRITE_GOAL = "write_goal"
-    const val LOGIN = "login"
+    const val LOGIN = "login/{tokenData}"
 }

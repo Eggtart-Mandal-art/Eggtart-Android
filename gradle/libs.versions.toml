@@ -23,6 +23,8 @@ gson = "2.10.1"
 ktor = "2.3.10"
 kakao = "2.20.1"
 secrets-gradle = "2.0.1"
+appcompat = "1.6.1"
+material = "1.11.0"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -80,6 +82,8 @@ ktor-client-android = { group = "io.ktor", name = "ktor-client-android", version
 ktor-client-logging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor" }
 ktor-serialization = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-client-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 
 [plugins]
