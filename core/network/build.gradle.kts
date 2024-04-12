@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlinSerialization)
 }
 
 android {
@@ -32,17 +33,22 @@ android {
 
 dependencies {
     implementation(project(":domain:kakao"))
+    implementation(project(":domain:user"))
 
     implementation(project(":common:util"))
 
     implementation(libs.core.ktx)
 
+    // Kakao
+    implementation(libs.kakao.user)
+
     // Hilt
     implementation(libs.dagger.hilt.android)
     ksp(libs.dagger.hilt.compiler)
 
-    // Kakao
-    implementation(libs.kakao.user)
+    // Ktor
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.serialization)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)

@@ -6,7 +6,8 @@ package com.teamegg.eggtart.common.feature.routes.root
 
 object RootRoutes {
     const val ROOT = "root_route"
+    const val SPLASH = "splash"
     const val HOME = "home"
     const val WRITE_GOAL = "write_goal"
-    const val LOGIN = "login/{tokenData}"
+    const val LOGIN = "login?kakaoAccessToken={kakaoAccessToken}"
 }

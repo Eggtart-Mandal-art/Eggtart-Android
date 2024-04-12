@@ -1,7 +1,6 @@
-package com.teamegg.eggtart.core.network.repository
+package com.teamegg.eggtart.core.network.kakao.repository
 
 import android.content.Context
-import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.AuthError
 import com.kakao.sdk.common.model.AuthErrorCause
 import com.kakao.sdk.common.model.ClientError
@@ -19,7 +18,7 @@ import kotlin.coroutines.resume
  *  Created by wonjin on 2024/04/11
  **/
 class KakaoRepositoryImpl @Inject constructor(@ActivityContext private val context: Context) : KakaoRepository {
-    override suspend fun loginWithKakao(): Result<OAuthToken?> {
+    override suspend fun loginWithKakao(): Result<String?> {
 
         return if (UserApiClient.instance.isKakaoTalkLoginAvailable(context)) {
             loginWithKakaoTalk()
@@ -28,7 +27,7 @@ class KakaoRepositoryImpl @Inject constructor(@ActivityContext private val conte
         }
     }
 
-    private suspend fun loginWithKakaoTalk(): Result<OAuthToken?> {
+    private suspend fun loginWithKakaoTalk(): Result<String?> {
         return suspendCancellableCoroutine { continuation ->
             UserApiClient.instance.loginWithKakaoTalk(context) { token, error ->
                 if (error != null) {
@@ -37,7 +36,7 @@ class KakaoRepositoryImpl @Inject constructor(@ActivityContext private val conte
                             if (accountError != null) {
                                 continuation.resume(Result.failure(accountError))
                             } else {
-                                continuation.resume(Result.success(accountToken))
+                                continuation.resume(Result.success(accountToken?.accessToken))
                             }
                         }
                     } else {
@@ -45,19 +44,19 @@ class KakaoRepositoryImpl @Inject constructor(@ActivityContext private val conte
                         Logger.d("error: $error")
                     }
                 } else {
-                    continuation.resume(Result.success(token))
+                    continuation.resume(Result.success(token?.accessToken))
                 }
             }
         }
     }
 
-    private suspend fun loginWithKakaoAccount(): Result<OAuthToken?> {
+    private suspend fun loginWithKakaoAccount(): Result<String?> {
         return suspendCancellableCoroutine { continuation ->
             UserApiClient.instance.loginWithKakaoAccount(context) { token, error ->
                 if (error != null) {
                     continuation.resume(Result.failure(error))
                 } else {
-                    continuation.resume(Result.success(token))
+                    continuation.resume(Result.success(token?.accessToken))
                 }
             }
         }

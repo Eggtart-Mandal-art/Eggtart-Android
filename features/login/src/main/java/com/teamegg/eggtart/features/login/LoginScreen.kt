@@ -1,5 +1,6 @@
 package com.teamegg.eggtart.features.login
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -12,8 +13,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -30,11 +33,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.kakao.sdk.auth.model.OAuthToken
+import androidx.compose.ui.window.Dialog
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.teamegg.eggtart.common.feature.theme.ColorKakao
 import com.teamegg.eggtart.common.feature.theme.EggtartTheme
-import com.teamegg.eggtart.common.util.Logger
 import kotlinx.coroutines.launch
+import org.orbitmvi.orbit.compose.collectAsState
 
 /**
  * Created by 노원진 on 2024.04.10
@@ -42,93 +46,108 @@ import kotlinx.coroutines.launch
 
 
 @Composable
-fun LoginScreen(tokenData: OAuthToken? = null, startKakaoLogin: suspend () -> Unit, navigateHomeScreen: () -> Unit) {
-    Logger.d("tokenData: $tokenData")
+fun LoginScreen(kakaoAccessToken: String? = null, viewModel: LoginViewModel = hiltViewModel(), startKakaoLogin: suspend () -> Unit) {
+    val viewModelState = viewModel.collectAsState()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .paint(painter = painterResource(id = R.drawable.bg_login), contentScale = ContentScale.Crop)
-            .padding(horizontal = 16.dp)
-            .padding(top = 80.dp, bottom = 104.dp),
-    ) {
-        val coroutine = rememberCoroutineScope()
+//    LaunchedEffect(kakaoAccessToken) {
+//        if (!kakaoAccessToken.isNullOrEmpty()) {
+//            viewModel.intentLoginWithKakao(kakaoAccessToken)
+//        }
+//    }
 
-        Text(text = stringResource(id = R.string.login_start), style = MaterialTheme.typography.headlineLarge, color = MaterialTheme.colorScheme.background)
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        Text(text = stringResource(id = R.string.login_start_des), style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.background)
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        Button(
+    Surface {
+        Column(
             modifier = Modifier
-                .fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = ColorKakao,
-                contentColor = Color.Black
-            ),
-            contentPadding = PaddingValues(vertical = 16.dp),
-            shape = RoundedCornerShape(12.dp),
-            onClick = {
-                /*TODO: KakaoLogin*/
-                coroutine.launch {
-                    startKakaoLogin()
+                .fillMaxSize()
+                .paint(painter = painterResource(id = R.drawable.bg_login), contentScale = ContentScale.Crop)
+                .padding(horizontal = 16.dp)
+                .padding(top = 80.dp, bottom = 104.dp),
+        ) {
+            val coroutine = rememberCoroutineScope()
+
+            Text(text = stringResource(id = R.string.login_start), style = MaterialTheme.typography.headlineLarge, color = MaterialTheme.colorScheme.background)
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Text(text = stringResource(id = R.string.login_start_des), style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.background)
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = ColorKakao,
+                    contentColor = Color.Black
+                ),
+                contentPadding = PaddingValues(vertical = 16.dp),
+                shape = RoundedCornerShape(12.dp),
+                onClick = {
+                    /*TODO: KakaoLogin*/
+                    coroutine.launch {
+                        startKakaoLogin()
+                    }
+                }
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(painter = painterResource(id = R.drawable.ic_kakao), contentDescription = "")
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = stringResource(id = R.string.login_continue_with_kakao), style = MaterialTheme.typography.labelLarge, color = Color.Black)
                 }
             }
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Black,
+                    contentColor = Color.White
+                ),
+                contentPadding = PaddingValues(vertical = 16.dp),
+                shape = RoundedCornerShape(12.dp),
+                onClick = {
+                    /*TODO: AppleLogin*/
+                }
             ) {
-                Icon(painter = painterResource(id = R.drawable.ic_kakao), contentDescription = "")
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(text = stringResource(id = R.string.login_continue_with_kakao), style = MaterialTheme.typography.labelLarge, color = Color.Black)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(painter = painterResource(id = R.drawable.ic_apple), contentDescription = "")
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = stringResource(id = R.string.login_continue_with_apple), style = MaterialTheme.typography.labelLarge, color = Color.White)
+                }
             }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = buildAnnotatedString {
+                    val des = stringResource(id = R.string.login_terms_des)
+                    val policy = stringResource(id = R.string.str_privacy_policy)
+                    val terms = stringResource(id = R.string.str_terms)
+
+                    append(stringResource(id = R.string.login_terms_des))
+
+                    addStyle(SpanStyle(textDecoration = TextDecoration.Underline), des.indexOf(policy), des.indexOf(policy) + policy.length)
+                    addStyle(SpanStyle(textDecoration = TextDecoration.Underline), des.indexOf(terms), des.indexOf(terms) + terms.length)
+                },
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.background
+            )
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Button(
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Black,
-                contentColor = Color.White
-            ),
-            contentPadding = PaddingValues(vertical = 16.dp),
-            shape = RoundedCornerShape(12.dp),
-            onClick = {
-                /*TODO: AppleLogin*/
-                navigateHomeScreen()
-            }
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(painter = painterResource(id = R.drawable.ic_apple), contentDescription = "")
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(text = stringResource(id = R.string.login_continue_with_apple), style = MaterialTheme.typography.labelLarge, color = Color.White)
+        if (viewModelState.value.loginLoading) {
+            Dialog(onDismissRequest = { }) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                }
             }
         }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = buildAnnotatedString {
-                val des = stringResource(id = R.string.login_terms_des)
-                val policy = stringResource(id = R.string.str_privacy_policy)
-                val terms = stringResource(id = R.string.str_terms)
-
-                append(stringResource(id = R.string.login_terms_des))
-
-                addStyle(SpanStyle(textDecoration = TextDecoration.Underline), des.indexOf(policy), des.indexOf(policy) + policy.length)
-                addStyle(SpanStyle(textDecoration = TextDecoration.Underline), des.indexOf(terms), des.indexOf(terms) + terms.length)
-            },
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.background
-        )
     }
 }
 
@@ -140,8 +159,6 @@ private fun PreviewLoginScreen() {
     EggtartTheme {
         LoginScreen(startKakaoLogin = {
 
-        }) {
-
-        }
+        })
     }
 }

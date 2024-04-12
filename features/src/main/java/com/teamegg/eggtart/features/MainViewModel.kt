@@ -3,12 +3,14 @@ package com.teamegg.eggtart.features
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.teamegg.eggtart.domain.kakao.usecase.KakaoLoginUseCase
+import com.teamegg.eggtart.domain.user.usecase.GetLocalUserTokenUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
+import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
 
 /**
@@ -16,8 +18,11 @@ import org.orbitmvi.orbit.viewmodel.container
  **/
 
 class MainViewModel @AssistedInject constructor(
-    @Assisted private val kakaoLoginUseCase: KakaoLoginUseCase
+    @Assisted private val kakaoLoginUseCase: KakaoLoginUseCase,
+    private val getLocalUserTokenUseCase: GetLocalUserTokenUseCase
 ) : ContainerHost<MainState, MainSideEffect>, ViewModel() {
+
+    override val container = container<MainState, MainSideEffect>(MainState())
 
     @AssistedFactory
     interface MainViewModelFactory {
@@ -33,9 +38,25 @@ class MainViewModel @AssistedInject constructor(
         }
     }
 
+    init {
+        intentGetLocalUserToken()
+    }
+
     fun intentKakaoLogin() = intent {
         postSideEffect(MainSideEffect.NavigateLoginWithKakaoResult(kakaoLoginUseCase()))
     }
 
-    override val container = container<MainState, MainSideEffect>(MainState())
+    private fun intentGetLocalUserToken() = intent {
+        getLocalUserTokenUseCase().collect {
+            if (it == null) {
+                postSideEffect(MainSideEffect.NavigateLogin)
+            } else {
+                postSideEffect(MainSideEffect.NavigateHome)
+            }
+
+            reduce {
+                state.copy(true)
+            }
+        }
+    }
 }

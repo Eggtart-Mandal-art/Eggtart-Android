@@ -1,6 +1,6 @@
 package com.teamegg.eggtart.di.repository
 
-import com.teamegg.eggtart.core.network.repository.KakaoRepositoryImpl
+import com.teamegg.eggtart.core.network.kakao.repository.KakaoRepositoryImpl
 import com.teamegg.eggtart.domain.kakao.repository.KakaoRepository
 import dagger.Binds
 import dagger.Module

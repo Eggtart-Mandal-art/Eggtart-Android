@@ -18,11 +18,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.google.gson.Gson
 import com.teamegg.eggtart.common.feature.routes.root.RootRoutes
 import com.teamegg.eggtart.common.feature.theme.EggtartTheme
 import com.teamegg.eggtart.domain.kakao.usecase.KakaoLoginUseCase
@@ -53,6 +54,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        installSplashScreen().apply {
+            setKeepOnScreenCondition {
+                viewModel.container.stateFlow.value.initialized
+            }
+        }
 
         setContent {
             EggtartTheme {
@@ -86,7 +93,10 @@ class MainActivity : ComponentActivity() {
                         .windowInsetsPadding(if (currentRoute == RootRoutes.LOGIN) WindowInsets(top = 0.dp, bottom = 0.dp) else WindowInsets.systemBars.only(WindowInsetsSides.Vertical))
                         .imePadding()
                 ) {
-                    NavHost(navController = navController, startDestination = RootRoutes.LOGIN, route = RootRoutes.ROOT) {
+                    NavHost(navController = navController, startDestination = RootRoutes.SPLASH, route = RootRoutes.ROOT) {
+                        composable(RootRoutes.SPLASH) {
+                            Surface {}
+                        }
                         homeScreen(
                             navigateWriteGoal = { index ->
                                 navController.navigate(RootRoutes.WRITE_GOAL)
@@ -97,21 +107,31 @@ class MainActivity : ComponentActivity() {
                             startKakaoLogin = {
                                 viewModel.intentKakaoLogin()
                             }
-                        ) {
-                            navController.navigate(RootRoutes.HOME) {
-                                popUpTo(RootRoutes.LOGIN) {
-                                    inclusive = true
-                                }
-                            }
-                        }
+                        )
                     }
                 }
 
                 viewModel.collectSideEffect {
                     when (it) {
                         is MainSideEffect.NavigateLoginWithKakaoResult -> {
-                            navController.navigate(RootRoutes.LOGIN.replace("{tokenData}", Gson().toJson(it.kakaoLoginData.getOrNull()))) {
+                            navController.navigate(RootRoutes.LOGIN.replace("{kakaoAccessToken}", it.kakaoAccessToken.getOrNull() ?: "{kakaoAccessToken}")) {
                                 launchSingleTop = true
+                            }
+                        }
+
+                        is MainSideEffect.NavigateLogin -> {
+                            navController.navigate(RootRoutes.LOGIN) {
+                                navController.currentDestination?.route?.let {
+                                    popUpTo(it) { inclusive = true }
+                                }
+                            }
+                        }
+
+                        is MainSideEffect.NavigateHome -> {
+                            navController.navigate(RootRoutes.HOME) {
+                                navController.currentDestination?.route?.let {
+                                    popUpTo(it) { inclusive = true }
+                                }
                             }
                         }
                     }

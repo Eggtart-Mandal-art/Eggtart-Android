@@ -1,9 +1,9 @@
 package com.teamegg.eggtart.features.login.navigation
 
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
-import com.google.gson.Gson
-import com.kakao.sdk.auth.model.OAuthToken
+import androidx.navigation.navArgument
 import com.teamegg.eggtart.common.feature.routes.root.RootRoutes
 import com.teamegg.eggtart.features.login.LoginScreen
 
@@ -13,12 +13,14 @@ import com.teamegg.eggtart.features.login.LoginScreen
 
 fun NavGraphBuilder.loginScreen(
     startKakaoLogin: suspend () -> Unit,
-    navigateHomeScreen: () -> Unit
 ) {
-    composable(RootRoutes.LOGIN) { backStackEntry ->
-        val tokenDataString = backStackEntry.arguments?.getString("tokenData")
-        val tokenData = Gson().fromJson(tokenDataString, OAuthToken::class.java)
+    composable(RootRoutes.LOGIN, arguments = listOf(navArgument("kakaoAccessToken") {
+        nullable = true
+        defaultValue = null
+        type = NavType.StringType
+    })) { backStackEntry ->
+        val kakaoAccessToken = backStackEntry.arguments?.getString("kakaoAccessToken")
 
-        LoginScreen(tokenData, startKakaoLogin, navigateHomeScreen)
+        LoginScreen(kakaoAccessToken = kakaoAccessToken, startKakaoLogin = startKakaoLogin)
     }
 }

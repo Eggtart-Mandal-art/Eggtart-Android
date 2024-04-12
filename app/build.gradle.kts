@@ -11,7 +11,7 @@ plugins {
     alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hiltAndroid)
-    id(libs.plugins.secretsGradle.get().pluginId)
+    alias(libs.plugins.secretsGradle)
 }
 
 android {
@@ -104,11 +104,6 @@ dependencies {
     implementation(libs.hilt.navigation.compose)
     implementation(libs.dagger.hilt.android)
     ksp(libs.dagger.hilt.compiler)
-
-    // Retrofit
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.gson.converter)
-    implementation(libs.okhttp.logging)
 
     // Coil
     implementation(libs.coil.compose)
