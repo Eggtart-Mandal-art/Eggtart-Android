@@ -1,6 +1,7 @@
 package com.teamegg.eggtart.features
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
@@ -57,6 +58,7 @@ class MainActivity : ComponentActivity() {
 
         installSplashScreen().apply {
             setKeepOnScreenCondition {
+                Log.d("test", "${viewModel.container.stateFlow.value.initialized}")
                 viewModel.container.stateFlow.value.initialized
             }
         }

@@ -5,5 +5,7 @@ package com.teamegg.eggtart.core.network.user.datasource
  **/
 interface
 UserRemoteSource {
-    suspend fun loginWithKakao(accessToken: String): String
+    suspend fun loginWithKakao(kakaoAccessToken: String): String
+
+    suspend fun getUserInfo(accessToken: String): String
 }

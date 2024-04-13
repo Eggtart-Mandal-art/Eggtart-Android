@@ -9,4 +9,8 @@ interface UserLocalSource {
     val userToken: Flow<String?>
 
     suspend fun setUserToken(token: String?)
+
+    val userInfo: Flow<String?>
+
+    suspend fun setUserInfo(info: String?)
 }

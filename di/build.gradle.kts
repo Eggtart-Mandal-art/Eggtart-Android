@@ -67,7 +67,7 @@ dependencies {
     // Room
     implementation(libs.room.ktx)
 
-    // Retrofit
+    // Ktor
     implementation(libs.ktor.client.android)
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.logging)

@@ -1,5 +1,6 @@
 package com.teamegg.eggtart.features
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.teamegg.eggtart.domain.kakao.usecase.KakaoLoginUseCase
@@ -7,6 +8,7 @@ import com.teamegg.eggtart.domain.user.usecase.GetLocalUserTokenUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.delay
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
@@ -48,6 +50,8 @@ class MainViewModel @AssistedInject constructor(
 
     private fun intentGetLocalUserToken() = intent {
         getLocalUserTokenUseCase().collect {
+            Log.d("test", "$it")
+
             if (it == null) {
                 postSideEffect(MainSideEffect.NavigateLogin)
             } else {
@@ -55,7 +59,7 @@ class MainViewModel @AssistedInject constructor(
             }
 
             reduce {
-                state.copy(true)
+                state.copy(false)
             }
         }
     }

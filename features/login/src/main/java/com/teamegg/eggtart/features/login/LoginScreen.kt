@@ -19,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,11 +50,11 @@ import org.orbitmvi.orbit.compose.collectAsState
 fun LoginScreen(kakaoAccessToken: String? = null, viewModel: LoginViewModel = hiltViewModel(), startKakaoLogin: suspend () -> Unit) {
     val viewModelState = viewModel.collectAsState()
 
-//    LaunchedEffect(kakaoAccessToken) {
-//        if (!kakaoAccessToken.isNullOrEmpty()) {
-//            viewModel.intentLoginWithKakao(kakaoAccessToken)
-//        }
-//    }
+    LaunchedEffect(kakaoAccessToken) {
+        if (!kakaoAccessToken.isNullOrEmpty()) {
+            viewModel.intentLoginWithKakao(kakaoAccessToken)
+        }
+    }
 
     Surface {
         Column(

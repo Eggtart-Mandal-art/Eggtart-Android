@@ -9,5 +9,5 @@ import javax.inject.Inject
  *  Created by wonjin on 2024/04/12
  **/
 class LoginWithKakaoUseCase @Inject constructor(private val userRepository: NetworkUserRepository) {
-    suspend operator fun invoke(accessToken: String): Result<UserTokenModel> = userRepository.loginWithKakao(accessToken)
+    suspend operator fun invoke(kakaoAccessToken: String): Result<UserTokenModel> = userRepository.loginWithKakao(kakaoAccessToken)
 }

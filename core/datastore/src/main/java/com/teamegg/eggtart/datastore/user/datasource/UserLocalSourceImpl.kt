@@ -13,6 +13,7 @@ import javax.inject.Inject
  **/
 class UserLocalSourceImpl @Inject constructor(private val dataStore: DataStore<Preferences>) : UserLocalSource {
     private val userTokenKey = stringPreferencesKey("user_token")
+    private val userInfoKey = stringPreferencesKey("user_info")
 
     override val userToken: Flow<String?>
         get() = dataStore.data.map {
@@ -25,6 +26,21 @@ class UserLocalSourceImpl @Inject constructor(private val dataStore: DataStore<P
                 it.remove(userTokenKey)
             } else {
                 it[userTokenKey] = token
+            }
+        }
+    }
+
+    override val userInfo: Flow<String?>
+        get() = dataStore.data.map {
+            it[userInfoKey]
+        }
+
+    override suspend fun setUserInfo(info: String?) {
+        dataStore.edit {
+            if (info == null) {
+                it.remove(userInfoKey)
+            } else {
+                it[userInfoKey] = info
             }
         }
     }

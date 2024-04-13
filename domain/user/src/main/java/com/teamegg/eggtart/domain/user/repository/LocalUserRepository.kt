@@ -1,5 +1,6 @@
 package com.teamegg.eggtart.domain.user.repository
 
+import com.teamegg.eggtart.domain.user.model.UserInfoModel
 import com.teamegg.eggtart.domain.user.model.UserTokenModel
 import kotlinx.coroutines.flow.Flow
 
@@ -11,4 +12,8 @@ interface LocalUserRepository {
     val userToken: Flow<UserTokenModel?>
 
     suspend fun setUserToken(userTokenModel: UserTokenModel?)
+
+    val userInfo: Flow<UserInfoModel?>
+
+    suspend fun setUserInfo(userInfoModel: UserInfoModel?)
 }

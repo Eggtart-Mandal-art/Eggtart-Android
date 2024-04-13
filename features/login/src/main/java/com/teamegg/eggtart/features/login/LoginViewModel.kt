@@ -3,7 +3,10 @@ package com.teamegg.eggtart.features.login
 import androidx.lifecycle.ViewModel
 import com.teamegg.eggtart.common.util.Logger
 import com.teamegg.eggtart.common.util.Result
+import com.teamegg.eggtart.domain.user.usecase.GetUserInfoUseCase
 import com.teamegg.eggtart.domain.user.usecase.LoginWithKakaoUseCase
+import com.teamegg.eggtart.domain.user.usecase.SetLocalUserInfoUseCase
+import com.teamegg.eggtart.domain.user.usecase.SetLocalUserTokenUseCase
 import com.teamegg.eggtart.features.login.sideeffect.LoginSideEffect
 import com.teamegg.eggtart.features.login.state.LoginState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,7 +23,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val loginWithKakaoUseCase: LoginWithKakaoUseCase
+    private val loginWithKakaoUseCase: LoginWithKakaoUseCase,
+    private val getUserInfoUseCase: GetUserInfoUseCase,
+    private val setLocalUserTokenUseCase: SetLocalUserTokenUseCase,
+    private val setLocalUserInfoUseCase: SetLocalUserInfoUseCase
 ) : ContainerHost<LoginState, LoginSideEffect>, ViewModel() {
     override val container: Container<LoginState, LoginSideEffect> = container(LoginState())
 
@@ -30,12 +36,21 @@ class LoginViewModel @Inject constructor(
             state.copy(loginLoading = true)
         }
 
-        val response = loginWithKakaoUseCase(accessToken)
+        val loginResponse = loginWithKakaoUseCase(accessToken)
 
-        if (response is Result.Success) {
-            Logger.d("result: ${response.data}")
-        } else if (response is Result.Failure) {
-            Logger.d("failed result: ${response.error}")
+        if (loginResponse is Result.Success) {
+            val userInfoResponse = getUserInfoUseCase(loginResponse.data.accessToken)
+
+            if (userInfoResponse is Result.Success) {
+                setLocalUserInfoUseCase(userInfoResponse.data)
+                setLocalUserTokenUseCase(loginResponse.data)
+            } else if (userInfoResponse is Result.Failure) {
+                // TODO: 추후 에러 처리 필요
+                Logger.d("failed result: ${userInfoResponse.error}")
+            }
+        } else if (loginResponse is Result.Failure) {
+            // TODO: 추후 에러 처리 필요
+            Logger.d("failed result: ${loginResponse.error}")
         }
 
         reduce {
