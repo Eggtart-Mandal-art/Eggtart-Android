@@ -5,5 +5,5 @@ package com.teamegg.eggtart.features
  **/
 
 data class MainState(
-    val initialized: Boolean = true
+    val initialized: Boolean = false
 )

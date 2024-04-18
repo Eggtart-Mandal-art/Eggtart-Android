@@ -38,8 +38,10 @@ import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.teamegg.eggtart.common.feature.theme.ColorKakao
 import com.teamegg.eggtart.common.feature.theme.EggtartTheme
+import com.teamegg.eggtart.features.login.sideeffect.LoginSideEffect
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 
 /**
  * Created by 노원진 on 2024.04.10
@@ -149,6 +151,12 @@ fun LoginScreen(kakaoAccessToken: String? = null, viewModel: LoginViewModel = hi
                 }
             }
         }
+
+        viewModel.collectSideEffect {
+            when (it) {
+                is LoginSideEffect.ShowErrorPopup -> {}
+            }
+        }
     }
 }
 
@@ -158,8 +166,6 @@ fun LoginScreen(kakaoAccessToken: String? = null, viewModel: LoginViewModel = hi
 @Composable
 private fun PreviewLoginScreen() {
     EggtartTheme {
-        LoginScreen(startKakaoLogin = {
-
-        })
+        LoginScreen(startKakaoLogin = {})
     }
 }

@@ -9,4 +9,6 @@ sealed class MainSideEffect {
     data object NavigateLogin : MainSideEffect()
 
     data object NavigateHome : MainSideEffect()
+
+    data class NavigateWriteGoal(val goalIndex: Int) : MainSideEffect()
 }

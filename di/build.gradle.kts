@@ -73,6 +73,7 @@ dependencies {
     implementation(libs.ktor.client.logging)
     implementation(libs.ktor.serialization)
     implementation(libs.ktor.client.negotiation)
+    implementation(libs.ktor.client.auth)
 
     // Datastore
     implementation(libs.androidx.datastore)

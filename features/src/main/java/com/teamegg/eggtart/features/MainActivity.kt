@@ -1,7 +1,6 @@
 package com.teamegg.eggtart.features
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
@@ -27,6 +26,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.teamegg.eggtart.common.feature.routes.root.RootRoutes
 import com.teamegg.eggtart.common.feature.theme.EggtartTheme
+import com.teamegg.eggtart.common.util.Logger
 import com.teamegg.eggtart.domain.kakao.usecase.KakaoLoginUseCase
 import com.teamegg.eggtart.features.home.navigation.homeScreen
 import com.teamegg.eggtart.features.login.navigation.loginScreen
@@ -58,8 +58,8 @@ class MainActivity : ComponentActivity() {
 
         installSplashScreen().apply {
             setKeepOnScreenCondition {
-                Log.d("test", "${viewModel.container.stateFlow.value.initialized}")
-                viewModel.container.stateFlow.value.initialized
+                Logger.d("${viewModel.container.stateFlow.value.initialized}")
+                !viewModel.container.stateFlow.value.initialized
             }
         }
 
@@ -100,15 +100,11 @@ class MainActivity : ComponentActivity() {
                             Surface {}
                         }
                         homeScreen(
-                            navigateWriteGoal = { index ->
-                                navController.navigate(RootRoutes.WRITE_GOAL)
-                            }
+                            navigateWriteGoal = viewModel::navigateWriteGoal
                         )
                         writeGoalScreen(navController)
                         loginScreen(
-                            startKakaoLogin = {
-                                viewModel.intentKakaoLogin()
-                            }
+                            startKakaoLogin = viewModel::intentKakaoLogin,
                         )
                     }
                 }
@@ -135,6 +131,10 @@ class MainActivity : ComponentActivity() {
                                     popUpTo(it) { inclusive = true }
                                 }
                             }
+                        }
+
+                        is MainSideEffect.NavigateWriteGoal -> {
+                            navController.navigate(RootRoutes.WRITE_GOAL.replace("{goalIndex}", it.goalIndex.toString()))
                         }
                     }
                 }
