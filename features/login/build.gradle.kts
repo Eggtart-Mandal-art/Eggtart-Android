@@ -42,6 +42,7 @@ android {
 dependencies {
     implementation(project(":common:feature"))
     implementation(project(":common:util"))
+    implementation(project(":domain:user"))
 
     implementation(libs.core.ktx)
     implementation(libs.navigation.compose)
@@ -58,6 +59,9 @@ dependencies {
     implementation(libs.orbit.core)
     implementation(libs.orbit.viewmodel)
     implementation(libs.orbit.compose)
+
+    // Serialization
+    implementation(libs.ktor.serialization)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)

@@ -1,13 +1,14 @@
 package com.teamegg.eggtart.core.room.entity
 
 import androidx.room.Entity
-import com.teamegg.eggtart.domain.mandalart.model.MandalartCellModel
+import kotlinx.serialization.Serializable
 
 /**
  * Created by 노원진 on 2024.03.27
  */
 
 @Entity(tableName = "mandalartSheet", primaryKeys = ["sheetId"])
+@Serializable
 data class MandalartSheetEntity(
     val sheetId: Long,
     val ownerId: Long,

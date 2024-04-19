@@ -41,12 +41,17 @@ android {
 
 dependencies {
     implementation(project(":common:feature"))
+    implementation(project(":common:util"))
 
     implementation(project(":features:home"))
     implementation(project(":features:login"))
     implementation(project(":features:write-goal"))
 
+    implementation(project(":domain:kakao"))
+    implementation(project(":domain:user"))
+
     implementation(libs.core.ktx)
+    implementation(libs.core.splashscreen)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.activity.compose)
     implementation(platform(libs.compose.bom))
@@ -62,15 +67,8 @@ dependencies {
     implementation(libs.orbit.compose)
 
     // Hilt
-    implementation(libs.hilt.navigation.compose)
     implementation(libs.dagger.hilt.android)
     ksp(libs.dagger.hilt.compiler)
-
-    // Coil
-    implementation(libs.coil.compose)
-
-    // Room
-    implementation(libs.room.ktx)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)

@@ -20,6 +20,7 @@ graph TB
     room
   end
   subgraph domain
+    kakao
     mandalart
   end
   subgraph features
@@ -28,6 +29,10 @@ graph TB
     write-goal
   end
   login --> feature
+  login --> util
+  network --> kakao
+  network --> util
+  features --> feature
   home --> feature
   home --> mandalart
   app --> features
@@ -36,6 +41,7 @@ graph TB
   di --> room
   di --> network
   di --> mandalart
+  di --> kakao
   room --> mandalart
   write-goal --> feature
   write-goal --> util

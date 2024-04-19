@@ -6,9 +6,10 @@ import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import com.teamegg.eggtart.core.room.database.dao.MandalartCellDao
 import com.teamegg.eggtart.core.room.database.dao.MandalartSheetDao
-import com.google.gson.Gson
 import com.teamegg.eggtart.core.room.entity.MandalartCellEntity
 import com.teamegg.eggtart.core.room.entity.MandalartSheetEntity
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 /**
  * Created by 노원진 on 2024.03.27
@@ -23,15 +24,15 @@ abstract class AppDatabase : RoomDatabase() {
 
     class MandalartCellTypeConverter {
         @TypeConverter
-        fun listToJson(value: List<MandalartCellEntity>): String = Gson().toJson(value)
+        fun listToJson(value: List<MandalartCellEntity>): String = Json.encodeToString(value)
 
         @TypeConverter
-        fun JsonToList(value: String): List<MandalartCellEntity> = Gson().fromJson(value, Array<MandalartCellEntity>::class.java).toList()
+        fun JsonToList(value: String): List<MandalartCellEntity> = Json.decodeFromString<List<MandalartCellEntity>>(value)
 
         @TypeConverter
-        fun cellToJson(value: MandalartCellEntity?): String = Gson().toJson(value) ?: ""
+        fun cellToJson(value: MandalartCellEntity?): String = Json.encodeToString(value)
 
         @TypeConverter
-        fun jsonToCell(value: String): MandalartCellEntity? = Gson().fromJson(value, MandalartCellEntity::class.java)
+        fun jsonToCell(value: String): MandalartCellEntity? = Json.decodeFromString(value)
     }
 }
