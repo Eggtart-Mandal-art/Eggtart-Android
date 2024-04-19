@@ -34,6 +34,7 @@ android {
 dependencies {
     implementation(project(":domain:kakao"))
     implementation(project(":domain:user"))
+    implementation(project(":domain:mandalart"))
 
     implementation(project(":common:util"))
 

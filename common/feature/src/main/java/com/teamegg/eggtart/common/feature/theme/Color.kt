@@ -13,6 +13,8 @@ val Pink40 = Color(0xFF7D5260)
 val Color_F2F2F2 = Color(0xFFF2F2F2)
 val Color_F4AB1D = Color(0xFFF4AB1D)
 val Color_A3A9BA = Color(0xFFA3A9BA)
+val Color_EDEDED = Color(0xFFEDEDED)
+val Color_717171 = Color(0xFF717171)
 
 val ColorEggtart = Color(0xFFFFCF72)
 val ColorSausage = Color(0xFFFFBDBD)

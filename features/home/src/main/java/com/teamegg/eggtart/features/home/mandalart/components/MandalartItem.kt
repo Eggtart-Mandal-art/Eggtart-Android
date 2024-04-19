@@ -19,16 +19,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.teamegg.eggtart.common.feature.theme.Color_EDEDED
 import com.teamegg.eggtart.common.feature.types.DrawableResource
 import com.teamegg.eggtart.common.feature.types.StringResource
-import com.teamegg.eggtart.domain.mandalart.model.MandalartCellModel
+import com.teamegg.eggtart.domain.mandalart.model.CellModel
 
 /**
  *  Created by wonjin on 2024/04/05
  **/
 
 @Composable
-fun MandalartItem(navigateWriteGoal: (Int) -> Unit, rootCellData: MandalartCellModel?, cellData: MandalartCellModel?, index: Int) {
+fun MandalartItem(navigateWriteGoal: (Int) -> Unit, rootCellData: CellModel?, cellData: CellModel?, index: Int) {
     val isRootCell = index == 4
 
     Box(
@@ -36,21 +37,13 @@ fun MandalartItem(navigateWriteGoal: (Int) -> Unit, rootCellData: MandalartCellM
             .aspectRatio(1f)
             .clip(RoundedCornerShape(12.dp))
             .background(
-                if (isRootCell) {
-                    if (cellData?.color == null)
-                        Color.Black.copy(alpha = 0.1f)
-                    else
-                        Color(cellData.color!!)
+                if (cellData?.color == null) {
+                    Color_EDEDED
                 } else {
-                    if (rootCellData?.color == null)
-                        MaterialTheme.colorScheme.onBackground.copy(alpha = 0.04f)
-                    else if (cellData?.color == null)
-                        MaterialTheme.colorScheme.onBackground.copy(alpha = 0.08f)
-                    else
-                        Color(cellData.color!!)
+                    Color(cellData.color!!)
                 }
             )
-            .clickable(enabled = isRootCell || rootCellData?.color != null) {
+            .clickable {
                 if (cellData?.color == null) {
                     navigateWriteGoal(index)
                 } else {
@@ -69,7 +62,7 @@ fun MandalartItem(navigateWriteGoal: (Int) -> Unit, rootCellData: MandalartCellM
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.45f)
             )
-        } else if (rootCellData?.goal.isNullOrEmpty().not()) {
+        } else {
             Icon(painter = painterResource(id = DrawableResource.ic_add), contentDescription = "")
         }
     }

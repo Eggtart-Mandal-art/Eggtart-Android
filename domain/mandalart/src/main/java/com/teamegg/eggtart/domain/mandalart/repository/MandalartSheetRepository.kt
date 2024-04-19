@@ -1,6 +1,6 @@
 package com.teamegg.eggtart.domain.mandalart.repository
 
-import com.teamegg.eggtart.domain.mandalart.model.MandalartSheetModel
+import com.teamegg.eggtart.domain.mandalart.model.SheetModel
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -8,11 +8,11 @@ import kotlinx.coroutines.flow.Flow
  **/
 
 interface MandalartSheetRepository {
-    suspend fun insertSheet(vararg mandalartSheet: MandalartSheetModel)
+    suspend fun insertSheet(vararg mandalartSheet: SheetModel)
 
-    suspend fun updateSheet(vararg mandalartSheet: MandalartSheetModel)
+    suspend fun updateSheet(vararg mandalartSheet: SheetModel)
 
-    suspend fun deleteSheet(vararg mandalartSheet: MandalartSheetModel)
+    suspend fun deleteSheet(vararg mandalartSheet: SheetModel)
 
-    suspend fun getSheets(): Flow<List<MandalartSheetModel>>
+    suspend fun getSheets(): Flow<List<SheetModel>>
 }

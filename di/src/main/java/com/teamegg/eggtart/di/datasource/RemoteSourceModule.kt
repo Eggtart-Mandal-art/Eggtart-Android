@@ -1,6 +1,8 @@
 package com.teamegg.eggtart.di.datasource
 
 import com.teamegg.eggtart.common.util.Logger
+import com.teamegg.eggtart.core.network.mandalart.datasource.MandalartRemoteSource
+import com.teamegg.eggtart.core.network.mandalart.datasource.MandalartRemoteSourceImpl
 import com.teamegg.eggtart.core.network.user.datasource.UserRemoteSource
 import com.teamegg.eggtart.core.network.user.datasource.UserRemoteSourceImpl
 import com.teamegg.eggtart.di.BuildConfig
@@ -29,7 +31,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.URLProtocol
 import io.ktor.serialization.kotlinx.json.json
-import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.lastOrNull
 import kotlinx.serialization.json.Json
 import javax.inject.Singleton
 
@@ -62,11 +64,19 @@ object RemoteSourceProvideModule {
 
         install(Auth) {
             bearer {
+//                loadTokens {
+//                    val token = localUserRepository.userToken.lastOrNull()
+//
+//                    BearerTokens(
+//                        accessToken = token?.accessToken ?: "",
+//                        refreshToken = token?.refreshToken ?: ""
+//                    )
+//                }
                 refreshTokens {
                     val token = client.get {
                         markAsRefreshTokenRequest()
                         url("/token")
-                        bearerAuth(localUserRepository.userToken.firstOrNull()?.refreshToken ?: "")
+                        bearerAuth(localUserRepository.userToken.lastOrNull()?.refreshToken ?: "")
                     }.body<UserTokenModel>()
 
                     localUserRepository.setUserToken(token)
@@ -97,4 +107,8 @@ abstract class RemoteSourceBindsModule {
     @Singleton
     @Binds
     abstract fun bindsUserDataSource(userDataSource: UserRemoteSourceImpl): UserRemoteSource
+
+    @Singleton
+    @Binds
+    abstract fun bindsMandalartRemoteSource(mandalartRemoteSource: MandalartRemoteSourceImpl): MandalartRemoteSource
 }
