@@ -10,5 +10,6 @@ data class WriteGoalState(
     val imeBottom: Int = 0,
     val goalString: String = "",
     val goalColor: GoalColorModel? = null,
-    val isShowBottomSheet: Boolean = false
+    val isShowBottomSheet: Boolean = false,
+    val todoList: List<String> = listOf()
 )

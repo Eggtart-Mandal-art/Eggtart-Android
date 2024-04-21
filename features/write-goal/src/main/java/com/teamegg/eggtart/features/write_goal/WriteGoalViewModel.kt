@@ -3,6 +3,7 @@ package com.teamegg.eggtart.features.write_goal
 import androidx.lifecycle.ViewModel
 import com.teamegg.eggtart.common.feature.util.GoalColorModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.annotation.OrbitExperimental
@@ -28,13 +29,54 @@ class WriteGoalViewModel @Inject constructor() : ContainerHost<WriteGoalState, W
         }
     }
 
-    fun intentSetImeBottom(value: Int) = intent {
+    fun intentAddTodo() = intent {
         reduce {
-            state.copy(imeBottom = value)
+            state.copy(todoList = state.todoList.toMutableList().apply {
+                add("")
+            })
         }
 
-        if (value == 0) {
-            postSideEffect(sideEffect = WriteGoalSideEffect.HideKeyboard)
+        delay(200)
+
+        postSideEffect(WriteGoalSideEffect.RequestFocus)
+    }
+
+    fun intentRemoveTodo(index: Int) = intent {
+        reduce {
+            state.copy(todoList = state.todoList.toMutableList().apply {
+                removeAt(index)
+            })
+        }
+    }
+
+    fun intentRemoveEmptyTodo() = intent {
+        reduce {
+            state.copy(
+                todoList = state.todoList.toMutableList().apply {
+                    removeAll { it.isEmpty() }
+                }
+            )
+        }
+    }
+
+    @OptIn(OrbitExperimental::class)
+    fun intentSetTodoString(index: Int, value: String) = blockingIntent {
+        reduce {
+            state.copy(todoList = state.todoList.toMutableList().apply {
+                this[index] = value
+            })
+        }
+    }
+
+    fun intentSetImeBottom(value: Int) = intent {
+        if (value != state.imeBottom) {
+            reduce {
+                state.copy(imeBottom = value)
+            }
+
+            if (value == 0) {
+                postSideEffect(sideEffect = WriteGoalSideEffect.HideKeyboard)
+            }
         }
     }
 

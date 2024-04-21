@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,25 +32,24 @@ fun MandalartScreen(navigateWriteGoal: (Int) -> Unit, homePaddingValues: Padding
             MandalartAppBar()
         }
     ) { paddingValues ->
-        Surface(modifier = Modifier.padding(paddingValues)) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                contentAlignment = Alignment.Center
+        Box(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize()
+                .padding(16.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                modifier = Modifier.fillMaxWidth(1f),
+                userScrollEnabled = false,
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(3),
-                    modifier = Modifier.fillMaxWidth(1f),
-                    userScrollEnabled = false,
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    val rootCell = viewModelState.mandalartCellList.getOrNull(4)
+                val rootCell = viewModelState.mandalartCellList.getOrNull(4)
 
-                    items(9) { index ->
-                        MandalartItem(navigateWriteGoal = navigateWriteGoal, rootCellData = rootCell, cellData = viewModelState.mandalartCellList.getOrNull(index), index = index)
-                    }
+                items(9) { index ->
+                    MandalartItem(navigateWriteGoal = navigateWriteGoal, rootCellData = rootCell, cellData = viewModelState.mandalartCellList.getOrNull(index), index = index)
                 }
             }
         }

@@ -19,7 +19,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.teamegg.eggtart.common.feature.theme.Color_EDEDED
+import com.teamegg.eggtart.common.feature.theme.ColorGray50
 import com.teamegg.eggtart.common.feature.types.DrawableResource
 import com.teamegg.eggtart.common.feature.types.StringResource
 import com.teamegg.eggtart.domain.mandalart.model.CellModel
@@ -38,7 +38,7 @@ fun MandalartItem(navigateWriteGoal: (Int) -> Unit, rootCellData: CellModel?, ce
             .clip(RoundedCornerShape(12.dp))
             .background(
                 if (cellData?.color == null) {
-                    Color_EDEDED
+                    ColorGray50
                 } else {
                     Color(cellData.color!!)
                 }
@@ -60,10 +60,10 @@ fun MandalartItem(navigateWriteGoal: (Int) -> Unit, rootCellData: CellModel?, ce
                 text = if (cellData?.goal.isNullOrEmpty()) stringResource(id = StringResource.enter_final_goal_first) else cellData?.goal.toString(),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.45f)
+                color = MaterialTheme.colorScheme.secondary
             )
         } else {
-            Icon(painter = painterResource(id = DrawableResource.ic_add), contentDescription = "")
+            Icon(painter = painterResource(id = DrawableResource.ic_add), contentDescription = "", tint = MaterialTheme.colorScheme.secondary)
         }
     }
 }

@@ -14,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
@@ -26,9 +25,10 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Color_F4AB1D,
+    primary = ColorGray500,
     onPrimary = Color.White,
-    secondary = Color_A3A9BA,
+    primaryContainer = ColorYellow500,
+    secondary = ColorGray400,
     onSecondary = Color.White,
     tertiary = Color.Transparent,
     onTertiary = Color.Black,
@@ -53,10 +53,10 @@ private val rippleTheme = object : RippleTheme {
 
     @Composable
     override fun rippleAlpha(): RippleAlpha = RippleAlpha(
-        draggedAlpha = 0.05f,
-        focusedAlpha = 0.05f,
-        pressedAlpha = 0.05f,
-        hoveredAlpha = 0.05f
+        draggedAlpha = 0.1f,
+        focusedAlpha = 0.1f,
+        pressedAlpha = 0.1f,
+        hoveredAlpha = 0.1f
     )
 }
 

@@ -5,18 +5,22 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.teamegg.eggtart.common.feature.theme.ColorGray100
 import com.teamegg.eggtart.common.feature.theme.EggtartTheme
 
 /**
@@ -39,7 +43,7 @@ fun EggtartButton(
         enabled = enabled,
         colors = when (buttonStyle) {
             EggtartButtonStyle.PRIMARY -> ButtonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
                 disabledContainerColor = Color.Black.copy(alpha = 0.1f),
                 disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
@@ -82,17 +86,43 @@ fun EggtartButton(
 }
 
 @Composable
-fun EggtartIconButton(modifier: Modifier, onClick: () -> Unit, icon: @Composable () -> Unit) {
-    Box(
-        modifier = modifier
-            .padding(8.dp)
-            .clickable(onClick = onClick)
-            .clip()
+fun EggtartIconButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    buttonSize: EggtartButtonSize,
+    enabled: Boolean = true,
+    enabledIconColor: Color = MaterialTheme.colorScheme.secondary,
+    disabledIconColor: Color = ColorGray100,
+    icon: @Composable () -> Unit
+) {
+    Card(
+        modifier = modifier.size(
+            when (buttonSize) {
+                EggtartButtonSize.LARGE -> 44.dp
+                EggtartButtonSize.MEDIUM -> 40.dp
+                EggtartButtonSize.SMALL -> 32.dp
+            }
+        ),
+        shape = RoundedCornerShape(
+            when (buttonSize) {
+                EggtartButtonSize.LARGE -> 12.dp
+                EggtartButtonSize.MEDIUM -> 10.dp
+                EggtartButtonSize.SMALL -> 8.dp
+            }
+        ),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.Transparent
+        )
     ) {
-        icon()
-    }
-    IconButton(onClick = onClick) {
-
+        Box(
+            modifier = Modifier
+                .clickable(onClick = onClick, enabled = enabled)
+                .padding(8.dp)
+        ) {
+            CompositionLocalProvider(value = LocalContentColor provides if (enabled) enabledIconColor else disabledIconColor) {
+                icon()
+            }
+        }
     }
 }
 

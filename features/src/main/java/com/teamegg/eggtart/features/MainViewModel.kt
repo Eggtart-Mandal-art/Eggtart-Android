@@ -39,10 +39,6 @@ class MainViewModel @AssistedInject constructor(
         }
     }
 
-    init {
-        intentGetLocalUserToken()
-    }
-
     fun intentKakaoLogin() = intent {
         postSideEffect(MainSideEffect.NavigateLoginWithKakaoResult(kakaoLoginUseCase()))
     }
@@ -55,7 +51,7 @@ class MainViewModel @AssistedInject constructor(
         postSideEffect(MainSideEffect.NavigateHome)
     }
 
-    private fun intentGetLocalUserToken() = intent {
+    fun intentGetLocalUserToken() = intent {
         getLocalUserTokenUseCase().collect {
             Logger.d(it.toString())
 

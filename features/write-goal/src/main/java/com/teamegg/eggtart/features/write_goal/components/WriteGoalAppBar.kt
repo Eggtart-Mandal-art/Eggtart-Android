@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -14,6 +13,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.teamegg.eggtart.common.feature.components.EggtartButtonSize
+import com.teamegg.eggtart.common.feature.components.EggtartIconButton
 import com.teamegg.eggtart.common.feature.types.DrawableResource
 import com.teamegg.eggtart.common.feature.types.StringResource
 
@@ -33,7 +34,7 @@ fun WriteGoalAppBar(navHostController: NavHostController) {
             )
         },
         navigationIcon = {
-            IconButton(onClick = { navHostController.popBackStack() }) {
+            EggtartIconButton(onClick = { navHostController.popBackStack() }, buttonSize = EggtartButtonSize.MEDIUM) {
                 Icon(painter = painterResource(id = DrawableResource.ic_arrow_back), contentDescription = "")
             }
         },

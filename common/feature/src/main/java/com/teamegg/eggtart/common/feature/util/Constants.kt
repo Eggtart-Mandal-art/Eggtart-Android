@@ -22,8 +22,8 @@ object Constants {
         GoalColorModel(R.string.color_lime, ColorLime),
         GoalColorModel(R.string.color_soda, ColorSoda),
         GoalColorModel(R.string.color_grape, ColorGrape),
+        GoalColorModel(R.string.color_olive, ColorOlive),
         GoalColorModel(R.string.color_blueberry, ColorBlueBerry),
         GoalColorModel(R.string.color_melon, ColorMelon),
-        GoalColorModel(R.string.color_olive, ColorOlive)
     )
 }
