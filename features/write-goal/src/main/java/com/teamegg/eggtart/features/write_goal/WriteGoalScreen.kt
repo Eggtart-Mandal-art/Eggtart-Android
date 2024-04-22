@@ -1,6 +1,5 @@
 package com.teamegg.eggtart.features.write_goal
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -56,6 +55,7 @@ import com.teamegg.eggtart.common.feature.components.EggtartTextField
 import com.teamegg.eggtart.common.feature.types.DrawableResource
 import com.teamegg.eggtart.common.feature.types.StringResource
 import com.teamegg.eggtart.common.util.Logger
+import com.teamegg.eggtart.domain.mandalart.model.CellModel
 import com.teamegg.eggtart.features.write_goal.components.SelectColorBottomSheet
 import com.teamegg.eggtart.features.write_goal.components.WriteGoalAppBar
 import org.orbitmvi.orbit.compose.collectAsState
@@ -67,7 +67,7 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun WriteGoalScreen(navHostController: NavHostController, viewModel: WriteGoalViewModel = hiltViewModel()) {
+fun WriteGoalScreen(navHostController: NavHostController, cellModel: CellModel, viewModel: WriteGoalViewModel = hiltViewModel()) {
     val viewModelState = viewModel.collectAsState().value
     val focusManager = LocalFocusManager.current
     val todoFocusRequesters = remember { mutableStateMapOf<Int, FocusRequester>() }
@@ -238,6 +238,6 @@ fun WriteGoalScreen(navHostController: NavHostController, viewModel: WriteGoalVi
 @Composable
 private fun PreviewWriteGoalScreen() {
     com.teamegg.eggtart.common.feature.theme.EggtartTheme {
-        WriteGoalScreen(rememberNavController())
+        WriteGoalScreen(cellModel = CellModel(0, 0, 0), navHostController = rememberNavController())
     }
 }

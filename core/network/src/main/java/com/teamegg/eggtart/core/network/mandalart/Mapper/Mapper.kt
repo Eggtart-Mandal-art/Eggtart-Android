@@ -1,4 +1,4 @@
-package com.teamegg.eggtart.core.network.mandalart.Mapper
+package com.teamegg.eggtart.core.network.mandalart.mapper
 
 import com.teamegg.eggtart.core.network.mandalart.entities.PatchCellEntity
 import com.teamegg.eggtart.domain.mandalart.model.UpdateCellModel

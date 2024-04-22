@@ -41,6 +41,9 @@ android {
 
 dependencies {
     implementation(project(":common:feature"))
+    implementation(project(":common:util"))
+
+    implementation(project(":domain:user"))
     implementation(project(":domain:mandalart"))
 
     implementation(libs.core.ktx)

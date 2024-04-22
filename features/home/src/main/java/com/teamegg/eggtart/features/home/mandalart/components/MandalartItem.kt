@@ -29,41 +29,48 @@ import com.teamegg.eggtart.domain.mandalart.model.CellModel
  **/
 
 @Composable
-fun MandalartItem(navigateWriteGoal: (Int) -> Unit, rootCellData: CellModel?, cellData: CellModel?, index: Int) {
+fun MandalartItem(navigateWriteGoal: (CellModel) -> Unit, cellData: CellModel?, index: Int) {
     val isRootCell = index == 4
 
-    Box(
-        modifier = Modifier
-            .aspectRatio(1f)
-            .clip(RoundedCornerShape(12.dp))
-            .background(
-                if (cellData?.color == null) {
-                    ColorGray50
-                } else {
-                    Color(cellData.color!!)
-                }
-            )
-            .clickable {
-                if (cellData?.color == null) {
-                    navigateWriteGoal(index)
-                } else {
-                    // TODO 상세 페이지
-                }
-            },
-        contentAlignment = Alignment.Center
-    ) {
-        if (isRootCell || cellData?.goal.isNullOrEmpty().not()) {
-            Text(
-                modifier = Modifier
-                    .padding(horizontal = 8.dp)
-                    .wrapContentSize(),
-                text = if (cellData?.goal.isNullOrEmpty()) stringResource(id = StringResource.enter_final_goal_first) else cellData?.goal.toString(),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.secondary
-            )
-        } else {
-            Icon(painter = painterResource(id = DrawableResource.ic_add), contentDescription = "", tint = MaterialTheme.colorScheme.secondary)
+    if (cellData == null) {
+        Box(modifier = Modifier
+                .aspectRatio(1f)
+                .clip(RoundedCornerShape(12.dp))
+                .background(ColorGray50))
+    } else {
+        Box(
+            modifier = Modifier
+                .aspectRatio(1f)
+                .clip(RoundedCornerShape(12.dp))
+                .background(
+                    if (cellData.color == null) {
+                        ColorGray50
+                    } else {
+                        Color(cellData.color!!)
+                    }
+                )
+                .clickable {
+                    if (cellData.color == null) {
+                        navigateWriteGoal(cellData)
+                    } else {
+                        // TODO 상세 페이지
+                    }
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            if (isRootCell || cellData.goal.isNullOrEmpty().not()) {
+                Text(
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .wrapContentSize(),
+                    text = if (cellData.goal.isNullOrEmpty()) stringResource(id = StringResource.enter_final_goal_first) else cellData.goal.toString(),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+            } else {
+                Icon(painter = painterResource(id = DrawableResource.ic_add), contentDescription = "", tint = MaterialTheme.colorScheme.secondary)
+            }
         }
     }
 }

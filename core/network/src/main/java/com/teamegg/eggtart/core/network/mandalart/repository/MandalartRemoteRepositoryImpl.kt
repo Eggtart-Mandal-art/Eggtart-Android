@@ -2,19 +2,19 @@ package com.teamegg.eggtart.core.network.mandalart.repository
 
 import com.teamegg.eggtart.common.util.Result
 import com.teamegg.eggtart.common.util.ServerErrorModel
-import com.teamegg.eggtart.core.network.mandalart.Mapper.toPatchCellEntity
+import com.teamegg.eggtart.core.network.mandalart.mapper.toPatchCellEntity
 import com.teamegg.eggtart.core.network.mandalart.datasource.MandalartRemoteSource
 import com.teamegg.eggtart.core.network.mandalart.entities.ResponseCreateSheetEntity
 import com.teamegg.eggtart.domain.mandalart.model.CellModel
 import com.teamegg.eggtart.domain.mandalart.model.UpdateCellModel
-import com.teamegg.eggtart.domain.mandalart.repository.RemoteMandalartRepository
+import com.teamegg.eggtart.domain.mandalart.repository.MandalartRemoteRepository
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 /**
  *  Created by wonjin on 2024/04/18
  **/
-class RemoteMandalartRepositoryImpl @Inject constructor(private val mandalartRemoteSource: MandalartRemoteSource) : RemoteMandalartRepository {
+class MandalartRemoteRepositoryImpl @Inject constructor(private val mandalartRemoteSource: MandalartRemoteSource) : MandalartRemoteRepository {
     override suspend fun getSheets(accessToken: String): Result<List<Long>> {
         val response = mandalartRemoteSource.getSheets(accessToken)
 

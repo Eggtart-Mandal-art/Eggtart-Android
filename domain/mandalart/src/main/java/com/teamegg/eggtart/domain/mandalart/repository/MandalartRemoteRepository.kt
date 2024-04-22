@@ -8,7 +8,7 @@ import com.teamegg.eggtart.domain.mandalart.model.UpdateCellModel
  *  Created by wonjin on 2024/04/18
  **/
 
-interface RemoteMandalartRepository {
+interface MandalartRemoteRepository {
     suspend fun getSheets(accessToken: String): Result<List<Long>>
 
     suspend fun postCreateSheet(accessToken: String, sheetName: String = ""): Result<Long>

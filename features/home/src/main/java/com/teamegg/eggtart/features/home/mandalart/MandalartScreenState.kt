@@ -7,6 +7,8 @@ import com.teamegg.eggtart.domain.mandalart.model.CellModel
  **/
 
 data class MandalartScreenState(
-    val mandalartLoading: Boolean,
-    val mandalartCellList: List<CellModel>,
+    val accessToken: String = "",
+    val mandalartLoading: Boolean = false,
+    val sheetIds: List<Long> = listOf(),
+    val mandalartCellList: List<CellModel> = listOf(),
 )

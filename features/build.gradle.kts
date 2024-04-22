@@ -49,6 +49,7 @@ dependencies {
 
     implementation(project(":domain:kakao"))
     implementation(project(":domain:user"))
+    implementation(project(":domain:mandalart"))
 
     implementation(libs.core.ktx)
     implementation(libs.core.splashscreen)
@@ -69,6 +70,9 @@ dependencies {
     // Hilt
     implementation(libs.dagger.hilt.android)
     ksp(libs.dagger.hilt.compiler)
+
+    // KotlinSerialization
+    implementation(libs.ktor.serialization)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)

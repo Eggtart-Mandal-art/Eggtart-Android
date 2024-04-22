@@ -5,11 +5,11 @@ import com.teamegg.eggtart.core.network.mandalart.entities.RequestCreateSheetEnt
 import io.ktor.client.HttpClient
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.get
+import io.ktor.client.request.parameter
 import io.ktor.client.request.patch
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
-import io.ktor.http.parameters
 import javax.inject.Inject
 
 /**
@@ -31,10 +31,8 @@ class MandalartRemoteSourceImpl @Inject constructor(private val ktorClient: Http
 
     override suspend fun getCells(accessToken: String, sheetId: Long, depth: Int, parentOrder: Int): String = ktorClient.get(getCells.replace("{sheet_id}", sheetId.toString())) {
         bearerAuth(accessToken)
-        parameters {
-            append("depth", depth.toString())
-            append("parent_order", parentOrder.toString())
-        }
+        parameter("depth", depth)
+        parameter("parent_order", parentOrder)
     }.bodyAsText()
 
     override suspend fun patchCell(accessToken: String, cellId: Long, body: PatchCellEntity): String = ktorClient.patch(patchCell.replace("{cell_id}", cellId.toString())) {
