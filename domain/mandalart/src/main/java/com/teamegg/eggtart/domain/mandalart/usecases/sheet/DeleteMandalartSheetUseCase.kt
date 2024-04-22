@@ -1,6 +1,6 @@
 package com.teamegg.eggtart.domain.mandalart.usecases.sheet
 
-import com.teamegg.eggtart.domain.mandalart.model.MandalartSheetModel
+import com.teamegg.eggtart.domain.mandalart.model.SheetModel
 import com.teamegg.eggtart.domain.mandalart.repository.MandalartSheetRepository
 import javax.inject.Inject
 
@@ -9,5 +9,5 @@ import javax.inject.Inject
  **/
 
 class DeleteMandalartSheetUseCase @Inject constructor(private val mandalartSheetRepository: MandalartSheetRepository) {
-    suspend operator fun invoke(vararg mandalartSheet: MandalartSheetModel) = mandalartSheetRepository.deleteSheet(*mandalartSheet)
+    suspend operator fun invoke(vararg mandalartSheet: SheetModel) = mandalartSheetRepository.deleteSheet(*mandalartSheet)
 }

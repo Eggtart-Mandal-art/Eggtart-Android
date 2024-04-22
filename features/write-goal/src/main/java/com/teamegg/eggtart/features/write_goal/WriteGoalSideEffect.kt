@@ -6,4 +6,6 @@ package com.teamegg.eggtart.features.write_goal
 
 sealed class WriteGoalSideEffect {
     data object HideKeyboard : WriteGoalSideEffect()
+
+    data object RequestFocus : WriteGoalSideEffect()
 }

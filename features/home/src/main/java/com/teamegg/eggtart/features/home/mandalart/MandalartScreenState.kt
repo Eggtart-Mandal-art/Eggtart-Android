@@ -1,6 +1,6 @@
 package com.teamegg.eggtart.features.home.mandalart
 
-import com.teamegg.eggtart.domain.mandalart.model.MandalartCellModel
+import com.teamegg.eggtart.domain.mandalart.model.CellModel
 
 /**
  *  Created by wonjin on 2024/03/28
@@ -8,5 +8,5 @@ import com.teamegg.eggtart.domain.mandalart.model.MandalartCellModel
 
 data class MandalartScreenState(
     val mandalartLoading: Boolean,
-    val mandalartCellList: List<MandalartCellModel>,
+    val mandalartCellList: List<CellModel>,
 )

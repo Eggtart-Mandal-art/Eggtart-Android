@@ -5,6 +5,7 @@
     <string name="com_confirm">확인</string>
     <string name="com.save">저장</string>
     <string name="com_goal">목표</string>
+    <string name="com_todo">해야할 일</string>
 
     <!--  Color Name  -->
     <string name="color_egg_tart">에그타르트</string>
@@ -24,13 +25,12 @@
     <string name="nav_settings">설정</string>
 
     <!--  Mandalart  -->
-    <string name="enter_final_goal_first">먼저 최종 목표를 입력해주세요</string>
+    <string name="enter_final_goal_first">최종 목표를 입력해주세요</string>
 
     <!--  WriteGoal  -->
     <string name="write_goal_title">목표 작성</string>
     <string name="select_color">컬러 선택</string>
     <string name="select_color_hint">컬러를 선택하세요</string>
     <string name="enter_goal_hint">이루고 싶은 목표를 28자 이내로 입력하세요</string>
-    <string name="title_dynamicfeatures">Module Title</string>
-    <string name="title_instantfeatures">Module Title</string>
+    <string name="add_todo">추가하기</string>
 </resources>

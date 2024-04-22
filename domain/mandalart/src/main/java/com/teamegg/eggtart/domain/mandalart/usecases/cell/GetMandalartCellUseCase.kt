@@ -1,8 +1,7 @@
 package com.teamegg.eggtart.domain.mandalart.usecases.cell
 
-import com.teamegg.eggtart.domain.mandalart.model.MandalartCellModel
+import com.teamegg.eggtart.domain.mandalart.model.CellModel
 import com.teamegg.eggtart.domain.mandalart.repository.MandalartCellRepository
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 /**
@@ -10,5 +9,5 @@ import javax.inject.Inject
  **/
 
 class GetMandalartCellUseCase @Inject constructor(private val mandalartCellRepository: MandalartCellRepository) {
-    suspend operator fun invoke(sheetId: Long, step: Int = 0): List<MandalartCellModel> = mandalartCellRepository.getMandalartCell(sheetId, step)
+    suspend operator fun invoke(sheetId: Long, step: Int = 0): List<CellModel> = mandalartCellRepository.getMandalartCell(sheetId, step)
 }

@@ -54,7 +54,7 @@ fun EggtartTextField(
         singleLine = singleLine,
         colors = OutlinedTextFieldDefaults.colors(
             disabledBorderColor = MaterialTheme.colorScheme.onBackground.copy(0.05f),
-            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            focusedBorderColor = MaterialTheme.colorScheme.primaryContainer,
             unfocusedBorderColor = MaterialTheme.colorScheme.onBackground.copy(0.1f),
             disabledPlaceholderColor = MaterialTheme.colorScheme.onBackground.copy(0.25f),
             focusedPlaceholderColor = Color.Transparent,

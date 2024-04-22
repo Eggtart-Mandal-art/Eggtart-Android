@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -97,7 +98,9 @@ class MainActivity : ComponentActivity() {
                 ) {
                     NavHost(navController = navController, startDestination = RootRoutes.SPLASH, route = RootRoutes.ROOT) {
                         composable(RootRoutes.SPLASH) {
-                            Surface {}
+                            LaunchedEffect(Unit) {
+                                viewModel.intentGetLocalUserToken()
+                            }
                         }
                         homeScreen(
                             navigateWriteGoal = viewModel::navigateWriteGoal
