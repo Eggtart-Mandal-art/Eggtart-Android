@@ -107,7 +107,7 @@ class MainActivity : ComponentActivity() {
                         homeScreen(
                             navigateWriteGoal = viewModel::navigateWriteGoal
                         )
-                        writeGoalScreen(navController)
+                        writeGoalScreen(navigateHome = viewModel::navigateHome)
                         loginScreen(
                             startKakaoLogin = viewModel::intentKakaoLogin,
                         )
@@ -131,7 +131,12 @@ class MainActivity : ComponentActivity() {
                         }
 
                         is MainSideEffect.NavigateHome -> {
-                            navController.navigate(RootRoutes.HOME.replace("{sheetIds}", it.sheetsIds.joinToString(","))) {
+                            navController.navigate(
+                                RootRoutes.HOME
+                                    .replace("{sheetIds}", it.sheetsIds.joinToString(","))
+                                    .replace("{cellModel}", Json.encodeToString(it.cellModel))
+                            ) {
+                                launchSingleTop = true
 
                                 navController.currentDestination?.route?.let {
                                     popUpTo(it) { inclusive = true }

@@ -9,33 +9,55 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.teamegg.eggtart.domain.mandalart.model.CellModel
+import com.teamegg.eggtart.common.feature.components.EggtartSnackbar
+import com.teamegg.eggtart.common.util.Logger
+import com.teamegg.eggtart.domain.mandalart.model.ResCellModel
+import com.teamegg.eggtart.domain.mandalart.model.ResCellTodosModel
 import com.teamegg.eggtart.features.home.mandalart.components.MandalartAppBar
 import com.teamegg.eggtart.features.home.mandalart.components.MandalartItem
 import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 
 /**
  * Created by 노원진 on 2024.03.24
  */
 
 @Composable
-fun MandalartScreen(navigateWriteGoal: (CellModel) -> Unit, homePaddingValues: PaddingValues = PaddingValues(), sheetIds: List<Long>, viewModel: MandalartViewModel = hiltViewModel()) {
+fun MandalartScreen(
+    navigateWriteGoal: (ResCellModel) -> Unit,
+    homePaddingValues: PaddingValues = PaddingValues(),
+    sheetIds: List<Long>,
+    cellModel: ResCellTodosModel?,
+    viewModel: MandalartViewModel = hiltViewModel()
+) {
     val viewModelState = viewModel.collectAsState().value
+    val snackBarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
-        viewModel.getMandalartCells(sheetIds)
+        if (viewModelState.mandalartCellList.isEmpty()) {
+            viewModel.getMandalartCells(sheetIds)
+        } else if (cellModel != null) {
+            viewModel.updateCellModel(cellModel)
+        }
     }
 
     Scaffold(
         modifier = Modifier.padding(homePaddingValues),
         topBar = {
             MandalartAppBar()
+        },
+        snackbarHost = {
+            EggtartSnackbar(hostState = snackBarHostState)
         }
     ) { paddingValues ->
         Box(
@@ -55,6 +77,19 @@ fun MandalartScreen(navigateWriteGoal: (CellModel) -> Unit, homePaddingValues: P
                 items(9) { index ->
                     MandalartItem(navigateWriteGoal = navigateWriteGoal, cellData = viewModelState.mandalartCellList.getOrNull(index), index = index)
                 }
+            }
+        }
+    }
+
+    viewModel.collectSideEffect {
+        when (it) {
+            is MandalartSideEffect.SnackBarRes -> {
+                Logger.d("showSnackBar() ${context.getString(it.messageRes)}")
+                snackBarHostState.showSnackbar(context.getString(it.messageRes))
+            }
+
+            is MandalartSideEffect.SnackBarString -> {
+                snackBarHostState.showSnackbar(it.message)
             }
         }
     }

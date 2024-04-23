@@ -1,7 +1,8 @@
 package com.teamegg.eggtart.domain.mandalart.repository
 
 import com.teamegg.eggtart.common.util.Result
-import com.teamegg.eggtart.domain.mandalart.model.CellModel
+import com.teamegg.eggtart.domain.mandalart.model.ResCellModel
+import com.teamegg.eggtart.domain.mandalart.model.ResCellTodosModel
 import com.teamegg.eggtart.domain.mandalart.model.UpdateCellModel
 
 /**
@@ -13,7 +14,9 @@ interface MandalartRemoteRepository {
 
     suspend fun postCreateSheet(accessToken: String, sheetName: String = ""): Result<Long>
 
-    suspend fun getCells(accessToken: String, sheetId: Long, depth: Int, parentOrder: Int = 0): Result<List<CellModel>>
+    suspend fun getCells(accessToken: String, sheetId: Long, depth: Int, parentOrder: Int = 0): Result<List<ResCellModel>>
 
-    suspend fun patchCell(accessToken: String, cellId: Long, body: UpdateCellModel): Result<CellModel>
+    suspend fun patchCell(accessToken: String, cellId: Long, body: UpdateCellModel): Result<ResCellTodosModel>
+
+    suspend fun deleteCell(accessToken: String, cellId: Long): Result<ResCellTodosModel>
 }

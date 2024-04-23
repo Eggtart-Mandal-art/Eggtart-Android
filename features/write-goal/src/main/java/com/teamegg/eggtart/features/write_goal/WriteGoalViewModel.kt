@@ -1,9 +1,17 @@
 package com.teamegg.eggtart.features.write_goal
 
+import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
 import com.teamegg.eggtart.common.feature.util.GoalColorModel
+import com.teamegg.eggtart.common.util.Result
+import com.teamegg.eggtart.domain.mandalart.model.ResCellModel
+import com.teamegg.eggtart.domain.mandalart.model.UpdateCellModel
+import com.teamegg.eggtart.domain.mandalart.usecases.cell.DeleteMandalartCellUseCase
+import com.teamegg.eggtart.domain.mandalart.usecases.cell.UpdateMandalartCellUseCase
+import com.teamegg.eggtart.domain.user.usecase.GetLocalUserTokenUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.firstOrNull
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.annotation.OrbitExperimental
@@ -19,7 +27,11 @@ import javax.inject.Inject
  */
 
 @HiltViewModel
-class WriteGoalViewModel @Inject constructor() : ContainerHost<WriteGoalState, WriteGoalSideEffect>, ViewModel() {
+class WriteGoalViewModel @Inject constructor(
+    private val getLocalUserTokenUseCase: GetLocalUserTokenUseCase,
+    private val updateMandalartCellUseCase: UpdateMandalartCellUseCase,
+    private val deleteMandalartCellUseCase: DeleteMandalartCellUseCase
+) : ContainerHost<WriteGoalState, WriteGoalSideEffect>, ViewModel() {
     override val container: Container<WriteGoalState, WriteGoalSideEffect> = container(WriteGoalState())
 
     @OptIn(OrbitExperimental::class)
@@ -86,9 +98,69 @@ class WriteGoalViewModel @Inject constructor() : ContainerHost<WriteGoalState, W
         }
     }
 
-    fun intentSetGoalColorModel(value: GoalColorModel) = intent {
+    fun intentSetGoalColorModel(value: GoalColorModel?) = intent {
         reduce {
             state.copy(goalColor = value, isShowBottomSheet = false)
+        }
+    }
+
+    fun intentUpdateCell(cellModel: ResCellModel) = intent {
+        reduce {
+            state.copy(updateCellLoading = true)
+        }
+
+        val accessToken = getLocalUserTokenUseCase().firstOrNull()?.accessToken
+
+        val result = updateMandalartCellUseCase(
+            accessToken = accessToken ?: "",
+            cellId = cellModel.id,
+            updateCellModel = UpdateCellModel(
+                color = Integer.toHexString(state.goalColor?.color?.toArgb() ?: 0).uppercase(),
+                goal = state.goalString,
+                isCompleted = false,
+                todos = state.todoList
+            )
+        )
+
+        when (result) {
+            is Result.Success -> {
+                postSideEffect(WriteGoalSideEffect.FinishResult(result.data))
+            }
+
+            is Result.Failure -> {
+
+            }
+        }
+
+        reduce {
+            state.copy(updateCellLoading = false)
+        }
+    }
+
+    fun intentDeleteCell(cellModel: ResCellModel) = intent {
+        reduce {
+            state.copy(updateCellLoading = true)
+        }
+
+        val accessToken = getLocalUserTokenUseCase().firstOrNull()?.accessToken
+
+        val result = deleteMandalartCellUseCase(
+            accessToken = accessToken ?: "",
+            cellId = cellModel.id
+        )
+
+        when (result) {
+            is Result.Success -> {
+                postSideEffect(WriteGoalSideEffect.FinishResult(result.data))
+            }
+
+            is Result.Failure -> {
+
+            }
+        }
+
+        reduce {
+            state.copy(updateCellLoading = false)
         }
     }
 }

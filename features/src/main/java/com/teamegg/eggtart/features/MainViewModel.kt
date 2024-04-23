@@ -5,7 +5,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.teamegg.eggtart.common.util.Logger
 import com.teamegg.eggtart.common.util.Result
 import com.teamegg.eggtart.domain.kakao.usecase.KakaoLoginUseCase
-import com.teamegg.eggtart.domain.mandalart.model.CellModel
+import com.teamegg.eggtart.domain.mandalart.model.ResCellModel
+import com.teamegg.eggtart.domain.mandalart.model.ResCellTodosModel
 import com.teamegg.eggtart.domain.mandalart.usecases.sheet.CreateMandalartSheetUseCase
 import com.teamegg.eggtart.domain.mandalart.usecases.sheet.GetMandalartSheetsUseCase
 import com.teamegg.eggtart.domain.user.usecase.GetLocalUserTokenUseCase
@@ -49,8 +50,12 @@ class MainViewModel @AssistedInject constructor(
         postSideEffect(MainSideEffect.NavigateLoginWithKakaoResult(kakaoLoginUseCase()))
     }
 
-    fun navigateWriteGoal(cellModel: CellModel) = intent {
+    fun navigateWriteGoal(cellModel: ResCellModel) = intent {
         postSideEffect(MainSideEffect.NavigateWriteGoal(cellModel))
+    }
+
+    fun navigateHome(cellModel: ResCellTodosModel?) = intent {
+        postSideEffect(MainSideEffect.NavigateHome(sheetsIds = state.sheetIds, cellModel = cellModel))
     }
 
     fun intentGetLocalUserToken() = intent {
@@ -68,6 +73,9 @@ class MainViewModel @AssistedInject constructor(
 
                             when (sheetId) {
                                 is Result.Success -> {
+                                    reduce {
+                                        state.copy(sheetIds = listOf(sheetId.data))
+                                    }
                                     postSideEffect(MainSideEffect.NavigateHome(listOf(sheetId.data)))
                                 }
 
@@ -76,6 +84,9 @@ class MainViewModel @AssistedInject constructor(
                                 }
                             }
                         } else {
+                            reduce {
+                                state.copy(sheetIds = sheets.data)
+                            }
                             postSideEffect(MainSideEffect.NavigateHome(sheets.data))
                         }
                     }

@@ -7,6 +7,7 @@ import com.teamegg.eggtart.common.feature.util.GoalColorModel
  */
 
 data class WriteGoalState(
+    val updateCellLoading: Boolean = false,
     val imeBottom: Int = 0,
     val goalString: String = "",
     val goalColor: GoalColorModel? = null,

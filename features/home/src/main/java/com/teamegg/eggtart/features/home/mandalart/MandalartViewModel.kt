@@ -1,15 +1,18 @@
 package com.teamegg.eggtart.features.home.mandalart
 
 import androidx.lifecycle.ViewModel
+import com.teamegg.eggtart.common.feature.types.StringResource
 import com.teamegg.eggtart.common.util.Logger
 import com.teamegg.eggtart.common.util.Result
+import com.teamegg.eggtart.domain.mandalart.model.ResCellModel
+import com.teamegg.eggtart.domain.mandalart.model.ResCellTodosModel
 import com.teamegg.eggtart.domain.mandalart.usecases.cell.GetMandalartCellUseCase
 import com.teamegg.eggtart.domain.user.usecase.GetLocalUserTokenUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.lastOrNull
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
+import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
 import javax.inject.Inject
@@ -25,6 +28,20 @@ class MandalartViewModel @Inject constructor(
 ) : ContainerHost<MandalartScreenState, MandalartSideEffect>, ViewModel() {
 
     override val container = container<MandalartScreenState, MandalartSideEffect>(MandalartScreenState())
+
+    fun updateCellModel(cellModel: ResCellTodosModel) = intent {
+        val prevIndex = state.mandalartCellList.indexOfFirst { it.id == cellModel.id }
+
+        reduce {
+            state.copy(
+                mandalartCellList = state.mandalartCellList.toMutableList().apply {
+                    set(prevIndex, ResCellModel(cellModel.step, cellModel.id, cellModel.color, cellModel.goal, cellModel.isCompleted))
+                }
+            )
+        }
+
+        postSideEffect(MandalartSideEffect.SnackBarRes(StringResource.message_saved))
+    }
 
     fun getMandalartCells(sheetIds: List<Long>, depth: Int = 1, parentOrder: Int = 0) = intent {
         Logger.d("getMandalartCells Call")

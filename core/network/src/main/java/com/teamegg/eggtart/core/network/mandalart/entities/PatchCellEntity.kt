@@ -8,8 +8,9 @@ import kotlinx.serialization.Serializable
  **/
 @Serializable
 data class PatchCellEntity(
-    val goal: String,
-    val color: String,
+    val goal: String?,
+    val color: String?,
     @SerialName("is_completed")
-    val isCompleted: Boolean
+    val isCompleted: Boolean,
+    val todos: List<String>
 )

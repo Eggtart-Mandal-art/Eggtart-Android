@@ -1,11 +1,11 @@
 package com.teamegg.eggtart.features.write_goal.navigation
 
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.teamegg.eggtart.common.feature.routes.root.RootRoutes
-import com.teamegg.eggtart.domain.mandalart.model.CellModel
+import com.teamegg.eggtart.domain.mandalart.model.ResCellModel
+import com.teamegg.eggtart.domain.mandalart.model.ResCellTodosModel
 import com.teamegg.eggtart.features.write_goal.WriteGoalScreen
 import kotlinx.serialization.json.Json
 
@@ -13,9 +13,9 @@ import kotlinx.serialization.json.Json
  *  Created by wonjin on 2024/04/09
  **/
 
-fun NavGraphBuilder.writeGoalScreen(navHostController: NavHostController) {
+fun NavGraphBuilder.writeGoalScreen(navigateHome: (ResCellTodosModel?) -> Unit) {
     composable(RootRoutes.WRITE_GOAL, listOf(navArgument("cellModel") {})) { backStackEntry ->
-        val cellModel = Json.decodeFromString<CellModel>(backStackEntry.arguments?.getString("cellModel") ?: "")
-        WriteGoalScreen(navHostController, cellModel)
+        val cellModel = Json.decodeFromString<ResCellModel>(backStackEntry.arguments?.getString("cellModel") ?: "")
+        WriteGoalScreen(navigateHome, cellModel)
     }
 }

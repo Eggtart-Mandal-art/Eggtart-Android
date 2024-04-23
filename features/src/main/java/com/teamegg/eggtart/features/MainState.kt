@@ -5,5 +5,6 @@ package com.teamegg.eggtart.features
  **/
 
 data class MainState(
-    val initialized: Boolean = false
+    val initialized: Boolean = false,
+    val sheetIds: List<Long> = listOf()
 )

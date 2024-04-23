@@ -1,6 +1,6 @@
 package com.teamegg.eggtart.domain.mandalart.usecases.cell
 
-import com.teamegg.eggtart.domain.mandalart.model.CellModel
+import com.teamegg.eggtart.domain.mandalart.model.ResCellModel
 import com.teamegg.eggtart.domain.mandalart.repository.MandalartCellRepository
 import javax.inject.Inject
 
@@ -9,5 +9,5 @@ import javax.inject.Inject
  **/
 
 class InserMandalartCellUseCase @Inject constructor(private val mandalartCellRepository: MandalartCellRepository) {
-    suspend operator fun invoke(vararg mandalartCell: CellModel, sheetId: Long) = mandalartCellRepository.insertCell(*mandalartCell, sheetId = sheetId)
+    suspend operator fun invoke(vararg mandalartCell: ResCellModel, sheetId: Long) = mandalartCellRepository.insertCell(*mandalartCell, sheetId = sheetId)
 }

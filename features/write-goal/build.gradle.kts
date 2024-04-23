@@ -44,6 +44,7 @@ dependencies {
     implementation(project(":common:util"))
 
     implementation(project(":domain:mandalart"))
+    implementation(project(":domain:user"))
 
     implementation(libs.core.ktx)
     implementation(libs.navigation.compose)

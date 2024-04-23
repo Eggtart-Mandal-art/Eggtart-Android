@@ -1,7 +1,7 @@
 package com.teamegg.eggtart.domain.mandalart.usecases.cell
 
 import com.teamegg.eggtart.common.util.Result
-import com.teamegg.eggtart.domain.mandalart.model.CellModel
+import com.teamegg.eggtart.domain.mandalart.model.ResCellModel
 import com.teamegg.eggtart.domain.mandalart.repository.MandalartRemoteRepository
 import javax.inject.Inject
 
@@ -15,7 +15,7 @@ class GetMandalartCellUseCase @Inject constructor(private val mandalartRemoteRep
         sheetId: Long,
         depth: Int,
         parentOrder: Int
-    ): Result<List<CellModel>> = mandalartRemoteRepository.getCells(
+    ): Result<List<ResCellModel>> = mandalartRemoteRepository.getCells(
         accessToken = accessToken,
         sheetId = sheetId,
         depth = depth,

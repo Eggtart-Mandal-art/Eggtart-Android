@@ -4,6 +4,7 @@ import com.teamegg.eggtart.core.network.mandalart.entities.PatchCellEntity
 import com.teamegg.eggtart.core.network.mandalart.entities.RequestCreateSheetEntity
 import io.ktor.client.HttpClient
 import io.ktor.client.request.bearerAuth
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.patch
@@ -18,7 +19,7 @@ import javax.inject.Inject
 class MandalartRemoteSourceImpl @Inject constructor(private val ktorClient: HttpClient) : MandalartRemoteSource {
     private val sheet = "/sheet"
     private val getCells = "/sheet/{sheet_id}/cell"
-    private val patchCell = "/cell/{cell_id}"
+    private val cell = "/cell/{cell_id}"
 
     override suspend fun getSheets(accessToken: String): String = ktorClient.get(sheet) {
         bearerAuth(accessToken)
@@ -35,8 +36,12 @@ class MandalartRemoteSourceImpl @Inject constructor(private val ktorClient: Http
         parameter("parent_order", parentOrder)
     }.bodyAsText()
 
-    override suspend fun patchCell(accessToken: String, cellId: Long, body: PatchCellEntity): String = ktorClient.patch(patchCell.replace("{cell_id}", cellId.toString())) {
+    override suspend fun patchCell(accessToken: String, cellId: Long, body: PatchCellEntity): String = ktorClient.patch(cell.replace("{cell_id}", cellId.toString())) {
         bearerAuth(accessToken)
         setBody(body)
+    }.bodyAsText()
+
+    override suspend fun deleteCell(accessToken: String, cellId: Long): String = ktorClient.delete(cell.replace("{cell_id}", cellId.toString())) {
+        bearerAuth(accessToken)
     }.bodyAsText()
 }

@@ -1,6 +1,8 @@
 package com.teamegg.eggtart.core.network.mandalart.mapper
 
 import com.teamegg.eggtart.core.network.mandalart.entities.PatchCellEntity
+import com.teamegg.eggtart.core.network.mandalart.entities.TodoEntity
+import com.teamegg.eggtart.domain.mandalart.model.TodoModel
 import com.teamegg.eggtart.domain.mandalart.model.UpdateCellModel
 
 /**
@@ -9,12 +11,26 @@ import com.teamegg.eggtart.domain.mandalart.model.UpdateCellModel
 
 internal fun PatchCellEntity.toUpdateCellModel(): UpdateCellModel = UpdateCellModel(
     goal = goal,
-    color = color.toLong(16),
-    isCompleted = isCompleted
+    color = color,
+    isCompleted = isCompleted,
+    todos = todos
 )
 
 internal fun UpdateCellModel.toPatchCellEntity(): PatchCellEntity = PatchCellEntity(
     goal = goal,
-    color = color.toString(16),
-    isCompleted = isCompleted
+    color = color,
+    isCompleted = isCompleted,
+    todos = todos
+)
+
+internal fun TodoModel.toTodoEntity(): TodoEntity = TodoEntity(
+    id = id,
+    content = content,
+    cellId = cellId
+)
+
+internal fun TodoEntity.toTodoModel(): TodoModel = TodoModel(
+    id = id,
+    content = content,
+    cellId = cellId
 )
