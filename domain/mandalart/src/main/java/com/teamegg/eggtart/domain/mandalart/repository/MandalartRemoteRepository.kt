@@ -19,4 +19,6 @@ interface MandalartRemoteRepository {
     suspend fun patchCell(accessToken: String, cellId: Long, body: UpdateCellModel): Result<ResCellTodosModel>
 
     suspend fun deleteCell(accessToken: String, cellId: Long): Result<ResCellTodosModel>
+
+    suspend fun getCellDetail(accessToken: String, cellId: Long): Result<ResCellTodosModel>
 }

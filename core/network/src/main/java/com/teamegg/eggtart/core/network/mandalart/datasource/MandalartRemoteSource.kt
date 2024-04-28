@@ -16,4 +16,6 @@ interface MandalartRemoteSource {
     suspend fun patchCell(accessToken: String, cellId: Long, body: PatchCellEntity): String
 
     suspend fun deleteCell(accessToken: String, cellId: Long): String
+
+    suspend fun getCellDetail(accessToken: String, cellId: Long): String
 }

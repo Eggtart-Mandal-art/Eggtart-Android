@@ -44,4 +44,8 @@ class MandalartRemoteSourceImpl @Inject constructor(private val ktorClient: Http
     override suspend fun deleteCell(accessToken: String, cellId: Long): String = ktorClient.delete(cell.replace("{cell_id}", cellId.toString())) {
         bearerAuth(accessToken)
     }.bodyAsText()
+
+    override suspend fun getCellDetail(accessToken: String, cellId: Long): String = ktorClient.get(cell.replace("{cell_id}", cellId.toString())) {
+        bearerAuth(accessToken)
+    }.bodyAsText()
 }

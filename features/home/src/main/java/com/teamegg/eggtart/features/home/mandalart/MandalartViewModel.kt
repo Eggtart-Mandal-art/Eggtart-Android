@@ -76,6 +76,10 @@ class MandalartViewModel @Inject constructor(
 
                 //TODO: 에러 로직 처리 필요
             }
+
+            is Result.Exception -> {
+                // TODO: 에러 로직 필요
+            }
         }
     }
 }

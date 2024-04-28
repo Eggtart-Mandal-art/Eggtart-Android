@@ -76,9 +76,12 @@ fun WriteGoalScreen(navigateHome: (ResCellTodosModel?) -> Unit, cellModel: ResCe
 
     viewModel.intentSetImeBottom(WindowInsets.imeAnimationTarget.getBottom(LocalDensity.current))
 
-    LaunchedEffect(key1 = Unit) {
-        viewModel.intentSetGoalString(cellModel.goal ?: "")
-        viewModel.intentSetGoalColorModel(GOAL_COLORS.firstOrNull { Integer.toHexString(it.color.toArgb()).uppercase() == cellModel.color })
+    LaunchedEffect(Unit) {
+        if (cellModel.goal.isNullOrEmpty().not()) {
+            viewModel.intentGetMandalartCellDetail(cellModel)
+            viewModel.intentSetGoalString(cellModel.goal ?: "")
+            viewModel.intentSetGoalColorModel(GOAL_COLORS.firstOrNull { Integer.toHexString(it.color.toArgb()).uppercase() == cellModel.color })
+        }
     }
 
     Scaffold(

@@ -7,6 +7,7 @@ import com.teamegg.eggtart.common.util.Result
 import com.teamegg.eggtart.domain.mandalart.model.ResCellModel
 import com.teamegg.eggtart.domain.mandalart.model.UpdateCellModel
 import com.teamegg.eggtart.domain.mandalart.usecases.cell.DeleteMandalartCellUseCase
+import com.teamegg.eggtart.domain.mandalart.usecases.cell.GetMandalartCellDetailUseCase
 import com.teamegg.eggtart.domain.mandalart.usecases.cell.UpdateMandalartCellUseCase
 import com.teamegg.eggtart.domain.user.usecase.GetLocalUserTokenUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,7 +31,8 @@ import javax.inject.Inject
 class WriteGoalViewModel @Inject constructor(
     private val getLocalUserTokenUseCase: GetLocalUserTokenUseCase,
     private val updateMandalartCellUseCase: UpdateMandalartCellUseCase,
-    private val deleteMandalartCellUseCase: DeleteMandalartCellUseCase
+    private val deleteMandalartCellUseCase: DeleteMandalartCellUseCase,
+    private val getMandalartCellDetailUseCase: GetMandalartCellDetailUseCase,
 ) : ContainerHost<WriteGoalState, WriteGoalSideEffect>, ViewModel() {
     override val container: Container<WriteGoalState, WriteGoalSideEffect> = container(WriteGoalState())
 
@@ -130,6 +132,10 @@ class WriteGoalViewModel @Inject constructor(
             is Result.Failure -> {
 
             }
+
+            is Result.Exception -> {
+
+            }
         }
 
         reduce {
@@ -157,10 +163,42 @@ class WriteGoalViewModel @Inject constructor(
             is Result.Failure -> {
 
             }
+
+            is Result.Exception -> {
+
+            }
         }
 
         reduce {
             state.copy(updateCellLoading = false)
+        }
+    }
+
+    fun intentGetMandalartCellDetail(cellModel: ResCellModel) = intent {
+        reduce { state.copy(getTodosLoading = true) }
+
+        val accessToken = getLocalUserTokenUseCase().firstOrNull()?.accessToken ?: ""
+
+        val result = getMandalartCellDetailUseCase(accessToken = accessToken, cellId = cellModel.id)
+
+        when (result) {
+            is Result.Success -> {
+                reduce {
+                    state.copy(
+                        getTodosLoading = false,
+                        origTodos = result.data.todos.map { it.content },
+                        todoList = result.data.todos.map { it.content }
+                    )
+                }
+            }
+
+            is Result.Failure -> {
+
+            }
+
+            is Result.Exception -> {
+
+            }
         }
     }
 }

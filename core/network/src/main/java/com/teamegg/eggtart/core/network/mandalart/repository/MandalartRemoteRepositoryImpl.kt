@@ -26,7 +26,7 @@ class MandalartRemoteRepositoryImpl @Inject constructor(private val mandalartRem
             try {
                 Result.Failure(Json.decodeFromString<ServerErrorModel>(response))
             } catch (e: Exception) {
-                Result.Failure(null)
+                Result.Exception(e)
             }
         }
     }
@@ -41,7 +41,7 @@ class MandalartRemoteRepositoryImpl @Inject constructor(private val mandalartRem
             try {
                 Result.Failure(Json.decodeFromString<ServerErrorModel>(response))
             } catch (e: Exception) {
-                Result.Failure(null)
+                Result.Exception(e)
             }
         }
     }
@@ -56,8 +56,7 @@ class MandalartRemoteRepositoryImpl @Inject constructor(private val mandalartRem
             try {
                 Result.Failure(Json.decodeFromString<ServerErrorModel>(response))
             } catch (e: Exception) {
-                Logger.d("exception: $e")
-                Result.Failure(null)
+                Result.Exception(e)
             }
         }
     }
@@ -71,7 +70,7 @@ class MandalartRemoteRepositoryImpl @Inject constructor(private val mandalartRem
             try {
                 Result.Failure(Json.decodeFromString<ServerErrorModel>(response))
             } catch (e: Exception) {
-                Result.Failure(null)
+                Result.Exception(e)
             }
         }
     }
@@ -85,7 +84,22 @@ class MandalartRemoteRepositoryImpl @Inject constructor(private val mandalartRem
             try {
                 Result.Failure(Json.decodeFromString<ServerErrorModel>(response))
             } catch (e: Exception) {
-                Result.Failure(null)
+                Result.Exception(e)
+            }
+        }
+    }
+
+    override suspend fun getCellDetail(accessToken: String, cellId: Long): Result<ResCellTodosModel> {
+        val response = mandalartRemoteSource.getCellDetail(accessToken, cellId)
+
+
+        return try {
+            Result.Success(Json.decodeFromString<ResCellTodosModel>(response))
+        } catch (e: Exception) {
+            try {
+                Result.Failure(Json.decodeFromString<ServerErrorModel>(response))
+            } catch (e: Exception) {
+                Result.Exception(e)
             }
         }
     }

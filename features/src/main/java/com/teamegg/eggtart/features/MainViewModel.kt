@@ -82,6 +82,10 @@ class MainViewModel @AssistedInject constructor(
                                 is Result.Failure -> {
                                     // TODO: 에러 로직 처리 필요
                                 }
+
+                                is Result.Exception -> {
+                                    // TODO: 에러 로직 필요
+                                }
                             }
                         } else {
                             reduce {
@@ -92,6 +96,10 @@ class MainViewModel @AssistedInject constructor(
                     }
 
                     is Result.Failure -> {
+                        // TODO: 에러 로직 필요
+                    }
+
+                    is Result.Exception -> {
                         // TODO: 에러 로직 필요
                     }
                 }
