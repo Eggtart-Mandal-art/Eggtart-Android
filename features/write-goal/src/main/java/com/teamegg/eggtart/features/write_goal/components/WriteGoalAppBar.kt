@@ -13,14 +13,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.teamegg.eggtart.common.feature.components.EggtartButtonSize
 import com.teamegg.eggtart.common.feature.components.EggtartIconButton
 import com.teamegg.eggtart.common.feature.types.DrawableResource
 import com.teamegg.eggtart.common.feature.types.StringResource
 import com.teamegg.eggtart.domain.mandalart.model.ResCellModel
-import com.teamegg.eggtart.domain.mandalart.model.ResCellTodosModel
-import com.teamegg.eggtart.features.write_goal.WriteGoalViewModel
 
 /**
  *  Created by wonjin on 2024/04/05
@@ -28,7 +25,7 @@ import com.teamegg.eggtart.features.write_goal.WriteGoalViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WriteGoalAppBar(navigateHome: (ResCellTodosModel?) -> Unit, cellModel: ResCellModel, viewModel: WriteGoalViewModel = hiltViewModel()) {
+fun WriteGoalAppBar(onBackClicked: () -> Unit, onDeleteClicked: () -> Unit, cellModel: ResCellModel) {
     CenterAlignedTopAppBar(
         modifier = Modifier.heightIn(max = 56.dp),
         title = {
@@ -40,15 +37,13 @@ fun WriteGoalAppBar(navigateHome: (ResCellTodosModel?) -> Unit, cellModel: ResCe
             )
         },
         navigationIcon = {
-            EggtartIconButton(onClick = { navigateHome(null) }, buttonSize = EggtartButtonSize.MEDIUM) {
+            EggtartIconButton(onClick = onBackClicked, buttonSize = EggtartButtonSize.MEDIUM) {
                 Icon(painter = painterResource(id = DrawableResource.ic_arrow_back), contentDescription = "")
             }
         },
         actions = {
             if (!cellModel.goal.isNullOrEmpty()) {
-                EggtartIconButton(onClick = {
-                    viewModel.intentDeleteCell(cellModel)
-                }, buttonSize = EggtartButtonSize.MEDIUM) {
+                EggtartIconButton(onClick = onDeleteClicked, buttonSize = EggtartButtonSize.MEDIUM) {
                     Icon(painter = painterResource(id = DrawableResource.ic_delete), contentDescription = "")
                 }
             }

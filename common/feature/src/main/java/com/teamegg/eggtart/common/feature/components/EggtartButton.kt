@@ -58,7 +58,7 @@ fun EggtartButton(
 
             EggtartButtonStyle.TERTIARY -> ButtonColors(
                 containerColor = MaterialTheme.colorScheme.tertiary,
-                contentColor = MaterialTheme.colorScheme.onTertiary,
+                contentColor = MaterialTheme.colorScheme.secondary,
                 disabledContainerColor = Color.Black.copy(alpha = 0.1f),
                 disabledContentColor = Color.Black.copy(alpha = 0.25f)
             )
@@ -72,7 +72,7 @@ fun EggtartButton(
         ),
         contentPadding = when (buttonSize) {
             EggtartButtonSize.LARGE -> PaddingValues(vertical = 16.dp, horizontal = 20.dp)
-            EggtartButtonSize.MEDIUM -> PaddingValues(vertical = 12.dp, horizontal = 16.dp)
+            EggtartButtonSize.MEDIUM -> PaddingValues(vertical = 10.dp, horizontal = 16.dp)
             EggtartButtonSize.SMALL -> PaddingValues(vertical = 8.dp, horizontal = 12.dp)
         },
         content = {

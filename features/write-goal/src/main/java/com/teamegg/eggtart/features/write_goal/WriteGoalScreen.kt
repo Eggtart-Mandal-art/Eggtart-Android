@@ -46,10 +46,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.teamegg.eggtart.common.feature.components.DialogData
 import com.teamegg.eggtart.common.feature.components.EggtartButton
 import com.teamegg.eggtart.common.feature.components.EggtartButtonSize
 import com.teamegg.eggtart.common.feature.components.EggtartButtonStyle
 import com.teamegg.eggtart.common.feature.components.EggtartIconButton
+import com.teamegg.eggtart.common.feature.components.EggtartPopup
 import com.teamegg.eggtart.common.feature.components.EggtartSelectionBox
 import com.teamegg.eggtart.common.feature.components.EggtartTextField
 import com.teamegg.eggtart.common.feature.types.DrawableResource
@@ -73,6 +75,7 @@ fun WriteGoalScreen(navigateHome: (ResCellTodosModel?) -> Unit, cellModel: ResCe
     val viewModelState = viewModel.collectAsState().value
     val focusManager = LocalFocusManager.current
     val todoFocusRequesters = remember { mutableStateMapOf<Int, FocusRequester>() }
+    val isChanged = checkChanged(cellModel, viewModelState.origTodos, viewModelState.goalColor?.color, viewModelState.goalString, viewModelState.todoList)
 
     viewModel.intentSetImeBottom(WindowInsets.imeAnimationTarget.getBottom(LocalDensity.current))
 
@@ -88,7 +91,15 @@ fun WriteGoalScreen(navigateHome: (ResCellTodosModel?) -> Unit, cellModel: ResCe
 
     Scaffold(
         topBar = {
-            WriteGoalAppBar(navigateHome = navigateHome, cellModel = cellModel)
+            WriteGoalAppBar(onBackClicked = {
+                if (isChanged) {
+                    viewModel.postUnSaveFinish()
+                } else {
+                    navigateHome(null)
+                }
+            }, onDeleteClicked = {
+                viewModel.postDeleteCell()
+            }, cellModel = cellModel)
         }
     ) { paddingValues ->
         Box(modifier = Modifier
@@ -222,8 +233,7 @@ fun WriteGoalScreen(navigateHome: (ResCellTodosModel?) -> Unit, cellModel: ResCe
                     buttonSize = EggtartButtonSize.LARGE,
                     buttonStyle = EggtartButtonStyle.PRIMARY,
                     contentString = stringResource(id = StringResource.com_save),
-                    enabled = (viewModelState.goalColor != null && viewModelState.goalString.isNotEmpty())
-                            && ((viewModelState.goalColor.color != cellModel.color?.let { Color(android.graphics.Color.parseColor("#${cellModel.color}")) } || viewModelState.goalString != cellModel.goal) || (viewModelState.origTodos == viewModelState.todoList.filter { it.isNotEmpty() })),
+                    enabled = isChanged,
                     onClick = {
                         viewModel.intentUpdateCell(cellModel)
                     }
@@ -233,6 +243,9 @@ fun WriteGoalScreen(navigateHome: (ResCellTodosModel?) -> Unit, cellModel: ResCe
 
         if (viewModelState.isShowBottomSheet)
             SelectColorBottomSheet()
+
+        if (viewModelState.dialogData != null)
+            EggtartPopup(dialogData = viewModelState.dialogData)
     }
 
     viewModel.collectSideEffect {
@@ -247,8 +260,59 @@ fun WriteGoalScreen(navigateHome: (ResCellTodosModel?) -> Unit, cellModel: ResCe
             is WriteGoalSideEffect.FinishResult -> {
                 navigateHome(it.cellTodosModel)
             }
+
+            is WriteGoalSideEffect.PopupDialog -> {
+                when (it.dialogTypes) {
+                    is DialogTypes.DeleteCell -> {
+                        viewModel.intentSetDialogData(
+                            dialogData = DialogData(
+                                title = "",
+                                content = "",
+                                confirm = "",
+                                dismiss = "",
+                                onDismiss = {
+                                    viewModel.intentSetDialogData(null)
+                                },
+                                onConfirm = {
+                                    viewModel.intentDeleteCell(cellModel)
+                                }
+                            )
+                        )
+                    }
+
+                    is DialogTypes.UnSaveFinish -> {
+                        viewModel.intentSetDialogData(
+                            dialogData = DialogData(
+                                title = "",
+                                content = "",
+                                confirm = "",
+                                dismiss = "",
+                                onDismiss = {
+                                    viewModel.intentSetDialogData(null)
+                                },
+                                onConfirm = {
+                                    navigateHome(null)
+                                }
+                            )
+                        )
+                    }
+
+                    is DialogTypes.ServerError -> {
+
+                    }
+                }
+            }
         }
     }
+}
+
+private fun checkChanged(cellModel: ResCellModel, origTodo: List<String>, goalColor: Color?, goalString: String, todoList: List<String>): Boolean {
+    val isNull = goalString.isNotEmpty() && goalColor != null
+    val goalChanged = cellModel.goal != goalString
+    val colorChanged = goalColor != cellModel.color?.let { Color(android.graphics.Color.parseColor("#${cellModel.color}")) }
+    val todoChanged = todoList.filter { it.isNotEmpty() } != origTodo
+
+    return isNull && (goalChanged || colorChanged || todoChanged)
 }
 
 @Preview(showBackground = true, showSystemUi = true)

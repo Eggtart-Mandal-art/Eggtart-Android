@@ -2,8 +2,10 @@ package com.teamegg.eggtart.features.write_goal
 
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
+import com.teamegg.eggtart.common.feature.components.DialogData
 import com.teamegg.eggtart.common.feature.util.GoalColorModel
 import com.teamegg.eggtart.common.util.Result
+import com.teamegg.eggtart.common.util.ServerErrorModel
 import com.teamegg.eggtart.domain.mandalart.model.ResCellModel
 import com.teamegg.eggtart.domain.mandalart.model.UpdateCellModel
 import com.teamegg.eggtart.domain.mandalart.usecases.cell.DeleteMandalartCellUseCase
@@ -36,7 +38,18 @@ class WriteGoalViewModel @Inject constructor(
 ) : ContainerHost<WriteGoalState, WriteGoalSideEffect>, ViewModel() {
     override val container: Container<WriteGoalState, WriteGoalSideEffect> = container(WriteGoalState())
 
-    @OptIn(OrbitExperimental::class)
+    fun postUnSaveFinish() = intent {
+        postSideEffect(WriteGoalSideEffect.PopupDialog(DialogTypes.UnSaveFinish))
+    }
+
+    fun postDeleteCell() = intent {
+        postSideEffect(WriteGoalSideEffect.PopupDialog(DialogTypes.DeleteCell))
+    }
+
+    fun postServerError(serverError: ServerErrorModel?) = intent {
+        postSideEffect(WriteGoalSideEffect.PopupDialog(DialogTypes.ServerError(serverError)))
+    }
+
     fun intentSetGoalString(value: String) = blockingIntent {
         reduce {
             state.copy(goalString = value)
@@ -198,5 +211,9 @@ class WriteGoalViewModel @Inject constructor(
 
             }
         }
+    }
+
+    fun intentSetDialogData(dialogData: DialogData?) = intent {
+        reduce { state.copy(dialogData = dialogData) }
     }
 }
