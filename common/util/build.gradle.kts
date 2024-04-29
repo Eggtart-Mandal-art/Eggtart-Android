@@ -39,6 +39,9 @@ dependencies {
 
     implementation(libs.ktor.serialization)
 
+    // Hilt
+    implementation(libs.dagger.hilt.android)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)

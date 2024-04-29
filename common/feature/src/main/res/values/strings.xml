@@ -7,6 +7,8 @@
     <string name="com_goal">목표</string>
     <string name="com_todo">해야할 일</string>
 
+    <string name="message_saved">저장되었습니다.</string>
+
     <!--  Color Name  -->
     <string name="color_egg_tart">에그타르트</string>
     <string name="color_sausage">소세지</string>

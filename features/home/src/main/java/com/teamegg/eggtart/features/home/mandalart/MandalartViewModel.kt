@@ -1,10 +1,18 @@
 package com.teamegg.eggtart.features.home.mandalart
 
 import androidx.lifecycle.ViewModel
+import com.teamegg.eggtart.common.feature.types.StringResource
+import com.teamegg.eggtart.common.util.Logger
+import com.teamegg.eggtart.common.util.Result
+import com.teamegg.eggtart.domain.mandalart.model.ResCellModel
+import com.teamegg.eggtart.domain.mandalart.model.ResCellTodosModel
 import com.teamegg.eggtart.domain.mandalart.usecases.cell.GetMandalartCellUseCase
+import com.teamegg.eggtart.domain.user.usecase.GetLocalUserTokenUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.firstOrNull
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
+import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
 import javax.inject.Inject
@@ -14,21 +22,64 @@ import javax.inject.Inject
  **/
 
 @HiltViewModel
-class MandalartViewModel @Inject constructor(private val getMandalartCellUseCase: GetMandalartCellUseCase) : ContainerHost<MandalartScreenState, MandalartSideEffect>, ViewModel() {
-    override val container = container<MandalartScreenState, MandalartSideEffect>(
-        MandalartScreenState(
-            mandalartLoading = false,
-            mandalartCellList = listOf(),
-        )
-    ) {
-        getMandalartCells()
+class MandalartViewModel @Inject constructor(
+    private val getMandalartCellUseCase: GetMandalartCellUseCase,
+    private val getLocalUserTokenUseCase: GetLocalUserTokenUseCase,
+) : ContainerHost<MandalartScreenState, MandalartSideEffect>, ViewModel() {
+
+    override val container = container<MandalartScreenState, MandalartSideEffect>(MandalartScreenState())
+
+    fun updateCellModel(cellModel: ResCellTodosModel) = intent {
+        val prevIndex = state.mandalartCellList.indexOfFirst { it.id == cellModel.id }
+
+        reduce {
+            state.copy(
+                mandalartCellList = state.mandalartCellList.toMutableList().apply {
+                    set(prevIndex, ResCellModel(cellModel.step, cellModel.id, cellModel.color, cellModel.goal, cellModel.isCompleted))
+                }
+            )
+        }
+
+        postSideEffect(MandalartSideEffect.SnackBarRes(StringResource.message_saved))
     }
 
-    fun getMandalartCells() = intent {
-        reduce { state.copy(mandalartLoading = true) }
+    fun getMandalartCells(sheetIds: List<Long>, depth: Int = 1, parentOrder: Int = 0) = intent {
+        Logger.d("getMandalartCells Call")
+        reduce {
+            state.copy(mandalartLoading = true, sheetIds = sheetIds)
+        }
 
-        val mandalartCells = getMandalartCellUseCase.invoke(1)
+        val accessToken = getLocalUserTokenUseCase().firstOrNull()?.accessToken
 
-        reduce { state.copy(mandalartLoading = false, mandalartCellList = mandalartCells) }
+        Logger.d("accessToken: $accessToken")
+
+        val mandalartCellsResult = getMandalartCellUseCase(
+            accessToken = accessToken ?: "",
+            sheetId = sheetIds.first(),
+            depth = depth,
+            parentOrder = parentOrder
+        )
+
+        Logger.d("manadalartCellsResult: $mandalartCellsResult")
+
+        when (mandalartCellsResult) {
+            is Result.Success -> {
+                reduce {
+                    state.copy(mandalartLoading = false, mandalartCellList = mandalartCellsResult.data)
+                }
+            }
+
+            is Result.Failure -> {
+                reduce {
+                    state.copy(mandalartLoading = false, mandalartCellList = emptyList())
+                }
+
+                //TODO: 에러 로직 처리 필요
+            }
+
+            is Result.Exception -> {
+                // TODO: 에러 로직 필요
+            }
+        }
     }
 }

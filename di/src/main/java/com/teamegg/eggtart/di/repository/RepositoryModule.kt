@@ -1,13 +1,13 @@
 package com.teamegg.eggtart.di.repository
 
-import com.teamegg.eggtart.core.network.mandalart.repository.RemoteMandalartRepositoryImpl
+import com.teamegg.eggtart.core.network.mandalart.repository.MandalartRemoteRepositoryImpl
 import com.teamegg.eggtart.core.network.user.repository.NetworkUserRepositoryImpl
 import com.teamegg.eggtart.core.room.repository.MandalartCellRepositoryImpl
 import com.teamegg.eggtart.core.room.repository.MandalartSheetRepositoryImpl
 import com.teamegg.eggtart.datastore.user.repository.LocalUserRepositoryImpl
 import com.teamegg.eggtart.domain.mandalart.repository.MandalartCellRepository
 import com.teamegg.eggtart.domain.mandalart.repository.MandalartSheetRepository
-import com.teamegg.eggtart.domain.mandalart.repository.RemoteMandalartRepository
+import com.teamegg.eggtart.domain.mandalart.repository.MandalartRemoteRepository
 import com.teamegg.eggtart.domain.user.repository.LocalUserRepository
 import com.teamegg.eggtart.domain.user.repository.NetworkUserRepository
 import dagger.Binds
@@ -42,5 +42,5 @@ abstract class RepositoryBindsModule {
 
     @Singleton
     @Binds
-    abstract fun bindsRemoteMandalartRepository(remoteMandalartRepositoryImpl: RemoteMandalartRepositoryImpl): RemoteMandalartRepository
+    abstract fun bindsMandalartRemoteRepository(mandalartRemoteRepositoryImpl: MandalartRemoteRepositoryImpl): MandalartRemoteRepository
 }

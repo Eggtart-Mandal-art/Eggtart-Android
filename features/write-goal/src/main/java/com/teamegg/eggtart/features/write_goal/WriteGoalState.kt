@@ -7,9 +7,12 @@ import com.teamegg.eggtart.common.feature.util.GoalColorModel
  */
 
 data class WriteGoalState(
+    val updateCellLoading: Boolean = false,
+    val getTodosLoading: Boolean = false,
     val imeBottom: Int = 0,
     val goalString: String = "",
     val goalColor: GoalColorModel? = null,
     val isShowBottomSheet: Boolean = false,
+    val origTodos: List<String> = listOf(),
     val todoList: List<String> = listOf()
 )

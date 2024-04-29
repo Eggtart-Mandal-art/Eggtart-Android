@@ -1,5 +1,7 @@
 package com.teamegg.eggtart.di.datasource
 
+import com.teamegg.eggtart.common.util.KtorClient
+import com.teamegg.eggtart.common.util.KtorTokenClient
 import com.teamegg.eggtart.common.util.Logger
 import com.teamegg.eggtart.core.network.mandalart.datasource.MandalartRemoteSource
 import com.teamegg.eggtart.core.network.mandalart.datasource.MandalartRemoteSourceImpl
@@ -31,7 +33,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.URLProtocol
 import io.ktor.serialization.kotlinx.json.json
-import kotlinx.coroutines.flow.lastOrNull
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.serialization.json.Json
 import javax.inject.Singleton
 
@@ -42,9 +44,41 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object RemoteSourceProvideModule {
+    @KtorClient
     @Singleton
     @Provides
-    fun provideKtor(localUserRepository: LocalUserRepository): HttpClient = HttpClient(Android) {
+    fun provideKtorClient(): HttpClient = HttpClient(Android) {
+        install(Logging) {
+            logger = object : io.ktor.client.plugins.logging.Logger {
+                override fun log(message: String) {
+                    Logger.d("EGGTART_SERVER: $message")
+                }
+            }
+            level = LogLevel.ALL
+        }
+
+        install(ContentNegotiation) {
+            json(
+                Json {
+                    prettyPrint = true
+                }
+            )
+        }
+
+        defaultRequest {
+            header(HttpHeaders.ContentType, ContentType.Application.Json)
+
+            url {
+                host = BuildConfig.EGGTART_API_URL
+                protocol = URLProtocol.HTTPS
+            }
+        }
+    }
+
+    @KtorTokenClient
+    @Singleton
+    @Provides
+    fun provideKtorTokenClient(localUserRepository: LocalUserRepository, @KtorClient ktorClient: HttpClient): HttpClient = HttpClient(Android) {
         install(Logging) {
             logger = object : io.ktor.client.plugins.logging.Logger {
                 override fun log(message: String) {
@@ -64,27 +98,37 @@ object RemoteSourceProvideModule {
 
         install(Auth) {
             bearer {
-//                loadTokens {
-//                    val token = localUserRepository.userToken.lastOrNull()
-//
-//                    BearerTokens(
-//                        accessToken = token?.accessToken ?: "",
-//                        refreshToken = token?.refreshToken ?: ""
-//                    )
-//                }
-                refreshTokens {
-                    val token = client.get {
-                        markAsRefreshTokenRequest()
-                        url("/token")
-                        bearerAuth(localUserRepository.userToken.lastOrNull()?.refreshToken ?: "")
-                    }.body<UserTokenModel>()
-
-                    localUserRepository.setUserToken(token)
+                loadTokens {
+                    val token = localUserRepository.userToken.firstOrNull()
 
                     BearerTokens(
-                        accessToken = token.accessToken,
-                        refreshToken = token.refreshToken,
+                        accessToken = token?.accessToken ?: "",
+                        refreshToken = token?.refreshToken ?: ""
                     )
+                }
+
+                refreshTokens {
+                    try {
+                        val token = ktorClient.get {
+                            markAsRefreshTokenRequest()
+                            url("/token")
+                            bearerAuth(localUserRepository.userToken.firstOrNull()?.refreshToken ?: "")
+                        }.body<UserTokenModel>()
+
+                        localUserRepository.setUserToken(token)
+
+                        BearerTokens(
+                            accessToken = token.accessToken,
+                            refreshToken = token.refreshToken,
+                        )
+                    } catch (e: Exception) {
+                        localUserRepository.setUserToken(null)
+
+                        BearerTokens(
+                            accessToken = "",
+                            refreshToken = "",
+                        )
+                    }
                 }
             }
         }

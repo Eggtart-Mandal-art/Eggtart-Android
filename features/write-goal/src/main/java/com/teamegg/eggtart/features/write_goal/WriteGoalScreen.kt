@@ -1,6 +1,5 @@
 package com.teamegg.eggtart.features.write_goal
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -30,6 +29,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
@@ -45,8 +46,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.teamegg.eggtart.common.feature.components.EggtartButton
 import com.teamegg.eggtart.common.feature.components.EggtartButtonSize
 import com.teamegg.eggtart.common.feature.components.EggtartButtonStyle
@@ -55,7 +54,10 @@ import com.teamegg.eggtart.common.feature.components.EggtartSelectionBox
 import com.teamegg.eggtart.common.feature.components.EggtartTextField
 import com.teamegg.eggtart.common.feature.types.DrawableResource
 import com.teamegg.eggtart.common.feature.types.StringResource
+import com.teamegg.eggtart.common.feature.util.Constants.GOAL_COLORS
 import com.teamegg.eggtart.common.util.Logger
+import com.teamegg.eggtart.domain.mandalart.model.ResCellModel
+import com.teamegg.eggtart.domain.mandalart.model.ResCellTodosModel
 import com.teamegg.eggtart.features.write_goal.components.SelectColorBottomSheet
 import com.teamegg.eggtart.features.write_goal.components.WriteGoalAppBar
 import org.orbitmvi.orbit.compose.collectAsState
@@ -67,16 +69,26 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun WriteGoalScreen(navHostController: NavHostController, viewModel: WriteGoalViewModel = hiltViewModel()) {
+fun WriteGoalScreen(navigateHome: (ResCellTodosModel?) -> Unit, cellModel: ResCellModel, viewModel: WriteGoalViewModel = hiltViewModel()) {
     val viewModelState = viewModel.collectAsState().value
     val focusManager = LocalFocusManager.current
     val todoFocusRequesters = remember { mutableStateMapOf<Int, FocusRequester>() }
 
     viewModel.intentSetImeBottom(WindowInsets.imeAnimationTarget.getBottom(LocalDensity.current))
 
+    LaunchedEffect(Unit) {
+        if (cellModel.goal.isNullOrEmpty().not()) {
+            viewModel.intentGetMandalartCellDetail(cellModel)
+            viewModel.intentSetGoalString(cellModel.goal ?: "")
+            viewModel.intentSetGoalColorModel(GOAL_COLORS.firstOrNull {
+                it.color == Color(android.graphics.Color.parseColor("#${cellModel.color}"))
+            })
+        }
+    }
+
     Scaffold(
         topBar = {
-            WriteGoalAppBar(navHostController = navHostController)
+            WriteGoalAppBar(navigateHome = navigateHome, cellModel = cellModel)
         }
     ) { paddingValues ->
         Box(modifier = Modifier
@@ -156,7 +168,7 @@ fun WriteGoalScreen(navHostController: NavHostController, viewModel: WriteGoalVi
                         }
                     }
 
-                    itemsIndexed(viewModelState.todoList, key = { index, item -> index }) { index, todo ->
+                    itemsIndexed(viewModelState.todoList) { index, todo ->
                         val focusRequester = FocusRequester()
                         todoFocusRequesters[index] = focusRequester
 
@@ -210,9 +222,10 @@ fun WriteGoalScreen(navHostController: NavHostController, viewModel: WriteGoalVi
                     buttonSize = EggtartButtonSize.LARGE,
                     buttonStyle = EggtartButtonStyle.PRIMARY,
                     contentString = stringResource(id = StringResource.com_save),
-                    enabled = viewModelState.goalColor != null && viewModelState.goalString.isNotEmpty(),
+                    enabled = (viewModelState.goalColor != null && viewModelState.goalString.isNotEmpty())
+                            && ((viewModelState.goalColor.color != cellModel.color?.let { Color(android.graphics.Color.parseColor("#${cellModel.color}")) } || viewModelState.goalString != cellModel.goal) || (viewModelState.origTodos == viewModelState.todoList.filter { it.isNotEmpty() })),
                     onClick = {
-                        /*TODO*/
+                        viewModel.intentUpdateCell(cellModel)
                     }
                 )
             }
@@ -230,6 +243,10 @@ fun WriteGoalScreen(navHostController: NavHostController, viewModel: WriteGoalVi
             }
 
             is WriteGoalSideEffect.RequestFocus -> todoFocusRequesters[viewModelState.todoList.lastIndex]?.requestFocus()
+
+            is WriteGoalSideEffect.FinishResult -> {
+                navigateHome(it.cellTodosModel)
+            }
         }
     }
 }
@@ -238,6 +255,6 @@ fun WriteGoalScreen(navHostController: NavHostController, viewModel: WriteGoalVi
 @Composable
 private fun PreviewWriteGoalScreen() {
     com.teamegg.eggtart.common.feature.theme.EggtartTheme {
-        WriteGoalScreen(rememberNavController())
+        WriteGoalScreen(cellModel = ResCellModel(0, 0), navigateHome = {})
     }
 }

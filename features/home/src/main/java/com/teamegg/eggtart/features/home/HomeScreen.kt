@@ -9,6 +9,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.teamegg.eggtart.common.feature.routes.home.HomeRoutes
 import com.teamegg.eggtart.common.feature.routes.root.RootRoutes
+import com.teamegg.eggtart.domain.mandalart.model.ResCellModel
+import com.teamegg.eggtart.domain.mandalart.model.ResCellTodosModel
 import com.teamegg.eggtart.features.home.calendar.CalendarScreen
 import com.teamegg.eggtart.features.home.components.HomeBottomBar
 import com.teamegg.eggtart.features.home.mandalart.MandalartScreen
@@ -19,8 +21,11 @@ import com.teamegg.eggtart.features.home.settings.SettingsScreen
  **/
 
 @Composable
-fun HomeScreen(navigateWriteGoal: (Int) -> Unit, navHostController: NavHostController = rememberNavController()) {
-
+fun HomeScreen(
+    navigateWriteGoal: (ResCellModel) -> Unit,
+    sheetIds: List<Long>,
+    cellModel: ResCellTodosModel?,
+    navHostController: NavHostController = rememberNavController()) {
     Scaffold(
         bottomBar = {
             HomeBottomBar(navHostController = navHostController)
@@ -28,7 +33,11 @@ fun HomeScreen(navigateWriteGoal: (Int) -> Unit, navHostController: NavHostContr
     ) { paddingValues ->
         NavHost(contentAlignment = Alignment.TopStart, navController = navHostController, startDestination = HomeRoutes.Mandalart.route, route = RootRoutes.HOME) {
             composable(HomeRoutes.Mandalart.route) {
-                MandalartScreen(navigateWriteGoal = navigateWriteGoal, homePaddingValues = paddingValues)
+                MandalartScreen(
+                    navigateWriteGoal = navigateWriteGoal,
+                    sheetIds = sheetIds,
+                    cellModel = cellModel,
+                    homePaddingValues = paddingValues)
             }
 
             composable(HomeRoutes.Calendar.route) {

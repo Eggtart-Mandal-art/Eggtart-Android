@@ -1,7 +1,8 @@
 package com.teamegg.eggtart.core.network.user.datasource
 
+import com.teamegg.eggtart.common.util.KtorClient
+import com.teamegg.eggtart.common.util.KtorTokenClient
 import io.ktor.client.HttpClient
-import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.statement.bodyAsText
@@ -10,7 +11,10 @@ import javax.inject.Inject
 /**
  *  Created by wonjin on 2024/04/12
  **/
-class UserRemoteSourceImpl @Inject constructor(private val ktorClient: HttpClient) : UserRemoteSource {
+class UserRemoteSourceImpl @Inject constructor(
+    @KtorClient private val ktorClient: HttpClient,
+    @KtorTokenClient private val ktorTokenClient: HttpClient
+) : UserRemoteSource {
     private val loginKakao = "/login/kakao"
     private val userInfo = "/user/me"
 
@@ -23,9 +27,7 @@ class UserRemoteSourceImpl @Inject constructor(private val ktorClient: HttpClien
     }
 
     override suspend fun getUserInfo(accessToken: String): String {
-        val response = ktorClient.get(userInfo) {
-            bearerAuth(accessToken)
-        }
+        val response = ktorTokenClient.get(userInfo)
 
         return response.bodyAsText()
     }

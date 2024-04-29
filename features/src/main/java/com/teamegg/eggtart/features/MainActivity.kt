@@ -33,6 +33,8 @@ import com.teamegg.eggtart.features.home.navigation.homeScreen
 import com.teamegg.eggtart.features.login.navigation.loginScreen
 import com.teamegg.eggtart.features.write_goal.navigation.writeGoalScreen
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.orbitmvi.orbit.compose.collectSideEffect
 import javax.inject.Inject
 
@@ -105,7 +107,7 @@ class MainActivity : ComponentActivity() {
                         homeScreen(
                             navigateWriteGoal = viewModel::navigateWriteGoal
                         )
-                        writeGoalScreen(navController)
+                        writeGoalScreen(navigateHome = viewModel::navigateHome)
                         loginScreen(
                             startKakaoLogin = viewModel::intentKakaoLogin,
                         )
@@ -129,7 +131,13 @@ class MainActivity : ComponentActivity() {
                         }
 
                         is MainSideEffect.NavigateHome -> {
-                            navController.navigate(RootRoutes.HOME) {
+                            navController.navigate(
+                                RootRoutes.HOME
+                                    .replace("{sheetIds}", it.sheetsIds.joinToString(","))
+                                    .replace("{cellModel}", Json.encodeToString(it.cellModel))
+                            ) {
+                                launchSingleTop = true
+
                                 navController.currentDestination?.route?.let {
                                     popUpTo(it) { inclusive = true }
                                 }
@@ -137,7 +145,7 @@ class MainActivity : ComponentActivity() {
                         }
 
                         is MainSideEffect.NavigateWriteGoal -> {
-                            navController.navigate(RootRoutes.WRITE_GOAL.replace("{goalIndex}", it.goalIndex.toString()))
+                            navController.navigate(RootRoutes.WRITE_GOAL.replace("{cellModel}", Json.encodeToString(it.cellModel)))
                         }
                     }
                 }

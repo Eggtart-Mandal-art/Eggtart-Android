@@ -3,7 +3,12 @@ package com.teamegg.eggtart.features
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.teamegg.eggtart.common.util.Logger
+import com.teamegg.eggtart.common.util.Result
 import com.teamegg.eggtart.domain.kakao.usecase.KakaoLoginUseCase
+import com.teamegg.eggtart.domain.mandalart.model.ResCellModel
+import com.teamegg.eggtart.domain.mandalart.model.ResCellTodosModel
+import com.teamegg.eggtart.domain.mandalart.usecases.sheet.CreateMandalartSheetUseCase
+import com.teamegg.eggtart.domain.mandalart.usecases.sheet.GetMandalartSheetsUseCase
 import com.teamegg.eggtart.domain.user.usecase.GetLocalUserTokenUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -20,7 +25,9 @@ import org.orbitmvi.orbit.viewmodel.container
 
 class MainViewModel @AssistedInject constructor(
     @Assisted private val kakaoLoginUseCase: KakaoLoginUseCase,
-    private val getLocalUserTokenUseCase: GetLocalUserTokenUseCase
+    private val getLocalUserTokenUseCase: GetLocalUserTokenUseCase,
+    private val getMandalartSheetsUseCase: GetMandalartSheetsUseCase,
+    private val createMandalartSheetUseCase: CreateMandalartSheetUseCase
 ) : ContainerHost<MainState, MainSideEffect>, ViewModel() {
 
     override val container = container<MainState, MainSideEffect>(MainState())
@@ -43,12 +50,12 @@ class MainViewModel @AssistedInject constructor(
         postSideEffect(MainSideEffect.NavigateLoginWithKakaoResult(kakaoLoginUseCase()))
     }
 
-    fun navigateWriteGoal(goalIndex: Int) = intent {
-        postSideEffect(MainSideEffect.NavigateWriteGoal(goalIndex))
+    fun navigateWriteGoal(cellModel: ResCellModel) = intent {
+        postSideEffect(MainSideEffect.NavigateWriteGoal(cellModel))
     }
 
-    fun navigateHome() = intent {
-        postSideEffect(MainSideEffect.NavigateHome)
+    fun navigateHome(cellModel: ResCellTodosModel?) = intent {
+        postSideEffect(MainSideEffect.NavigateHome(sheetsIds = state.sheetIds, cellModel = cellModel))
     }
 
     fun intentGetLocalUserToken() = intent {
@@ -58,7 +65,44 @@ class MainViewModel @AssistedInject constructor(
             if (it == null) {
                 postSideEffect(MainSideEffect.NavigateLogin)
             } else {
-                postSideEffect(MainSideEffect.NavigateHome)
+                val sheets = getMandalartSheetsUseCase(it.accessToken)
+                when (sheets) {
+                    is Result.Success -> {
+                        if (sheets.data.isEmpty()) {
+                            val sheetId = createMandalartSheetUseCase(it.accessToken)
+
+                            when (sheetId) {
+                                is Result.Success -> {
+                                    reduce {
+                                        state.copy(sheetIds = listOf(sheetId.data))
+                                    }
+                                    postSideEffect(MainSideEffect.NavigateHome(listOf(sheetId.data)))
+                                }
+
+                                is Result.Failure -> {
+                                    // TODO: 에러 로직 처리 필요
+                                }
+
+                                is Result.Exception -> {
+                                    // TODO: 에러 로직 필요
+                                }
+                            }
+                        } else {
+                            reduce {
+                                state.copy(sheetIds = sheets.data)
+                            }
+                            postSideEffect(MainSideEffect.NavigateHome(sheets.data))
+                        }
+                    }
+
+                    is Result.Failure -> {
+                        // TODO: 에러 로직 필요
+                    }
+
+                    is Result.Exception -> {
+                        // TODO: 에러 로직 필요
+                    }
+                }
             }
 
             reduce {

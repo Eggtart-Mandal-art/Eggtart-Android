@@ -8,10 +8,11 @@ import kotlinx.serialization.Serializable
  **/
 
 @Serializable
-data class UpdateCellModel(
+data class ResCellModel(
+    val step: Int,
+    val id: Long,
     val color: String? = null,
     val goal: String? = null,
     @SerialName("is_completed")
-    val isCompleted: Boolean = false,
-    val todos: List<String> = listOf()
+    val isCompleted: Boolean = false
 )

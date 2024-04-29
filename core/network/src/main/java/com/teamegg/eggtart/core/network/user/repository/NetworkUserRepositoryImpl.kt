@@ -15,9 +15,11 @@ import javax.inject.Inject
 
 class NetworkUserRepositoryImpl @Inject constructor(private val userDataSource: UserRemoteSource) : NetworkUserRepository {
     override suspend fun loginWithKakao(kakaoAccessToken: String): Result<UserTokenModel> {
-        val response = userDataSource.loginWithKakao(kakaoAccessToken)
+        var response = ""
 
         return try {
+            response = userDataSource.loginWithKakao(kakaoAccessToken)
+
             Result.Success(Json.decodeFromString<UserTokenModel>(response))
         } catch (e: Exception) {
             try {
@@ -29,9 +31,11 @@ class NetworkUserRepositoryImpl @Inject constructor(private val userDataSource: 
     }
 
     override suspend fun getUserInfo(accessToken: String): Result<UserInfoModel> {
-        val response = userDataSource.getUserInfo(accessToken)
+        var response = ""
 
         return try {
+            response = userDataSource.getUserInfo(accessToken)
+
             Result.Success(Json.decodeFromString<UserInfoModel>(response))
         } catch (e: Exception) {
             try {

@@ -22,48 +22,53 @@ import androidx.compose.ui.unit.dp
 import com.teamegg.eggtart.common.feature.theme.ColorGray50
 import com.teamegg.eggtart.common.feature.types.DrawableResource
 import com.teamegg.eggtart.common.feature.types.StringResource
-import com.teamegg.eggtart.domain.mandalart.model.CellModel
+import com.teamegg.eggtart.domain.mandalart.model.ResCellModel
 
 /**
  *  Created by wonjin on 2024/04/05
  **/
 
 @Composable
-fun MandalartItem(navigateWriteGoal: (Int) -> Unit, rootCellData: CellModel?, cellData: CellModel?, index: Int) {
+fun MandalartItem(navigateWriteGoal: (ResCellModel) -> Unit, cellData: ResCellModel?, index: Int) {
     val isRootCell = index == 4
 
-    Box(
-        modifier = Modifier
-            .aspectRatio(1f)
-            .clip(RoundedCornerShape(12.dp))
-            .background(
-                if (cellData?.color == null) {
-                    ColorGray50
-                } else {
-                    Color(cellData.color!!)
-                }
-            )
-            .clickable {
-                if (cellData?.color == null) {
-                    navigateWriteGoal(index)
-                } else {
-                    // TODO 상세 페이지
-                }
-            },
-        contentAlignment = Alignment.Center
-    ) {
-        if (isRootCell || cellData?.goal.isNullOrEmpty().not()) {
-            Text(
-                modifier = Modifier
-                    .padding(horizontal = 8.dp)
-                    .wrapContentSize(),
-                text = if (cellData?.goal.isNullOrEmpty()) stringResource(id = StringResource.enter_final_goal_first) else cellData?.goal.toString(),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.secondary
-            )
-        } else {
-            Icon(painter = painterResource(id = DrawableResource.ic_add), contentDescription = "", tint = MaterialTheme.colorScheme.secondary)
+    if (cellData == null) {
+        Box(
+            modifier = Modifier
+                .aspectRatio(1f)
+                .clip(RoundedCornerShape(12.dp))
+                .background(ColorGray50)
+        )
+    } else {
+        Box(
+            modifier = Modifier
+                .aspectRatio(1f)
+                .clip(RoundedCornerShape(12.dp))
+                .background(
+                    if (cellData.color == null) {
+                        ColorGray50
+                    } else {
+                        Color(android.graphics.Color.parseColor("#${cellData.color}"))
+                    }
+                )
+                .clickable {
+                    navigateWriteGoal(cellData)
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            if (isRootCell || cellData.goal.isNullOrEmpty().not()) {
+                Text(
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .wrapContentSize(),
+                    text = if (cellData.goal.isNullOrEmpty()) stringResource(id = StringResource.enter_final_goal_first) else cellData.goal.toString(),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+            } else {
+                Icon(painter = painterResource(id = DrawableResource.ic_add), contentDescription = "", tint = MaterialTheme.colorScheme.secondary)
+            }
         }
     }
 }
