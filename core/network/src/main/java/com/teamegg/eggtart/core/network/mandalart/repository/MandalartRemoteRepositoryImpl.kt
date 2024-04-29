@@ -1,6 +1,5 @@
 package com.teamegg.eggtart.core.network.mandalart.repository
 
-import com.teamegg.eggtart.common.util.Logger
 import com.teamegg.eggtart.common.util.Result
 import com.teamegg.eggtart.common.util.ServerErrorModel
 import com.teamegg.eggtart.core.network.mandalart.datasource.MandalartRemoteSource
@@ -18,9 +17,11 @@ import javax.inject.Inject
  **/
 class MandalartRemoteRepositoryImpl @Inject constructor(private val mandalartRemoteSource: MandalartRemoteSource) : MandalartRemoteRepository {
     override suspend fun getSheets(accessToken: String): Result<List<Long>> {
-        val response = mandalartRemoteSource.getSheets(accessToken)
+        var response = ""
 
         return try {
+            response = mandalartRemoteSource.getSheets(accessToken)
+
             Result.Success(Json.decodeFromString<List<Long>>(response))
         } catch (e: Exception) {
             try {
@@ -32,9 +33,11 @@ class MandalartRemoteRepositoryImpl @Inject constructor(private val mandalartRem
     }
 
     override suspend fun postCreateSheet(accessToken: String, sheetName: String): Result<Long> {
-        val response = mandalartRemoteSource.postCreateSheet(accessToken, sheetName)
+        var response = ""
 
         return try {
+            response = mandalartRemoteSource.postCreateSheet(accessToken, sheetName)
+
             val result = Json.decodeFromString<ResponseCreateSheetEntity>(response)
             Result.Success(result.sheetId)
         } catch (e: Exception) {
@@ -47,10 +50,11 @@ class MandalartRemoteRepositoryImpl @Inject constructor(private val mandalartRem
     }
 
     override suspend fun getCells(accessToken: String, sheetId: Long, depth: Int, parentOrder: Int): Result<List<ResCellModel>> {
-        val response = mandalartRemoteSource.getCells(accessToken, sheetId, depth, parentOrder)
+        var response = ""
 
         return try {
-            Logger.d("body: $response")
+            response = mandalartRemoteSource.getCells(accessToken, sheetId, depth, parentOrder)
+
             Result.Success(Json.decodeFromString<List<ResCellModel>>(response))
         } catch (e: Exception) {
             try {
@@ -62,9 +66,11 @@ class MandalartRemoteRepositoryImpl @Inject constructor(private val mandalartRem
     }
 
     override suspend fun patchCell(accessToken: String, cellId: Long, body: UpdateCellModel): Result<ResCellTodosModel> {
-        val response = mandalartRemoteSource.patchCell(accessToken, cellId, body.toPatchCellEntity())
+        var response = ""
 
         return try {
+            response = mandalartRemoteSource.patchCell(accessToken, cellId, body.toPatchCellEntity())
+
             Result.Success(Json.decodeFromString<ResCellTodosModel>(response))
         } catch (e: Exception) {
             try {
@@ -76,9 +82,11 @@ class MandalartRemoteRepositoryImpl @Inject constructor(private val mandalartRem
     }
 
     override suspend fun deleteCell(accessToken: String, cellId: Long): Result<ResCellTodosModel> {
-        val response = mandalartRemoteSource.deleteCell(accessToken, cellId)
+        var response = ""
 
         return try {
+            response = mandalartRemoteSource.deleteCell(accessToken, cellId)
+
             Result.Success(Json.decodeFromString<ResCellTodosModel>(response))
         } catch (e: Exception) {
             try {
@@ -90,10 +98,11 @@ class MandalartRemoteRepositoryImpl @Inject constructor(private val mandalartRem
     }
 
     override suspend fun getCellDetail(accessToken: String, cellId: Long): Result<ResCellTodosModel> {
-        val response = mandalartRemoteSource.getCellDetail(accessToken, cellId)
-
+        var response = ""
 
         return try {
+            response = mandalartRemoteSource.getCellDetail(accessToken, cellId)
+
             Result.Success(Json.decodeFromString<ResCellTodosModel>(response))
         } catch (e: Exception) {
             try {

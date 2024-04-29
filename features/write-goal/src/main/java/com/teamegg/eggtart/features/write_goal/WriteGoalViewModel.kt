@@ -179,9 +179,7 @@ class WriteGoalViewModel @Inject constructor(
 
         val accessToken = getLocalUserTokenUseCase().firstOrNull()?.accessToken ?: ""
 
-        val result = getMandalartCellDetailUseCase(accessToken = accessToken, cellId = cellModel.id)
-
-        when (result) {
+        when (val result = getMandalartCellDetailUseCase(accessToken = accessToken, cellId = cellModel.id)) {
             is Result.Success -> {
                 reduce {
                     state.copy(

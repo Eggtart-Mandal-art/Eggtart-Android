@@ -37,7 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
@@ -80,7 +80,9 @@ fun WriteGoalScreen(navigateHome: (ResCellTodosModel?) -> Unit, cellModel: ResCe
         if (cellModel.goal.isNullOrEmpty().not()) {
             viewModel.intentGetMandalartCellDetail(cellModel)
             viewModel.intentSetGoalString(cellModel.goal ?: "")
-            viewModel.intentSetGoalColorModel(GOAL_COLORS.firstOrNull { Integer.toHexString(it.color.toArgb()).uppercase() == cellModel.color })
+            viewModel.intentSetGoalColorModel(GOAL_COLORS.firstOrNull {
+                it.color == Color(android.graphics.Color.parseColor("#${cellModel.color}"))
+            })
         }
     }
 
@@ -221,8 +223,7 @@ fun WriteGoalScreen(navigateHome: (ResCellTodosModel?) -> Unit, cellModel: ResCe
                     buttonStyle = EggtartButtonStyle.PRIMARY,
                     contentString = stringResource(id = StringResource.com_save),
                     enabled = (viewModelState.goalColor != null && viewModelState.goalString.isNotEmpty())
-                            && ((viewModelState.todoList.count { it.isNotEmpty() } > 0)
-                            || (Integer.toHexString(viewModelState.goalColor.color.toArgb()).uppercase() == cellModel.color || viewModelState.goalString == cellModel.goal)),
+                            && ((viewModelState.goalColor.color != cellModel.color?.let { Color(android.graphics.Color.parseColor("#${cellModel.color}")) } || viewModelState.goalString != cellModel.goal) || (viewModelState.origTodos == viewModelState.todoList.filter { it.isNotEmpty() })),
                     onClick = {
                         viewModel.intentUpdateCell(cellModel)
                     }

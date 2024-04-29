@@ -48,7 +48,7 @@ fun MandalartItem(navigateWriteGoal: (ResCellModel) -> Unit, cellData: ResCellMo
                     if (cellData.color == null) {
                         ColorGray50
                     } else {
-                        Color(cellData.color!!.toLong(16))
+                        Color(android.graphics.Color.parseColor("#${cellData.color}"))
                     }
                 )
                 .clickable {
