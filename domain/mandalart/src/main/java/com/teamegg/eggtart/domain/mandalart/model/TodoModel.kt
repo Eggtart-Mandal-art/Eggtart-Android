@@ -7,6 +7,5 @@ import kotlinx.serialization.Serializable
 data class TodoModel(
     val content: String = "",
     val id: Long = 0,
-    @SerialName("cell_id")
     val cellId: Long = 0
 )

@@ -1,4 +1,4 @@
-package com.teamegg.eggtart.domain.user.model
+package com.teamegg.eggtart.core.network.user.entites
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -8,8 +8,9 @@ import kotlinx.serialization.Serializable
  */
 
 @Serializable
-data class UserInfoModel(
+data class UserInfoEntity(
     val id: Long,
+    @SerialName("social_provider")
     val socialProvider: String,
     val nickname: String
 )

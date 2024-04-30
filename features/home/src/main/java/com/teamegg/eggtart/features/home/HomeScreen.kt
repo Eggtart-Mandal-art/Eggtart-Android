@@ -9,8 +9,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.teamegg.eggtart.common.feature.routes.home.HomeRoutes
 import com.teamegg.eggtart.common.feature.routes.root.RootRoutes
-import com.teamegg.eggtart.domain.mandalart.model.ResCellModel
-import com.teamegg.eggtart.domain.mandalart.model.ResCellTodosModel
+import com.teamegg.eggtart.domain.mandalart.model.CellModel
+import com.teamegg.eggtart.domain.mandalart.model.CellTodosModel
 import com.teamegg.eggtart.features.home.calendar.CalendarScreen
 import com.teamegg.eggtart.features.home.components.HomeBottomBar
 import com.teamegg.eggtart.features.home.mandalart.MandalartScreen
@@ -22,9 +22,9 @@ import com.teamegg.eggtart.features.home.settings.SettingsScreen
 
 @Composable
 fun HomeScreen(
-    navigateWriteGoal: (ResCellModel) -> Unit,
+    navigateWriteGoal: (CellModel) -> Unit,
     sheetIds: List<Long>,
-    cellModel: ResCellTodosModel?,
+    cellModel: CellTodosModel?,
     navHostController: NavHostController = rememberNavController()) {
     Scaffold(
         bottomBar = {

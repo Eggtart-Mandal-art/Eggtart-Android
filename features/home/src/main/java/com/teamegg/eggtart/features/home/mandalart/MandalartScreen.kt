@@ -20,8 +20,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.teamegg.eggtart.common.feature.components.EggtartSnackbar
 import com.teamegg.eggtart.common.util.Logger
-import com.teamegg.eggtart.domain.mandalart.model.ResCellModel
-import com.teamegg.eggtart.domain.mandalart.model.ResCellTodosModel
+import com.teamegg.eggtart.domain.mandalart.model.CellModel
+import com.teamegg.eggtart.domain.mandalart.model.CellTodosModel
 import com.teamegg.eggtart.features.home.mandalart.components.MandalartAppBar
 import com.teamegg.eggtart.features.home.mandalart.components.MandalartItem
 import org.orbitmvi.orbit.compose.collectAsState
@@ -33,10 +33,10 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun MandalartScreen(
-    navigateWriteGoal: (ResCellModel) -> Unit,
+    navigateWriteGoal: (CellModel) -> Unit,
     homePaddingValues: PaddingValues = PaddingValues(),
     sheetIds: List<Long>,
-    cellModel: ResCellTodosModel?,
+    cellModel: CellTodosModel?,
     viewModel: MandalartViewModel = hiltViewModel()
 ) {
     val viewModelState = viewModel.collectAsState().value

@@ -1,6 +1,6 @@
 package com.teamegg.eggtart.domain.mandalart.usecases.sheet
 
-import com.teamegg.eggtart.common.util.Result
+import com.teamegg.eggtart.common.util.ServerResult
 import com.teamegg.eggtart.domain.mandalart.repository.MandalartRemoteRepository
 import javax.inject.Inject
 
@@ -9,5 +9,5 @@ import javax.inject.Inject
  **/
 
 class GetMandalartSheetsUseCase @Inject constructor(private val mandalartRemoteRepository: MandalartRemoteRepository) {
-    suspend operator fun invoke(accessToken: String): Result<List<Long>> = mandalartRemoteRepository.getSheets(accessToken = accessToken)
+    suspend operator fun invoke(): ServerResult<List<Long>> = mandalartRemoteRepository.getSheets()
 }

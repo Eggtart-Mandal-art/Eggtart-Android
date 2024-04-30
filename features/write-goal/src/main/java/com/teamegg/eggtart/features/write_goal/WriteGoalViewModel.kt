@@ -4,17 +4,15 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
 import com.teamegg.eggtart.common.feature.components.DialogData
 import com.teamegg.eggtart.common.feature.util.GoalColorModel
-import com.teamegg.eggtart.common.util.Result
 import com.teamegg.eggtart.common.util.ServerErrorModel
-import com.teamegg.eggtart.domain.mandalart.model.ResCellModel
+import com.teamegg.eggtart.common.util.ServerResult
+import com.teamegg.eggtart.domain.mandalart.model.CellModel
 import com.teamegg.eggtart.domain.mandalart.model.UpdateCellModel
 import com.teamegg.eggtart.domain.mandalart.usecases.cell.DeleteMandalartCellUseCase
 import com.teamegg.eggtart.domain.mandalart.usecases.cell.GetMandalartCellDetailUseCase
 import com.teamegg.eggtart.domain.mandalart.usecases.cell.UpdateMandalartCellUseCase
-import com.teamegg.eggtart.domain.user.usecase.GetLocalUserTokenUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.firstOrNull
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.annotation.OrbitExperimental
@@ -31,7 +29,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WriteGoalViewModel @Inject constructor(
-    private val getLocalUserTokenUseCase: GetLocalUserTokenUseCase,
     private val updateMandalartCellUseCase: UpdateMandalartCellUseCase,
     private val deleteMandalartCellUseCase: DeleteMandalartCellUseCase,
     private val getMandalartCellDetailUseCase: GetMandalartCellDetailUseCase,
@@ -119,15 +116,12 @@ class WriteGoalViewModel @Inject constructor(
         }
     }
 
-    fun intentUpdateCell(cellModel: ResCellModel) = intent {
+    fun intentUpdateCell(cellModel: CellModel) = intent {
         reduce {
             state.copy(updateCellLoading = true)
         }
 
-        val accessToken = getLocalUserTokenUseCase().firstOrNull()?.accessToken
-
         val result = updateMandalartCellUseCase(
-            accessToken = accessToken ?: "",
             cellId = cellModel.id,
             updateCellModel = UpdateCellModel(
                 color = Integer.toHexString(state.goalColor?.color?.toArgb() ?: 0).uppercase(),
@@ -138,15 +132,15 @@ class WriteGoalViewModel @Inject constructor(
         )
 
         when (result) {
-            is Result.Success -> {
+            is ServerResult.Success -> {
                 postSideEffect(WriteGoalSideEffect.FinishResult(result.data))
             }
 
-            is Result.Failure -> {
+            is ServerResult.Failure -> {
 
             }
 
-            is Result.Exception -> {
+            is ServerResult.Exception -> {
 
             }
         }
@@ -156,28 +150,23 @@ class WriteGoalViewModel @Inject constructor(
         }
     }
 
-    fun intentDeleteCell(cellModel: ResCellModel) = intent {
+    fun intentDeleteCell(cellModel: CellModel) = intent {
         reduce {
             state.copy(updateCellLoading = true)
         }
 
-        val accessToken = getLocalUserTokenUseCase().firstOrNull()?.accessToken
-
-        val result = deleteMandalartCellUseCase(
-            accessToken = accessToken ?: "",
-            cellId = cellModel.id
-        )
+        val result = deleteMandalartCellUseCase(cellId = cellModel.id)
 
         when (result) {
-            is Result.Success -> {
+            is ServerResult.Success -> {
                 postSideEffect(WriteGoalSideEffect.FinishResult(result.data))
             }
 
-            is Result.Failure -> {
+            is ServerResult.Failure -> {
 
             }
 
-            is Result.Exception -> {
+            is ServerResult.Exception -> {
 
             }
         }
@@ -187,13 +176,11 @@ class WriteGoalViewModel @Inject constructor(
         }
     }
 
-    fun intentGetMandalartCellDetail(cellModel: ResCellModel) = intent {
+    fun intentGetMandalartCellDetail(cellModel: CellModel) = intent {
         reduce { state.copy(getTodosLoading = true) }
 
-        val accessToken = getLocalUserTokenUseCase().firstOrNull()?.accessToken ?: ""
-
-        when (val result = getMandalartCellDetailUseCase(accessToken = accessToken, cellId = cellModel.id)) {
-            is Result.Success -> {
+        when (val result = getMandalartCellDetailUseCase(cellId = cellModel.id)) {
+            is ServerResult.Success -> {
                 reduce {
                     state.copy(
                         getTodosLoading = false,
@@ -203,11 +190,11 @@ class WriteGoalViewModel @Inject constructor(
                 }
             }
 
-            is Result.Failure -> {
+            is ServerResult.Failure -> {
 
             }
 
-            is Result.Exception -> {
+            is ServerResult.Exception -> {
 
             }
         }

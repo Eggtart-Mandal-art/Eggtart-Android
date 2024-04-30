@@ -1,12 +1,14 @@
 package com.teamegg.eggtart.core.network.user.repository
 
-import com.teamegg.eggtart.common.util.Result
-import com.teamegg.eggtart.common.util.ServerErrorModel
+import com.teamegg.eggtart.common.util.ServerResult
 import com.teamegg.eggtart.core.network.user.datasource.UserRemoteSource
+import com.teamegg.eggtart.core.network.user.entites.UserInfoEntity
+import com.teamegg.eggtart.core.network.user.entites.UserTokenEntity
+import com.teamegg.eggtart.core.network.user.mapper.toUserInfoModel
+import com.teamegg.eggtart.core.network.user.mapper.toUserTokenModel
 import com.teamegg.eggtart.domain.user.model.UserInfoModel
 import com.teamegg.eggtart.domain.user.model.UserTokenModel
 import com.teamegg.eggtart.domain.user.repository.NetworkUserRepository
-import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 /**
@@ -14,35 +16,27 @@ import javax.inject.Inject
  **/
 
 class NetworkUserRepositoryImpl @Inject constructor(private val userDataSource: UserRemoteSource) : NetworkUserRepository {
-    override suspend fun loginWithKakao(kakaoAccessToken: String): Result<UserTokenModel> {
-        var response = ""
+    override suspend fun loginWithKakao(kakaoAccessToken: String): ServerResult<UserTokenModel> {
+        val response: UserTokenEntity
 
         return try {
             response = userDataSource.loginWithKakao(kakaoAccessToken)
 
-            Result.Success(Json.decodeFromString<UserTokenModel>(response))
+            ServerResult.Success(response.toUserTokenModel())
         } catch (e: Exception) {
-            try {
-                Result.Failure(Json.decodeFromString<ServerErrorModel>(response))
-            } catch (e: Exception) {
-                Result.Failure(null)
-            }
+            ServerResult.parseException(e)
         }
     }
 
-    override suspend fun getUserInfo(accessToken: String): Result<UserInfoModel> {
-        var response = ""
+    override suspend fun getUserInfo(): ServerResult<UserInfoModel> {
+        val response: UserInfoEntity
 
         return try {
-            response = userDataSource.getUserInfo(accessToken)
+            response = userDataSource.getUserInfo()
 
-            Result.Success(Json.decodeFromString<UserInfoModel>(response))
+            ServerResult.Success(response.toUserInfoModel())
         } catch (e: Exception) {
-            try {
-                Result.Failure(Json.decodeFromString<ServerErrorModel>(response))
-            } catch (e: Exception) {
-                Result.Failure(null)
-            }
+            ServerResult.parseException(e)
         }
     }
 }

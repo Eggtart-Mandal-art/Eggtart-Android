@@ -3,9 +3,9 @@ package com.teamegg.eggtart.features.home.mandalart
 import androidx.lifecycle.ViewModel
 import com.teamegg.eggtart.common.feature.types.StringResource
 import com.teamegg.eggtart.common.util.Logger
-import com.teamegg.eggtart.common.util.Result
-import com.teamegg.eggtart.domain.mandalart.model.ResCellModel
-import com.teamegg.eggtart.domain.mandalart.model.ResCellTodosModel
+import com.teamegg.eggtart.common.util.ServerResult
+import com.teamegg.eggtart.domain.mandalart.model.CellModel
+import com.teamegg.eggtart.domain.mandalart.model.CellTodosModel
 import com.teamegg.eggtart.domain.mandalart.usecases.cell.GetMandalartCellUseCase
 import com.teamegg.eggtart.domain.user.usecase.GetLocalUserTokenUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,9 +29,9 @@ class MandalartViewModel @Inject constructor(
 
     override val container = container<MandalartScreenState, MandalartSideEffect>(MandalartScreenState())
 
-    fun updateCellModel(cellModel: ResCellTodosModel) = intent {
+    fun updateCellModel(cellModel: CellTodosModel) = intent {
         val prevIndex = state.mandalartCellList.indexOfFirst { it.id == cellModel.id }
-        val newCellModel = ResCellModel(cellModel.step, cellModel.id, cellModel.color, cellModel.goal, cellModel.isCompleted)
+        val newCellModel = CellModel(cellModel.step, cellModel.id, cellModel.color, cellModel.goal, cellModel.isCompleted)
 
         if (state.mandalartCellList[prevIndex] != newCellModel) {
             if (cellModel.goal == null) {
@@ -43,7 +43,7 @@ class MandalartViewModel @Inject constructor(
             reduce {
                 state.copy(
                     mandalartCellList = state.mandalartCellList.toMutableList().apply {
-                        set(prevIndex, ResCellModel(cellModel.step, cellModel.id, cellModel.color, cellModel.goal, cellModel.isCompleted))
+                        set(prevIndex, CellModel(cellModel.step, cellModel.id, cellModel.color, cellModel.goal, cellModel.isCompleted))
                     }
                 )
             }
@@ -61,7 +61,6 @@ class MandalartViewModel @Inject constructor(
         Logger.d("accessToken: $accessToken")
 
         val mandalartCellsResult = getMandalartCellUseCase(
-            accessToken = accessToken ?: "",
             sheetId = sheetIds.first(),
             depth = depth,
             parentOrder = parentOrder
@@ -70,13 +69,13 @@ class MandalartViewModel @Inject constructor(
         Logger.d("manadalartCellsResult: $mandalartCellsResult")
 
         when (mandalartCellsResult) {
-            is Result.Success -> {
+            is ServerResult.Success -> {
                 reduce {
                     state.copy(mandalartLoading = false, mandalartCellList = mandalartCellsResult.data)
                 }
             }
 
-            is Result.Failure -> {
+            is ServerResult.Failure -> {
                 reduce {
                     state.copy(mandalartLoading = false, mandalartCellList = emptyList())
                 }
@@ -84,7 +83,7 @@ class MandalartViewModel @Inject constructor(
                 //TODO: 에러 로직 처리 필요
             }
 
-            is Result.Exception -> {
+            is ServerResult.Exception -> {
                 // TODO: 에러 로직 필요
             }
         }

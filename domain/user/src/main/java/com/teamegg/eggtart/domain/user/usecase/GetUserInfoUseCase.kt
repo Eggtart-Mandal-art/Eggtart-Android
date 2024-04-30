@@ -1,6 +1,6 @@
 package com.teamegg.eggtart.domain.user.usecase
 
-import com.teamegg.eggtart.common.util.Result
+import com.teamegg.eggtart.common.util.ServerResult
 import com.teamegg.eggtart.domain.user.model.UserInfoModel
 import com.teamegg.eggtart.domain.user.repository.NetworkUserRepository
 import javax.inject.Inject
@@ -10,5 +10,5 @@ import javax.inject.Inject
  */
 class GetUserInfoUseCase @Inject constructor(private val networkUserRepository: NetworkUserRepository) {
 
-    suspend operator fun invoke(accessToken: String): Result<UserInfoModel> = networkUserRepository.getUserInfo(accessToken)
+    suspend operator fun invoke(): ServerResult<UserInfoModel> = networkUserRepository.getUserInfo()
 }

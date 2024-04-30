@@ -2,7 +2,7 @@ package com.teamegg.eggtart.features.login
 
 import androidx.lifecycle.ViewModel
 import com.teamegg.eggtart.common.util.Logger
-import com.teamegg.eggtart.common.util.Result
+import com.teamegg.eggtart.common.util.ServerResult
 import com.teamegg.eggtart.domain.user.usecase.GetUserInfoUseCase
 import com.teamegg.eggtart.domain.user.usecase.LoginWithKakaoUseCase
 import com.teamegg.eggtart.domain.user.usecase.SetLocalUserInfoUseCase
@@ -38,17 +38,17 @@ class LoginViewModel @Inject constructor(
 
         val loginResponse = loginWithKakaoUseCase(accessToken)
 
-        if (loginResponse is Result.Success) {
-            val userInfoResponse = getUserInfoUseCase(loginResponse.data.accessToken)
+        if (loginResponse is ServerResult.Success) {
+            val userInfoResponse = getUserInfoUseCase()
 
-            if (userInfoResponse is Result.Success) {
+            if (userInfoResponse is ServerResult.Success) {
                 setLocalUserInfoUseCase(userInfoResponse.data)
                 setLocalUserTokenUseCase(loginResponse.data)
-            } else if (userInfoResponse is Result.Failure) {
+            } else if (userInfoResponse is ServerResult.Failure) {
                 // TODO: 추후 에러 처리 필요
                 Logger.d("failed result: ${userInfoResponse.error}")
             }
-        } else if (loginResponse is Result.Failure) {
+        } else if (loginResponse is ServerResult.Failure) {
             // TODO: 추후 에러 처리 필요
             Logger.d("failed result: ${loginResponse.error}")
         }

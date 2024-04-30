@@ -1,4 +1,4 @@
-package com.teamegg.eggtart.domain.mandalart.model
+package com.teamegg.eggtart.core.network.mandalart.entities
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -8,9 +8,11 @@ import kotlinx.serialization.Serializable
  **/
 
 @Serializable
-data class UpdateCellModel(
+data class ResCellEntity(
+    val step: Int,
+    val id: Long,
     val color: String? = null,
     val goal: String? = null,
-    val isCompleted: Boolean = false,
-    val todos: List<String> = listOf()
+    @SerialName("is_completed")
+    val isCompleted: Boolean = false
 )

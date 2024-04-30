@@ -42,6 +42,9 @@ dependencies {
     // Hilt
     implementation(libs.dagger.hilt.android)
 
+    // Ktor
+    implementation(libs.ktor.client.core)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)

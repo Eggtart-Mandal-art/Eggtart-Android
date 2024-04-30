@@ -1,8 +1,8 @@
 package com.teamegg.eggtart.domain.mandalart.repository
 
-import com.teamegg.eggtart.common.util.Result
-import com.teamegg.eggtart.domain.mandalart.model.ResCellModel
-import com.teamegg.eggtart.domain.mandalart.model.ResCellTodosModel
+import com.teamegg.eggtart.common.util.ServerResult
+import com.teamegg.eggtart.domain.mandalart.model.CellModel
+import com.teamegg.eggtart.domain.mandalart.model.CellTodosModel
 import com.teamegg.eggtart.domain.mandalart.model.UpdateCellModel
 
 /**
@@ -10,15 +10,15 @@ import com.teamegg.eggtart.domain.mandalart.model.UpdateCellModel
  **/
 
 interface MandalartRemoteRepository {
-    suspend fun getSheets(accessToken: String): Result<List<Long>>
+    suspend fun getSheets(): ServerResult<List<Long>>
 
-    suspend fun postCreateSheet(accessToken: String, sheetName: String = ""): Result<Long>
+    suspend fun postCreateSheet(sheetName: String = ""): ServerResult<Long>
 
-    suspend fun getCells(accessToken: String, sheetId: Long, depth: Int, parentOrder: Int = 0): Result<List<ResCellModel>>
+    suspend fun getCells(sheetId: Long, depth: Int, parentOrder: Int = 0): ServerResult<List<CellModel>>
 
-    suspend fun patchCell(accessToken: String, cellId: Long, body: UpdateCellModel): Result<ResCellTodosModel>
+    suspend fun patchCell(cellId: Long, body: UpdateCellModel): ServerResult<CellTodosModel>
 
-    suspend fun deleteCell(accessToken: String, cellId: Long): Result<ResCellTodosModel>
+    suspend fun deleteCell(cellId: Long): ServerResult<CellTodosModel>
 
-    suspend fun getCellDetail(accessToken: String, cellId: Long): Result<ResCellTodosModel>
+    suspend fun getCellDetail(cellId: Long): ServerResult<CellTodosModel>
 }

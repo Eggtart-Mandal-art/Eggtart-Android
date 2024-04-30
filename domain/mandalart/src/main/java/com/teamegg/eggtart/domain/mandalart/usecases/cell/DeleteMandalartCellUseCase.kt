@@ -9,5 +9,5 @@ import javax.inject.Inject
 
 class DeleteMandalartCellUseCase @Inject constructor(private val mandalartRemoteRepository: MandalartRemoteRepository) {
 
-    suspend operator fun invoke(accessToken: String, cellId: Long) = mandalartRemoteRepository.deleteCell(accessToken = accessToken, cellId = cellId)
+    suspend operator fun invoke(cellId: Long) = mandalartRemoteRepository.deleteCell(cellId = cellId)
 }

@@ -5,8 +5,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.teamegg.eggtart.common.feature.routes.root.RootRoutes
 import com.teamegg.eggtart.common.util.Logger
-import com.teamegg.eggtart.domain.mandalart.model.ResCellModel
-import com.teamegg.eggtart.domain.mandalart.model.ResCellTodosModel
+import com.teamegg.eggtart.domain.mandalart.model.CellModel
+import com.teamegg.eggtart.domain.mandalart.model.CellTodosModel
 import com.teamegg.eggtart.features.home.HomeScreen
 import kotlinx.serialization.json.Json
 
@@ -15,7 +15,7 @@ import kotlinx.serialization.json.Json
  **/
 
 fun NavGraphBuilder.homeScreen(
-    navigateWriteGoal: (ResCellModel) -> Unit
+    navigateWriteGoal: (CellModel) -> Unit
 ) {
     composable(
         route = RootRoutes.HOME, listOf(navArgument("sheetIds") {
@@ -27,7 +27,7 @@ fun NavGraphBuilder.homeScreen(
     ) { backStackEntry ->
         val sheetIds = backStackEntry.arguments?.getString("sheetIds")?.split(",")?.mapNotNull { it.toLongOrNull() } ?: listOf()
         val cellModel = backStackEntry.arguments?.getString("cellModel")?.let {
-            Json.decodeFromString<ResCellTodosModel>(it)
+            Json.decodeFromString<CellTodosModel>(it)
         }
 
         Logger.d("homescreen cellModel: $cellModel")

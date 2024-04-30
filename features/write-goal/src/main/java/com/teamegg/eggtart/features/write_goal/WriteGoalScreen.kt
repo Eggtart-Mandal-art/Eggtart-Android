@@ -61,8 +61,8 @@ import com.teamegg.eggtart.common.feature.types.DrawableResource
 import com.teamegg.eggtart.common.feature.types.StringResource
 import com.teamegg.eggtart.common.feature.util.Constants.GOAL_COLORS
 import com.teamegg.eggtart.common.util.Logger
-import com.teamegg.eggtart.domain.mandalart.model.ResCellModel
-import com.teamegg.eggtart.domain.mandalart.model.ResCellTodosModel
+import com.teamegg.eggtart.domain.mandalart.model.CellModel
+import com.teamegg.eggtart.domain.mandalart.model.CellTodosModel
 import com.teamegg.eggtart.features.write_goal.components.SelectColorBottomSheet
 import com.teamegg.eggtart.features.write_goal.components.WriteGoalAppBar
 import org.orbitmvi.orbit.compose.collectAsState
@@ -74,7 +74,7 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun WriteGoalScreen(navigateHome: (ResCellTodosModel?) -> Unit, cellModel: ResCellModel, viewModel: WriteGoalViewModel = hiltViewModel()) {
+fun WriteGoalScreen(navigateHome: (CellTodosModel?) -> Unit, cellModel: CellModel, viewModel: WriteGoalViewModel = hiltViewModel()) {
     val viewModelState = viewModel.collectAsState().value
     val focusManager = LocalFocusManager.current
     val todoFocusRequesters = remember { mutableStateMapOf<Int, FocusRequester>() }
@@ -322,7 +322,7 @@ fun WriteGoalScreen(navigateHome: (ResCellTodosModel?) -> Unit, cellModel: ResCe
     }
 }
 
-private fun checkChanged(cellModel: ResCellModel, origTodo: List<String>, goalColor: Color?, goalString: String, todoList: List<String>): Boolean {
+private fun checkChanged(cellModel: CellModel, origTodo: List<String>, goalColor: Color?, goalString: String, todoList: List<String>): Boolean {
     val isNull = goalString.isNotEmpty() && goalColor != null
     val goalChanged = cellModel.goal != goalString
     val colorChanged = goalColor != cellModel.color?.let { Color(android.graphics.Color.parseColor("#${cellModel.color}")) }
@@ -335,6 +335,6 @@ private fun checkChanged(cellModel: ResCellModel, origTodo: List<String>, goalCo
 @Composable
 private fun PreviewWriteGoalScreen() {
     com.teamegg.eggtart.common.feature.theme.EggtartTheme {
-        WriteGoalScreen(cellModel = ResCellModel(0, 0), navigateHome = {})
+        WriteGoalScreen(cellModel = CellModel(0, 0), navigateHome = {})
     }
 }

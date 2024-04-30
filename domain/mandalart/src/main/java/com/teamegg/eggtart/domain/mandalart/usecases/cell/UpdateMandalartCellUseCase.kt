@@ -10,6 +10,6 @@ import javax.inject.Inject
 
 class UpdateMandalartCellUseCase @Inject constructor(private val mandalartRemoteRepository: MandalartRemoteRepository) {
 
-    suspend operator fun invoke(accessToken: String, cellId: Long, updateCellModel: UpdateCellModel) =
-        mandalartRemoteRepository.patchCell(accessToken = accessToken, cellId = cellId, body = updateCellModel)
+    suspend operator fun invoke(cellId: Long, updateCellModel: UpdateCellModel) =
+        mandalartRemoteRepository.patchCell(cellId = cellId, body = updateCellModel)
 }
