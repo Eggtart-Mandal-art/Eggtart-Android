@@ -1,5 +1,6 @@
 package com.teamegg.eggtart.features.write_goal
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -22,6 +23,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -39,6 +41,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -46,10 +49,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.teamegg.eggtart.common.feature.components.DialogData
 import com.teamegg.eggtart.common.feature.components.EggtartButton
 import com.teamegg.eggtart.common.feature.components.EggtartButtonSize
 import com.teamegg.eggtart.common.feature.components.EggtartButtonStyle
 import com.teamegg.eggtart.common.feature.components.EggtartIconButton
+import com.teamegg.eggtart.common.feature.components.EggtartPopup
 import com.teamegg.eggtart.common.feature.components.EggtartSelectionBox
 import com.teamegg.eggtart.common.feature.components.EggtartTextField
 import com.teamegg.eggtart.common.feature.types.DrawableResource
@@ -73,6 +78,8 @@ fun WriteGoalScreen(navigateHome: (ResCellTodosModel?) -> Unit, cellModel: ResCe
     val viewModelState = viewModel.collectAsState().value
     val focusManager = LocalFocusManager.current
     val todoFocusRequesters = remember { mutableStateMapOf<Int, FocusRequester>() }
+    val isChanged = checkChanged(cellModel, viewModelState.origTodos, viewModelState.goalColor?.color, viewModelState.goalString, viewModelState.todoList)
+    val context = LocalContext.current
 
     viewModel.intentSetImeBottom(WindowInsets.imeAnimationTarget.getBottom(LocalDensity.current))
 
@@ -86,9 +93,25 @@ fun WriteGoalScreen(navigateHome: (ResCellTodosModel?) -> Unit, cellModel: ResCe
         }
     }
 
+    BackHandler(true) {
+        if (isChanged) {
+            viewModel.postUnSaveFinish()
+        } else {
+            navigateHome(null)
+        }
+    }
+
     Scaffold(
         topBar = {
-            WriteGoalAppBar(navigateHome = navigateHome, cellModel = cellModel)
+            WriteGoalAppBar(onBackClicked = {
+                if (isChanged) {
+                    viewModel.postUnSaveFinish()
+                } else {
+                    navigateHome(null)
+                }
+            }, onDeleteClicked = {
+                viewModel.postDeleteCell()
+            }, cellModel = cellModel)
         }
     ) { paddingValues ->
         Box(modifier = Modifier
@@ -126,7 +149,7 @@ fun WriteGoalScreen(navigateHome: (ResCellTodosModel?) -> Unit, cellModel: ResCe
                                 },
                                 placeHolder = stringResource(id = StringResource.enter_goal_hint),
                                 value = viewModelState.goalString,
-                                onValueChanged = { viewModel.intentSetGoalString(it) }
+                                onValueChanged = { if (it.length <= 28) viewModel.intentSetGoalString(it) }
                             )
 
                             Spacer(modifier = Modifier.height(16.dp))
@@ -222,17 +245,23 @@ fun WriteGoalScreen(navigateHome: (ResCellTodosModel?) -> Unit, cellModel: ResCe
                     buttonSize = EggtartButtonSize.LARGE,
                     buttonStyle = EggtartButtonStyle.PRIMARY,
                     contentString = stringResource(id = StringResource.com_save),
-                    enabled = (viewModelState.goalColor != null && viewModelState.goalString.isNotEmpty())
-                            && ((viewModelState.goalColor.color != cellModel.color?.let { Color(android.graphics.Color.parseColor("#${cellModel.color}")) } || viewModelState.goalString != cellModel.goal) || (viewModelState.origTodos == viewModelState.todoList.filter { it.isNotEmpty() })),
+                    enabled = isChanged,
                     onClick = {
                         viewModel.intentUpdateCell(cellModel)
                     }
                 )
             }
+
+            if (viewModelState.getTodosLoading || viewModelState.updateCellLoading) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            }
         }
 
         if (viewModelState.isShowBottomSheet)
             SelectColorBottomSheet()
+
+        if (viewModelState.dialogData != null)
+            EggtartPopup(dialogData = viewModelState.dialogData)
     }
 
     viewModel.collectSideEffect {
@@ -247,8 +276,59 @@ fun WriteGoalScreen(navigateHome: (ResCellTodosModel?) -> Unit, cellModel: ResCe
             is WriteGoalSideEffect.FinishResult -> {
                 navigateHome(it.cellTodosModel)
             }
+
+            is WriteGoalSideEffect.PopupDialog -> {
+                when (it.dialogTypes) {
+                    is DialogTypes.DeleteCell -> @Composable {
+                        viewModel.intentSetDialogData(
+                            dialogData = DialogData(
+                                title = context.getString(StringResource.popup_delete_title),
+                                content = context.getString(StringResource.popup_delete_content),
+                                confirm = context.getString(StringResource.com_yes),
+                                dismiss = context.getString(StringResource.com_no),
+                                onDismiss = {
+                                    viewModel.intentSetDialogData(null)
+                                },
+                                onConfirm = {
+                                    viewModel.intentDeleteCell(cellModel)
+                                }
+                            )
+                        )
+                    }
+
+                    is DialogTypes.UnSaveFinish -> {
+                        viewModel.intentSetDialogData(
+                            dialogData = DialogData(
+                                title = context.getString(StringResource.popup_finish_without_save_title),
+                                content = context.getString(StringResource.popup_finish_without_save_content),
+                                confirm = context.getString(StringResource.com_yes),
+                                dismiss = context.getString(StringResource.com_no),
+                                onDismiss = {
+                                    viewModel.intentSetDialogData(null)
+                                },
+                                onConfirm = {
+                                    navigateHome(null)
+                                }
+                            )
+                        )
+                    }
+
+                    is DialogTypes.ServerError -> {
+
+                    }
+                }
+            }
         }
     }
+}
+
+private fun checkChanged(cellModel: ResCellModel, origTodo: List<String>, goalColor: Color?, goalString: String, todoList: List<String>): Boolean {
+    val isNull = goalString.isNotEmpty() && goalColor != null
+    val goalChanged = cellModel.goal != goalString
+    val colorChanged = goalColor != cellModel.color?.let { Color(android.graphics.Color.parseColor("#${cellModel.color}")) }
+    val todoChanged = todoList.filter { it.isNotEmpty() } != origTodo
+
+    return isNull && (goalChanged || colorChanged || todoChanged)
 }
 
 @Preview(showBackground = true, showSystemUi = true)

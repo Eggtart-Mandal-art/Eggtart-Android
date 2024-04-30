@@ -4,6 +4,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.teamegg.eggtart.common.feature.routes.root.RootRoutes
+import com.teamegg.eggtart.common.util.Logger
 import com.teamegg.eggtart.domain.mandalart.model.ResCellModel
 import com.teamegg.eggtart.domain.mandalart.model.ResCellTodosModel
 import com.teamegg.eggtart.features.home.HomeScreen
@@ -28,6 +29,8 @@ fun NavGraphBuilder.homeScreen(
         val cellModel = backStackEntry.arguments?.getString("cellModel")?.let {
             Json.decodeFromString<ResCellTodosModel>(it)
         }
+
+        Logger.d("homescreen cellModel: $cellModel")
         HomeScreen(navigateWriteGoal, cellModel = cellModel, sheetIds = sheetIds)
     }
 }

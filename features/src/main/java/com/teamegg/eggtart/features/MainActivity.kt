@@ -131,6 +131,7 @@ class MainActivity : ComponentActivity() {
                         }
 
                         is MainSideEffect.NavigateHome -> {
+                            Logger.d("navigateHome cell: ${it.cellModel}")
                             navController.navigate(
                                 RootRoutes.HOME
                                     .replace("{sheetIds}", it.sheetsIds.joinToString(","))

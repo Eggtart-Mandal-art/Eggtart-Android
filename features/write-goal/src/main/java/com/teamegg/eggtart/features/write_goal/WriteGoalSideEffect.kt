@@ -12,4 +12,6 @@ sealed class WriteGoalSideEffect {
     data object RequestFocus : WriteGoalSideEffect()
 
     data class FinishResult(val cellTodosModel: ResCellTodosModel? = null) : WriteGoalSideEffect()
+
+    data class PopupDialog(val dialogTypes: DialogTypes) : WriteGoalSideEffect()
 }

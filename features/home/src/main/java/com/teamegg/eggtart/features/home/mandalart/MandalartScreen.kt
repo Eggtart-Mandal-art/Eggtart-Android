@@ -57,7 +57,7 @@ fun MandalartScreen(
             MandalartAppBar()
         },
         snackbarHost = {
-            EggtartSnackbar(hostState = snackBarHostState)
+            EggtartSnackbar(modifier = Modifier.padding(bottom = 24.dp), hostState = snackBarHostState)
         }
     ) { paddingValues ->
         Box(

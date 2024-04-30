@@ -31,16 +31,23 @@ class MandalartViewModel @Inject constructor(
 
     fun updateCellModel(cellModel: ResCellTodosModel) = intent {
         val prevIndex = state.mandalartCellList.indexOfFirst { it.id == cellModel.id }
+        val newCellModel = ResCellModel(cellModel.step, cellModel.id, cellModel.color, cellModel.goal, cellModel.isCompleted)
 
-        reduce {
-            state.copy(
-                mandalartCellList = state.mandalartCellList.toMutableList().apply {
-                    set(prevIndex, ResCellModel(cellModel.step, cellModel.id, cellModel.color, cellModel.goal, cellModel.isCompleted))
-                }
-            )
+        if (state.mandalartCellList[prevIndex] != newCellModel) {
+            if (cellModel.goal == null) {
+                postSideEffect(MandalartSideEffect.SnackBarRes(StringResource.toast_goal_deleted))
+            } else {
+                postSideEffect(MandalartSideEffect.SnackBarRes(StringResource.toast_goal_saved))
+            }
+
+            reduce {
+                state.copy(
+                    mandalartCellList = state.mandalartCellList.toMutableList().apply {
+                        set(prevIndex, ResCellModel(cellModel.step, cellModel.id, cellModel.color, cellModel.goal, cellModel.isCompleted))
+                    }
+                )
+            }
         }
-
-        postSideEffect(MandalartSideEffect.SnackBarRes(StringResource.message_saved))
     }
 
     fun getMandalartCells(sheetIds: List<Long>, depth: Int = 1, parentOrder: Int = 0) = intent {

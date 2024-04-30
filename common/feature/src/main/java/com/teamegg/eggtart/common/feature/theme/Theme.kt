@@ -15,7 +15,9 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.unit.Density
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
@@ -93,7 +95,10 @@ fun EggtartTheme(
         colorScheme = colorScheme,
         typography = Typography,
         content = {
-            CompositionLocalProvider(value = LocalRippleTheme provides rippleTheme, content = content)
+            CompositionLocalProvider(
+                values = arrayOf(LocalRippleTheme provides rippleTheme, LocalDensity provides Density(LocalDensity.current.density, 1f)),
+                content = content
+            )
         }
     )
 }
