@@ -91,7 +91,7 @@ fun EggtartPopup(
                             if (dialogData.dismiss != null) {
                                 EggtartButton(
                                     modifier = Modifier.weight(1f),
-                                    contentString = dialogData.dismiss!!,
+                                    contentString = dialogData.dismiss,
                                     buttonSize = EggtartButtonSize.MEDIUM,
                                     buttonStyle = EggtartButtonStyle.TERTIARY,
                                     onClick = dialogData.onDismiss
@@ -144,7 +144,7 @@ private fun EggtartPopupPreview() {
             EggtartPopup(
                 dialogData = DialogData(
                     title = "삭제하기",
-                    content = "작성ㅎ나 목표를 삭제하시겠습니까?",
+                    content = "작성한 목표를 삭제하시겠습니까?",
                     confirm = "예",
                     dismiss = "아니오",
                     onDismiss = {},

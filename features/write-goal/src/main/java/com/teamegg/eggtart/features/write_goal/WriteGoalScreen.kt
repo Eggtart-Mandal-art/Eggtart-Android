@@ -1,5 +1,6 @@
 package com.teamegg.eggtart.features.write_goal
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -22,6 +23,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -39,6 +41,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -76,6 +79,7 @@ fun WriteGoalScreen(navigateHome: (ResCellTodosModel?) -> Unit, cellModel: ResCe
     val focusManager = LocalFocusManager.current
     val todoFocusRequesters = remember { mutableStateMapOf<Int, FocusRequester>() }
     val isChanged = checkChanged(cellModel, viewModelState.origTodos, viewModelState.goalColor?.color, viewModelState.goalString, viewModelState.todoList)
+    val context = LocalContext.current
 
     viewModel.intentSetImeBottom(WindowInsets.imeAnimationTarget.getBottom(LocalDensity.current))
 
@@ -86,6 +90,14 @@ fun WriteGoalScreen(navigateHome: (ResCellTodosModel?) -> Unit, cellModel: ResCe
             viewModel.intentSetGoalColorModel(GOAL_COLORS.firstOrNull {
                 it.color == Color(android.graphics.Color.parseColor("#${cellModel.color}"))
             })
+        }
+    }
+
+    BackHandler(true) {
+        if (isChanged) {
+            viewModel.postUnSaveFinish()
+        } else {
+            navigateHome(null)
         }
     }
 
@@ -137,7 +149,7 @@ fun WriteGoalScreen(navigateHome: (ResCellTodosModel?) -> Unit, cellModel: ResCe
                                 },
                                 placeHolder = stringResource(id = StringResource.enter_goal_hint),
                                 value = viewModelState.goalString,
-                                onValueChanged = { viewModel.intentSetGoalString(it) }
+                                onValueChanged = { if (it.length <= 28) viewModel.intentSetGoalString(it) }
                             )
 
                             Spacer(modifier = Modifier.height(16.dp))
@@ -239,6 +251,10 @@ fun WriteGoalScreen(navigateHome: (ResCellTodosModel?) -> Unit, cellModel: ResCe
                     }
                 )
             }
+
+            if (viewModelState.getTodosLoading || viewModelState.updateCellLoading) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            }
         }
 
         if (viewModelState.isShowBottomSheet)
@@ -263,13 +279,13 @@ fun WriteGoalScreen(navigateHome: (ResCellTodosModel?) -> Unit, cellModel: ResCe
 
             is WriteGoalSideEffect.PopupDialog -> {
                 when (it.dialogTypes) {
-                    is DialogTypes.DeleteCell -> {
+                    is DialogTypes.DeleteCell -> @Composable {
                         viewModel.intentSetDialogData(
                             dialogData = DialogData(
-                                title = "",
-                                content = "",
-                                confirm = "",
-                                dismiss = "",
+                                title = context.getString(StringResource.popup_delete_title),
+                                content = context.getString(StringResource.popup_delete_content),
+                                confirm = context.getString(StringResource.com_yes),
+                                dismiss = context.getString(StringResource.com_no),
                                 onDismiss = {
                                     viewModel.intentSetDialogData(null)
                                 },
@@ -283,10 +299,10 @@ fun WriteGoalScreen(navigateHome: (ResCellTodosModel?) -> Unit, cellModel: ResCe
                     is DialogTypes.UnSaveFinish -> {
                         viewModel.intentSetDialogData(
                             dialogData = DialogData(
-                                title = "",
-                                content = "",
-                                confirm = "",
-                                dismiss = "",
+                                title = context.getString(StringResource.popup_finish_without_save_title),
+                                content = context.getString(StringResource.popup_finish_without_save_content),
+                                confirm = context.getString(StringResource.com_yes),
+                                dismiss = context.getString(StringResource.com_no),
                                 onDismiss = {
                                     viewModel.intentSetDialogData(null)
                                 },
