@@ -10,5 +10,5 @@ import javax.inject.Inject
  */
 class GetUserInfoUseCase @Inject constructor(private val networkUserRepository: NetworkUserRepository) {
 
-    suspend operator fun invoke(): ServerResult<UserInfoModel> = networkUserRepository.getUserInfo()
+    suspend operator fun invoke(accessToken: String = ""): ServerResult<UserInfoModel> = networkUserRepository.getUserInfo(accessToken)
 }

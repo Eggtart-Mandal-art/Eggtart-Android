@@ -10,5 +10,5 @@ import com.teamegg.eggtart.domain.user.model.UserTokenModel
 interface NetworkUserRepository {
     suspend fun loginWithKakao(kakaoAccessToken: String): ServerResult<UserTokenModel>
 
-    suspend fun getUserInfo(): ServerResult<UserInfoModel>
+    suspend fun getUserInfo(accessToken: String): ServerResult<UserInfoModel>
 }

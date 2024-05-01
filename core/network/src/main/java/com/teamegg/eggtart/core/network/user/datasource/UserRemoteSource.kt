@@ -10,5 +10,5 @@ interface
 UserRemoteSource {
     suspend fun loginWithKakao(kakaoAccessToken: String): UserTokenEntity
 
-    suspend fun getUserInfo(): UserInfoEntity
+    suspend fun getUserInfo(accessToken: String): UserInfoEntity
 }

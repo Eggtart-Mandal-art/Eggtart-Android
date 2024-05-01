@@ -28,11 +28,11 @@ class NetworkUserRepositoryImpl @Inject constructor(private val userDataSource: 
         }
     }
 
-    override suspend fun getUserInfo(): ServerResult<UserInfoModel> {
+    override suspend fun getUserInfo(accessToken: String): ServerResult<UserInfoModel> {
         val response: UserInfoEntity
 
         return try {
-            response = userDataSource.getUserInfo()
+            response = userDataSource.getUserInfo(accessToken)
 
             ServerResult.Success(response.toUserInfoModel())
         } catch (e: Exception) {

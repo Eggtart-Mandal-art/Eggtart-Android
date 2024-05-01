@@ -39,7 +39,7 @@ class LoginViewModel @Inject constructor(
         val loginResponse = loginWithKakaoUseCase(accessToken)
 
         if (loginResponse is ServerResult.Success) {
-            val userInfoResponse = getUserInfoUseCase()
+            val userInfoResponse = getUserInfoUseCase(loginResponse.data.accessToken)
 
             if (userInfoResponse is ServerResult.Success) {
                 setLocalUserInfoUseCase(userInfoResponse.data)
