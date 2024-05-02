@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imeAnimationTarget
@@ -48,6 +49,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.teamegg.eggtart.common.feature.components.DialogData
 import com.teamegg.eggtart.common.feature.components.EggtartButton
@@ -56,7 +58,9 @@ import com.teamegg.eggtart.common.feature.components.EggtartButtonStyle
 import com.teamegg.eggtart.common.feature.components.EggtartIconButton
 import com.teamegg.eggtart.common.feature.components.EggtartPopup
 import com.teamegg.eggtart.common.feature.components.EggtartSelectionBox
+import com.teamegg.eggtart.common.feature.components.EggtartServerErrorPopup
 import com.teamegg.eggtart.common.feature.components.EggtartTextField
+import com.teamegg.eggtart.common.feature.components.ServerErrorDialogData
 import com.teamegg.eggtart.common.feature.types.DrawableResource
 import com.teamegg.eggtart.common.feature.types.StringResource
 import com.teamegg.eggtart.common.feature.util.Constants.GOAL_COLORS
@@ -253,7 +257,11 @@ fun WriteGoalScreen(navigateHome: (CellTodosModel?) -> Unit, cellModel: CellMode
             }
 
             if (viewModelState.getTodosLoading || viewModelState.updateCellLoading) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                Dialog(onDismissRequest = { }) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    }
+                }
             }
         }
 
@@ -262,6 +270,10 @@ fun WriteGoalScreen(navigateHome: (CellTodosModel?) -> Unit, cellModel: CellMode
 
         if (viewModelState.dialogData != null)
             EggtartPopup(dialogData = viewModelState.dialogData)
+
+        if (viewModelState.serverErrorDialogData != null) {
+            EggtartServerErrorPopup(serverErrorDialogData = viewModelState.serverErrorDialogData)
+        }
     }
 
     viewModel.collectSideEffect {
@@ -278,10 +290,10 @@ fun WriteGoalScreen(navigateHome: (CellTodosModel?) -> Unit, cellModel: CellMode
             }
 
             is WriteGoalSideEffect.PopupDialog -> {
-                when (it.dialogTypes) {
-                    is DialogTypes.DeleteCell -> @Composable {
-                        viewModel.intentSetDialogData(
-                            dialogData = DialogData(
+                viewModel.intentSetDialogData(
+                    when (it.popupType) {
+                        PopupType.DELETE_CELL -> {
+                            DialogData(
                                 title = context.getString(StringResource.popup_delete_title),
                                 content = context.getString(StringResource.popup_delete_content),
                                 confirm = context.getString(StringResource.com_yes),
@@ -293,12 +305,10 @@ fun WriteGoalScreen(navigateHome: (CellTodosModel?) -> Unit, cellModel: CellMode
                                     viewModel.intentDeleteCell(cellModel)
                                 }
                             )
-                        )
-                    }
+                        }
 
-                    is DialogTypes.UnSaveFinish -> {
-                        viewModel.intentSetDialogData(
-                            dialogData = DialogData(
+                        PopupType.WITHOUT_SAVE_FINISH -> {
+                            DialogData(
                                 title = context.getString(StringResource.popup_finish_without_save_title),
                                 content = context.getString(StringResource.popup_finish_without_save_content),
                                 confirm = context.getString(StringResource.com_yes),
@@ -310,13 +320,28 @@ fun WriteGoalScreen(navigateHome: (CellTodosModel?) -> Unit, cellModel: CellMode
                                     navigateHome(null)
                                 }
                             )
-                        )
+                        }
                     }
+                )
+            }
 
-                    is DialogTypes.ServerError -> {
-
-                    }
-                }
+            is WriteGoalSideEffect.ServerErrorPopup -> {
+                viewModel.intentSetServerErrorData(
+                    ServerErrorDialogData(
+                        serverResult = it.serverResult,
+                        onConfirm = {
+                            if (it.type == ServerCallType.GET_CELL_DETAIL) {
+                                navigateHome(null)
+                            }
+                        },
+                        onDismiss = {
+                            viewModel.intentSetServerErrorData(null)
+                        },
+                        onClearLoginData = {
+                            viewModel.intentClearLoginData()
+                        }
+                    )
+                )
             }
         }
     }

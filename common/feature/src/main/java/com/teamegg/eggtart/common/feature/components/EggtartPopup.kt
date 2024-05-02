@@ -124,14 +124,13 @@ fun EggtartPopup(
 }
 
 data class DialogData(
-    val title: String?,
+    val title: String? = null,
     val content: String,
     val confirm: String,
-    val dismiss: String?,
+    val dismiss: String? = null,
     val onDismiss: () -> Unit,
     val onConfirm: () -> Unit
 )
-
 
 @Composable
 @Preview(

@@ -6,8 +6,10 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.systemBars
@@ -25,6 +27,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.teamegg.eggtart.common.feature.components.EggtartServerErrorPopup
+import com.teamegg.eggtart.common.feature.components.ServerErrorDialogData
 import com.teamegg.eggtart.common.feature.routes.root.RootRoutes
 import com.teamegg.eggtart.common.feature.theme.EggtartTheme
 import com.teamegg.eggtart.common.util.Logger
@@ -35,6 +39,7 @@ import com.teamegg.eggtart.features.write_goal.navigation.writeGoalScreen
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 import javax.inject.Inject
 
@@ -68,6 +73,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             EggtartTheme {
+                val viewModelState = viewModel.collectAsState().value
                 val navController = rememberNavController()
                 val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
@@ -100,24 +106,30 @@ class MainActivity : ComponentActivity() {
                 ) {
                     NavHost(navController = navController, startDestination = RootRoutes.SPLASH, route = RootRoutes.ROOT) {
                         composable(RootRoutes.SPLASH) {
+                            Box(modifier = Modifier.fillMaxSize())
+
                             LaunchedEffect(Unit) {
                                 viewModel.intentGetLocalUserToken()
                             }
                         }
                         homeScreen(
-                            navigateWriteGoal = viewModel::navigateWriteGoal
+                            navigateWriteGoal = viewModel::intentNavigateWriteGoal
                         )
-                        writeGoalScreen(navigateHome = viewModel::navigateHome)
+                        writeGoalScreen(navigateHome = viewModel::intentNavigateHome)
                         loginScreen(
                             startKakaoLogin = viewModel::intentKakaoLogin,
                         )
                     }
                 }
 
-                viewModel.collectSideEffect {
-                    when (it) {
+                if (viewModelState.serverErrorDialogData != null) {
+                    EggtartServerErrorPopup(serverErrorDialogData = viewModelState.serverErrorDialogData)
+                }
+
+                viewModel.collectSideEffect { sideEffect ->
+                    when (sideEffect) {
                         is MainSideEffect.NavigateLoginWithKakaoResult -> {
-                            navController.navigate(RootRoutes.LOGIN.replace("{kakaoAccessToken}", it.kakaoAccessToken.getOrNull() ?: "{kakaoAccessToken}")) {
+                            navController.navigate(RootRoutes.LOGIN.replace("{kakaoAccessToken}", sideEffect.kakaoAccessToken.getOrNull() ?: "{kakaoAccessToken}")) {
                                 launchSingleTop = true
                             }
                         }
@@ -131,11 +143,11 @@ class MainActivity : ComponentActivity() {
                         }
 
                         is MainSideEffect.NavigateHome -> {
-                            Logger.d("navigateHome cell: ${it.cellModel}")
+                            Logger.d("navigateHome cell: ${sideEffect.cellModel}")
                             navController.navigate(
                                 RootRoutes.HOME
-                                    .replace("{sheetIds}", it.sheetsIds.joinToString(","))
-                                    .replace("{cellModel}", Json.encodeToString(it.cellModel))
+                                    .replace("{sheetIds}", sideEffect.sheetsIds.joinToString(","))
+                                    .replace("{cellModel}", Json.encodeToString(sideEffect.cellModel))
                             ) {
                                 launchSingleTop = true
 
@@ -146,7 +158,28 @@ class MainActivity : ComponentActivity() {
                         }
 
                         is MainSideEffect.NavigateWriteGoal -> {
-                            navController.navigate(RootRoutes.WRITE_GOAL.replace("{cellModel}", Json.encodeToString(it.cellModel)))
+                            navController.navigate(RootRoutes.WRITE_GOAL.replace("{cellModel}", Json.encodeToString(sideEffect.cellModel)))
+                        }
+
+                        is MainSideEffect.ServerErrorPopup -> {
+                            when (sideEffect.type) {
+                                ServerCallType.GET_MANDALART_SHEET, ServerCallType.CREATE_MANDALART_SHEET -> {
+                                    viewModel.intentSetServerErrorData(
+                                        ServerErrorDialogData(
+                                            serverResult = sideEffect.serverResult,
+                                            onConfirm = {
+                                                finish()
+                                            },
+                                            onDismiss = {
+                                                viewModel.intentSetServerErrorData(null)
+                                            },
+                                            onClearLoginData = {
+                                                viewModel.intentClearLoginData()
+                                            }
+                                        )
+                                    )
+                                }
+                            }
                         }
                     }
                 }

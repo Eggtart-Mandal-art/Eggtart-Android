@@ -1,15 +1,15 @@
 package com.teamegg.eggtart.features.home.mandalart
 
 import androidx.lifecycle.ViewModel
+import com.teamegg.eggtart.common.feature.components.ServerErrorDialogData
 import com.teamegg.eggtart.common.feature.types.StringResource
 import com.teamegg.eggtart.common.util.Logger
 import com.teamegg.eggtart.common.util.ServerResult
 import com.teamegg.eggtart.domain.mandalart.model.CellModel
 import com.teamegg.eggtart.domain.mandalart.model.CellTodosModel
 import com.teamegg.eggtart.domain.mandalart.usecases.cell.GetMandalartCellUseCase
-import com.teamegg.eggtart.domain.user.usecase.GetLocalUserTokenUseCase
+import com.teamegg.eggtart.domain.user.usecase.SetLocalUserTokenUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.firstOrNull
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
@@ -24,12 +24,22 @@ import javax.inject.Inject
 @HiltViewModel
 class MandalartViewModel @Inject constructor(
     private val getMandalartCellUseCase: GetMandalartCellUseCase,
-    private val getLocalUserTokenUseCase: GetLocalUserTokenUseCase,
+    private val setLocalUserTokenUseCase: SetLocalUserTokenUseCase,
 ) : ContainerHost<MandalartScreenState, MandalartSideEffect>, ViewModel() {
 
     override val container = container<MandalartScreenState, MandalartSideEffect>(MandalartScreenState())
 
-    fun updateCellModel(cellModel: CellTodosModel) = intent {
+    fun intentClearLoginData() = intent {
+        setLocalUserTokenUseCase(null)
+    }
+
+    fun intentSetServerErrorData(serverErrorDialogData: ServerErrorDialogData?) = intent {
+        reduce {
+            state.copy(serverErrorDialogData = serverErrorDialogData)
+        }
+    }
+
+    fun intentUpdateCellModel(cellModel: CellTodosModel) = intent {
         val prevIndex = state.mandalartCellList.indexOfFirst { it.id == cellModel.id }
         val newCellModel = CellModel(cellModel.step, cellModel.id, cellModel.color, cellModel.goal, cellModel.isCompleted)
 
@@ -50,15 +60,11 @@ class MandalartViewModel @Inject constructor(
         }
     }
 
-    fun getMandalartCells(sheetIds: List<Long>, depth: Int = 1, parentOrder: Int = 0) = intent {
+    fun intentGetMandalartCells(sheetIds: List<Long>, depth: Int = 1, parentOrder: Int = 0) = intent {
         Logger.d("getMandalartCells Call")
         reduce {
             state.copy(mandalartLoading = true, sheetIds = sheetIds)
         }
-
-        val accessToken = getLocalUserTokenUseCase().firstOrNull()?.accessToken
-
-        Logger.d("accessToken: $accessToken")
 
         val mandalartCellsResult = getMandalartCellUseCase(
             sheetId = sheetIds.first(),
@@ -75,16 +81,11 @@ class MandalartViewModel @Inject constructor(
                 }
             }
 
-            is ServerResult.Failure -> {
+            else -> {
+                postSideEffect(MandalartSideEffect.ServerErrorPopup(ServerCallType.GET_CELL_DATA, mandalartCellsResult))
                 reduce {
-                    state.copy(mandalartLoading = false, mandalartCellList = emptyList())
+                    state.copy(mandalartLoading = false)
                 }
-
-                //TODO: 에러 로직 처리 필요
-            }
-
-            is ServerResult.Exception -> {
-                // TODO: 에러 로직 필요
             }
         }
     }

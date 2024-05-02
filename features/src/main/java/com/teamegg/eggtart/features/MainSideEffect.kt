@@ -1,5 +1,6 @@
 package com.teamegg.eggtart.features
 
+import com.teamegg.eggtart.common.util.ServerResult
 import com.teamegg.eggtart.domain.mandalart.model.CellModel
 import com.teamegg.eggtart.domain.mandalart.model.CellTodosModel
 
@@ -14,4 +15,11 @@ sealed class MainSideEffect {
     data class NavigateHome(val sheetsIds: List<Long>, val cellModel: CellTodosModel? = null) : MainSideEffect()
 
     data class NavigateWriteGoal(val cellModel: CellModel) : MainSideEffect()
+
+    data class ServerErrorPopup(val type: ServerCallType, val serverResult: ServerResult<*>): MainSideEffect()
+}
+
+enum class ServerCallType {
+    CREATE_MANDALART_SHEET,
+    GET_MANDALART_SHEET
 }

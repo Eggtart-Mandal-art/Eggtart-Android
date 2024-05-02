@@ -36,6 +36,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.teamegg.eggtart.common.feature.components.EggtartServerErrorPopup
+import com.teamegg.eggtart.common.feature.components.ServerErrorDialogData
 import com.teamegg.eggtart.common.feature.theme.ColorKakao
 import com.teamegg.eggtart.common.feature.theme.EggtartTheme
 import com.teamegg.eggtart.features.login.sideeffect.LoginSideEffect
@@ -50,7 +52,7 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun LoginScreen(kakaoAccessToken: String? = null, viewModel: LoginViewModel = hiltViewModel(), startKakaoLogin: suspend () -> Unit) {
-    val viewModelState = viewModel.collectAsState()
+    val viewModelState = viewModel.collectAsState().value
 
     LaunchedEffect(kakaoAccessToken) {
         if (!kakaoAccessToken.isNullOrEmpty()) {
@@ -144,7 +146,7 @@ fun LoginScreen(kakaoAccessToken: String? = null, viewModel: LoginViewModel = hi
             )
         }
 
-        if (viewModelState.value.loginLoading) {
+        if (viewModelState.loginLoading) {
             Dialog(onDismissRequest = { }) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
@@ -152,9 +154,22 @@ fun LoginScreen(kakaoAccessToken: String? = null, viewModel: LoginViewModel = hi
             }
         }
 
+        if (viewModelState.serverErrorDialogData != null) {
+            EggtartServerErrorPopup(serverErrorDialogData = viewModelState.serverErrorDialogData)
+        }
+
         viewModel.collectSideEffect {
             when (it) {
-                is LoginSideEffect.ShowErrorPopup -> {}
+                is LoginSideEffect.ServerErrorPopup -> {
+                    viewModel.intentSetServerErrorData(
+                        ServerErrorDialogData(
+                            serverResult = it.serverResult,
+                            onConfirm = {},
+                            onDismiss = { viewModel.intentSetServerErrorData(null) },
+                            onClearLoginData = {}
+                        )
+                    )
+                }
             }
         }
     }

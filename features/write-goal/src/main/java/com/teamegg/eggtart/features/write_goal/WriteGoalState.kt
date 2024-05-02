@@ -1,6 +1,7 @@
 package com.teamegg.eggtart.features.write_goal
 
 import com.teamegg.eggtart.common.feature.components.DialogData
+import com.teamegg.eggtart.common.feature.components.ServerErrorDialogData
 import com.teamegg.eggtart.common.feature.util.GoalColorModel
 
 /**
@@ -16,5 +17,6 @@ data class WriteGoalState(
     val isShowBottomSheet: Boolean = false,
     val origTodos: List<String> = listOf(),
     val todoList: List<String> = listOf(),
-    val dialogData: DialogData? = null
+    val dialogData: DialogData? = null,
+    val serverErrorDialogData: ServerErrorDialogData? = null
 )

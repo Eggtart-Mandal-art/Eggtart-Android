@@ -18,7 +18,6 @@ import dagger.hilt.components.SingletonComponent
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.android.Android
-import io.ktor.client.plugins.addDefaultResponseValidation
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
@@ -49,6 +48,8 @@ object RemoteSourceProvideModule {
     @Singleton
     @Provides
     fun provideKtorClient(): HttpClient = HttpClient(Android) {
+        expectSuccess = true
+
         install(Logging) {
             logger = object : io.ktor.client.plugins.logging.Logger {
                 override fun log(message: String) {
@@ -62,6 +63,7 @@ object RemoteSourceProvideModule {
             json(
                 Json {
                     prettyPrint = true
+                    ignoreUnknownKeys = true
                 }
             )
         }
@@ -74,14 +76,14 @@ object RemoteSourceProvideModule {
                 protocol = URLProtocol.HTTPS
             }
         }
-
-        addDefaultResponseValidation()
     }
 
     @KtorTokenClient
     @Singleton
     @Provides
     fun provideKtorTokenClient(localUserRepository: LocalUserRepository, @KtorClient ktorClient: HttpClient): HttpClient = HttpClient(Android) {
+        expectSuccess = true
+
         install(Logging) {
             logger = object : io.ktor.client.plugins.logging.Logger {
                 override fun log(message: String) {
@@ -95,6 +97,7 @@ object RemoteSourceProvideModule {
             json(
                 Json {
                     prettyPrint = true
+                    ignoreUnknownKeys = true
                 }
             )
         }
@@ -113,27 +116,18 @@ object RemoteSourceProvideModule {
                 }
 
                 refreshTokens {
-                    try {
-                        val token = ktorClient.get {
-                            markAsRefreshTokenRequest()
-                            url("/token")
-                            bearerAuth(localUserRepository.userToken.firstOrNull()?.refreshToken ?: "")
-                        }.body<UserTokenModel>()
+                    val tokenResponse = ktorClient.get {
+                        markAsRefreshTokenRequest()
+                        url("/token")
+                        bearerAuth(localUserRepository.userToken.firstOrNull()?.refreshToken ?: "")
+                    }.body<UserTokenModel>()
 
-                        localUserRepository.setUserToken(token)
+                    localUserRepository.setUserToken(tokenResponse)
 
-                        BearerTokens(
-                            accessToken = token.accessToken,
-                            refreshToken = token.refreshToken,
-                        )
-                    } catch (e: Exception) {
-                        localUserRepository.setUserToken(null)
-
-                        BearerTokens(
-                            accessToken = "",
-                            refreshToken = "",
-                        )
-                    }
+                    BearerTokens(
+                        accessToken = tokenResponse.accessToken,
+                        refreshToken = tokenResponse.refreshToken,
+                    )
                 }
             }
         }
@@ -146,8 +140,6 @@ object RemoteSourceProvideModule {
                 protocol = URLProtocol.HTTPS
             }
         }
-
-        addDefaultResponseValidation()
     }
 }
 

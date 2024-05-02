@@ -17,14 +17,12 @@ import kotlinx.serialization.json.Json
 fun NavGraphBuilder.homeScreen(
     navigateWriteGoal: (CellModel) -> Unit
 ) {
-    composable(
-        route = RootRoutes.HOME, listOf(navArgument("sheetIds") {
-            defaultValue = ""
-        }, navArgument("cellModel") {
-            defaultValue = null
-            nullable = true
-        })
-    ) { backStackEntry ->
+    composable(route = RootRoutes.HOME, listOf(navArgument("sheetIds") {
+        defaultValue = ""
+    }, navArgument("cellModel") {
+        defaultValue = null
+        nullable = true
+    })) { backStackEntry ->
         val sheetIds = backStackEntry.arguments?.getString("sheetIds")?.split(",")?.mapNotNull { it.toLongOrNull() } ?: listOf()
         val cellModel = backStackEntry.arguments?.getString("cellModel")?.let {
             Json.decodeFromString<CellTodosModel>(it)
