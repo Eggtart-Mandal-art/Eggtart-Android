@@ -22,14 +22,14 @@ import androidx.compose.ui.unit.dp
 import com.teamegg.eggtart.common.feature.theme.ColorGray50
 import com.teamegg.eggtart.common.feature.types.DrawableResource
 import com.teamegg.eggtart.common.feature.types.StringResource
-import com.teamegg.eggtart.domain.mandalart.model.ResCellModel
+import com.teamegg.eggtart.domain.mandalart.model.CellModel
 
 /**
  *  Created by wonjin on 2024/04/05
  **/
 
 @Composable
-fun MandalartItem(navigateWriteGoal: (ResCellModel) -> Unit, cellData: ResCellModel?, index: Int) {
+fun MandalartItem(navigateWriteGoal: (CellModel) -> Unit, cellData: CellModel?, index: Int) {
     val isRootCell = index == 4
 
     if (cellData == null) {

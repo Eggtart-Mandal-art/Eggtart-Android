@@ -7,6 +7,6 @@ import kotlinx.serialization.Serializable
  **/
 
 @Serializable
-class RequestCreateSheetEntity(
+class ReqCreateSheetEntity(
     val name: String
 )

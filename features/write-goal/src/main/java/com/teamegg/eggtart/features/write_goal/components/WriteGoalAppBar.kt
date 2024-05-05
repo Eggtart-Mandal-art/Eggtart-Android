@@ -17,7 +17,7 @@ import com.teamegg.eggtart.common.feature.components.EggtartButtonSize
 import com.teamegg.eggtart.common.feature.components.EggtartIconButton
 import com.teamegg.eggtart.common.feature.types.DrawableResource
 import com.teamegg.eggtart.common.feature.types.StringResource
-import com.teamegg.eggtart.domain.mandalart.model.ResCellModel
+import com.teamegg.eggtart.domain.mandalart.model.CellModel
 
 /**
  *  Created by wonjin on 2024/04/05
@@ -25,7 +25,7 @@ import com.teamegg.eggtart.domain.mandalart.model.ResCellModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WriteGoalAppBar(onBackClicked: () -> Unit, onDeleteClicked: () -> Unit, cellModel: ResCellModel) {
+fun WriteGoalAppBar(onBackClicked: () -> Unit, onDeleteClicked: () -> Unit, cellModel: CellModel) {
     CenterAlignedTopAppBar(
         modifier = Modifier.heightIn(max = 56.dp),
         title = {

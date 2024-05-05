@@ -12,6 +12,17 @@
     <string name="toast_goal_saved">저장되었습니다.</string>
     <string name="toast_goal_deleted">삭제되었습니다.</string>
 
+    <!--  Popup Message  -->
+    <string name="popup_delete_title">삭제하기</string>
+    <string name="popup_delete_content">작성한 목표를 삭제하시겠습니까?</string>
+    <string name="popup_finish_without_save_title">저장하지 않고 나가기</string>
+    <string name="popup_finish_without_save_content">작성한 내용은 사라집니다\n그래도 나가겠습니까?</string>
+
+    <string name="popup_unknown_error_content">알 수 없는 오류가 발생하였습니다.\n잠시 후 다시 시도해 주세요.</string>
+    <string name="popup_expired_token_error_content">토큰이 만료되었습니다.\n다시 로그인해주세요.</string>
+    <string name="popup_invalid_token_error_content">토큰 정보가 올바르지 않습니다.\n다시 로그인해주세요.</string>
+    <string name="popup_network_error_content">네트워크 연결 상태가 좋지 않습니다.\n잠시 후 다시 시도해주세요.</string>
+
     <!--  Color Name  -->
     <string name="color_egg_tart">에그타르트</string>
     <string name="color_sausage">소세지</string>
@@ -38,8 +49,4 @@
     <string name="select_color_hint">컬러를 선택하세요</string>
     <string name="enter_goal_hint">이루고 싶은 목표를 28자 이내로 입력하세요</string>
     <string name="add_todo">추가하기</string>
-    <string name="popup_delete_title">삭제하기</string>
-    <string name="popup_delete_content">작성한 목표를 삭제하시겠습니까?</string>
-    <string name="popup_finish_without_save_title">저장하지 않고 나가기</string>
-    <string name="popup_finish_without_save_content">작성한 내용은 사라집니다\n그래도 나가겠습니까?</string>
 </resources>

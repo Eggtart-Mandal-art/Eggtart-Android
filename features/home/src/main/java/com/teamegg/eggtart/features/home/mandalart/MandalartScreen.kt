@@ -1,5 +1,6 @@
 package com.teamegg.eggtart.features.home.mandalart
 
+import android.app.Activity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -18,10 +19,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.teamegg.eggtart.common.feature.components.EggtartServerErrorPopup
 import com.teamegg.eggtart.common.feature.components.EggtartSnackbar
+import com.teamegg.eggtart.common.feature.components.ServerErrorDialogData
 import com.teamegg.eggtart.common.util.Logger
-import com.teamegg.eggtart.domain.mandalart.model.ResCellModel
-import com.teamegg.eggtart.domain.mandalart.model.ResCellTodosModel
+import com.teamegg.eggtart.domain.mandalart.model.CellModel
+import com.teamegg.eggtart.domain.mandalart.model.CellTodosModel
 import com.teamegg.eggtart.features.home.mandalart.components.MandalartAppBar
 import com.teamegg.eggtart.features.home.mandalart.components.MandalartItem
 import org.orbitmvi.orbit.compose.collectAsState
@@ -33,10 +36,10 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun MandalartScreen(
-    navigateWriteGoal: (ResCellModel) -> Unit,
+    navigateWriteGoal: (CellModel) -> Unit,
     homePaddingValues: PaddingValues = PaddingValues(),
     sheetIds: List<Long>,
-    cellModel: ResCellTodosModel?,
+    cellModel: CellTodosModel?,
     viewModel: MandalartViewModel = hiltViewModel()
 ) {
     val viewModelState = viewModel.collectAsState().value
@@ -45,9 +48,9 @@ fun MandalartScreen(
 
     LaunchedEffect(Unit) {
         if (viewModelState.mandalartCellList.isEmpty()) {
-            viewModel.getMandalartCells(sheetIds)
+            viewModel.intentGetMandalartCells(sheetIds)
         } else if (cellModel != null) {
-            viewModel.updateCellModel(cellModel)
+            viewModel.intentUpdateCellModel(cellModel)
         }
     }
 
@@ -79,6 +82,10 @@ fun MandalartScreen(
                 }
             }
         }
+
+        if (viewModelState.serverErrorDialogData != null) {
+            EggtartServerErrorPopup(viewModelState.serverErrorDialogData)
+        }
     }
 
     viewModel.collectSideEffect {
@@ -90,6 +97,27 @@ fun MandalartScreen(
 
             is MandalartSideEffect.SnackBarString -> {
                 snackBarHostState.showSnackbar(it.message)
+            }
+
+            is MandalartSideEffect.ServerErrorPopup -> {
+                when (it.type) {
+                    ServerCallType.GET_CELL_DATA -> {
+                        viewModel.intentSetServerErrorData(
+                            ServerErrorDialogData(
+                                serverResult = it.serverResult,
+                                onConfirm = {
+                                    (context as? Activity)?.finish()
+                                },
+                                onDismiss = {
+                                    viewModel.intentSetServerErrorData(null)
+                                },
+                                onClearLoginData = {
+                                    viewModel.intentClearLoginData()
+                                }
+                            )
+                        )
+                    }
+                }
             }
         }
     }

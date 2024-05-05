@@ -2,14 +2,16 @@ package com.teamegg.eggtart.features
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.teamegg.eggtart.common.feature.components.ServerErrorDialogData
 import com.teamegg.eggtart.common.util.Logger
-import com.teamegg.eggtart.common.util.Result
+import com.teamegg.eggtart.common.util.ServerResult
 import com.teamegg.eggtart.domain.kakao.usecase.KakaoLoginUseCase
-import com.teamegg.eggtart.domain.mandalart.model.ResCellModel
-import com.teamegg.eggtart.domain.mandalart.model.ResCellTodosModel
+import com.teamegg.eggtart.domain.mandalart.model.CellModel
+import com.teamegg.eggtart.domain.mandalart.model.CellTodosModel
 import com.teamegg.eggtart.domain.mandalart.usecases.sheet.CreateMandalartSheetUseCase
 import com.teamegg.eggtart.domain.mandalart.usecases.sheet.GetMandalartSheetsUseCase
 import com.teamegg.eggtart.domain.user.usecase.GetLocalUserTokenUseCase
+import com.teamegg.eggtart.domain.user.usecase.SetLocalUserTokenUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -26,6 +28,7 @@ import org.orbitmvi.orbit.viewmodel.container
 class MainViewModel @AssistedInject constructor(
     @Assisted private val kakaoLoginUseCase: KakaoLoginUseCase,
     private val getLocalUserTokenUseCase: GetLocalUserTokenUseCase,
+    private val setLocalUserTokenUseCase: SetLocalUserTokenUseCase,
     private val getMandalartSheetsUseCase: GetMandalartSheetsUseCase,
     private val createMandalartSheetUseCase: CreateMandalartSheetUseCase
 ) : ContainerHost<MainState, MainSideEffect>, ViewModel() {
@@ -46,15 +49,25 @@ class MainViewModel @AssistedInject constructor(
         }
     }
 
+    fun intentClearLoginData() = intent {
+        setLocalUserTokenUseCase(null)
+    }
+
+    fun intentSetServerErrorData(serverErrorDialogData: ServerErrorDialogData?) = intent {
+        reduce {
+            state.copy(serverErrorDialogData = serverErrorDialogData)
+        }
+    }
+
     fun intentKakaoLogin() = intent {
         postSideEffect(MainSideEffect.NavigateLoginWithKakaoResult(kakaoLoginUseCase()))
     }
 
-    fun navigateWriteGoal(cellModel: ResCellModel) = intent {
+    fun intentNavigateWriteGoal(cellModel: CellModel) = intent {
         postSideEffect(MainSideEffect.NavigateWriteGoal(cellModel))
     }
 
-    fun navigateHome(cellModel: ResCellTodosModel?) = intent {
+    fun intentNavigateHome(cellModel: CellTodosModel?) = intent {
         postSideEffect(MainSideEffect.NavigateHome(sheetsIds = state.sheetIds, cellModel = cellModel))
     }
 
@@ -65,48 +78,37 @@ class MainViewModel @AssistedInject constructor(
             if (it == null) {
                 postSideEffect(MainSideEffect.NavigateLogin)
             } else {
-                val sheets = getMandalartSheetsUseCase(it.accessToken)
-                when (sheets) {
-                    is Result.Success -> {
-                        if (sheets.data.isEmpty()) {
-                            val sheetId = createMandalartSheetUseCase(it.accessToken)
-
-                            when (sheetId) {
-                                is Result.Success -> {
+                when (val getSheetsResult = getMandalartSheetsUseCase()) {
+                    is ServerResult.Success -> {
+                        if (getSheetsResult.data.isEmpty()) {
+                            when (val createSheetResult = createMandalartSheetUseCase()) {
+                                is ServerResult.Success -> {
                                     reduce {
-                                        state.copy(sheetIds = listOf(sheetId.data))
+                                        state.copy(sheetIds = listOf(createSheetResult.data))
                                     }
-                                    postSideEffect(MainSideEffect.NavigateHome(listOf(sheetId.data)))
+                                    postSideEffect(MainSideEffect.NavigateHome(listOf(createSheetResult.data)))
                                 }
 
-                                is Result.Failure -> {
-                                    // TODO: 에러 로직 처리 필요
-                                }
-
-                                is Result.Exception -> {
-                                    // TODO: 에러 로직 필요
+                                else -> {
+                                    postSideEffect(MainSideEffect.ServerErrorPopup(ServerCallType.CREATE_MANDALART_SHEET, createSheetResult))
                                 }
                             }
                         } else {
                             reduce {
-                                state.copy(sheetIds = sheets.data)
+                                state.copy(sheetIds = getSheetsResult.data)
                             }
-                            postSideEffect(MainSideEffect.NavigateHome(sheets.data))
+                            postSideEffect(MainSideEffect.NavigateHome(getSheetsResult.data))
                         }
                     }
 
-                    is Result.Failure -> {
-                        // TODO: 에러 로직 필요
-                    }
-
-                    is Result.Exception -> {
-                        // TODO: 에러 로직 필요
+                    else -> {
+                        postSideEffect(MainSideEffect.ServerErrorPopup(ServerCallType.GET_MANDALART_SHEET, getSheetsResult))
                     }
                 }
             }
 
             reduce {
-                state.copy(true)
+                state.copy(initialized = true)
             }
         }
     }

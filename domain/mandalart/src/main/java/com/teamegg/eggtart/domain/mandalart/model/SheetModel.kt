@@ -10,5 +10,5 @@ data class SheetModel(
     val name: String,
     val createdAt: String,
     val modifiedAt: String,
-    val depth1Cell: ResCellModel?
+    val depth1Cell: CellModel?
 )

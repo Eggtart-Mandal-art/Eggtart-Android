@@ -3,21 +3,19 @@ package com.teamegg.eggtart.features.write_goal
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
 import com.teamegg.eggtart.common.feature.components.DialogData
+import com.teamegg.eggtart.common.feature.components.ServerErrorDialogData
 import com.teamegg.eggtart.common.feature.util.GoalColorModel
-import com.teamegg.eggtart.common.util.Result
-import com.teamegg.eggtart.common.util.ServerErrorModel
-import com.teamegg.eggtart.domain.mandalart.model.ResCellModel
+import com.teamegg.eggtart.common.util.ServerResult
+import com.teamegg.eggtart.domain.mandalart.model.CellModel
 import com.teamegg.eggtart.domain.mandalart.model.UpdateCellModel
 import com.teamegg.eggtart.domain.mandalart.usecases.cell.DeleteMandalartCellUseCase
 import com.teamegg.eggtart.domain.mandalart.usecases.cell.GetMandalartCellDetailUseCase
 import com.teamegg.eggtart.domain.mandalart.usecases.cell.UpdateMandalartCellUseCase
-import com.teamegg.eggtart.domain.user.usecase.GetLocalUserTokenUseCase
+import com.teamegg.eggtart.domain.user.usecase.SetLocalUserTokenUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.firstOrNull
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
-import org.orbitmvi.orbit.annotation.OrbitExperimental
 import org.orbitmvi.orbit.syntax.simple.blockingIntent
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
@@ -31,23 +29,19 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WriteGoalViewModel @Inject constructor(
-    private val getLocalUserTokenUseCase: GetLocalUserTokenUseCase,
     private val updateMandalartCellUseCase: UpdateMandalartCellUseCase,
     private val deleteMandalartCellUseCase: DeleteMandalartCellUseCase,
     private val getMandalartCellDetailUseCase: GetMandalartCellDetailUseCase,
+    private val setLocalUserTokenUseCase: SetLocalUserTokenUseCase
 ) : ContainerHost<WriteGoalState, WriteGoalSideEffect>, ViewModel() {
     override val container: Container<WriteGoalState, WriteGoalSideEffect> = container(WriteGoalState())
 
     fun postUnSaveFinish() = intent {
-        postSideEffect(WriteGoalSideEffect.PopupDialog(DialogTypes.UnSaveFinish))
+        postSideEffect(WriteGoalSideEffect.PopupDialog(PopupType.WITHOUT_SAVE_FINISH))
     }
 
     fun postDeleteCell() = intent {
-        postSideEffect(WriteGoalSideEffect.PopupDialog(DialogTypes.DeleteCell))
-    }
-
-    fun postServerError(serverError: ServerErrorModel?) = intent {
-        postSideEffect(WriteGoalSideEffect.PopupDialog(DialogTypes.ServerError(serverError)))
+        postSideEffect(WriteGoalSideEffect.PopupDialog(PopupType.DELETE_CELL))
     }
 
     fun intentSetGoalString(value: String) = blockingIntent {
@@ -86,7 +80,6 @@ class WriteGoalViewModel @Inject constructor(
         }
     }
 
-    @OptIn(OrbitExperimental::class)
     fun intentSetTodoString(index: Int, value: String) = blockingIntent {
         reduce {
             state.copy(todoList = state.todoList.toMutableList().apply {
@@ -119,15 +112,12 @@ class WriteGoalViewModel @Inject constructor(
         }
     }
 
-    fun intentUpdateCell(cellModel: ResCellModel) = intent {
+    fun intentUpdateCell(cellModel: CellModel) = intent {
         reduce {
             state.copy(updateCellLoading = true)
         }
 
-        val accessToken = getLocalUserTokenUseCase().firstOrNull()?.accessToken
-
         val result = updateMandalartCellUseCase(
-            accessToken = accessToken ?: "",
             cellId = cellModel.id,
             updateCellModel = UpdateCellModel(
                 color = Integer.toHexString(state.goalColor?.color?.toArgb() ?: 0).uppercase(),
@@ -138,16 +128,12 @@ class WriteGoalViewModel @Inject constructor(
         )
 
         when (result) {
-            is Result.Success -> {
+            is ServerResult.Success -> {
                 postSideEffect(WriteGoalSideEffect.FinishResult(result.data))
             }
 
-            is Result.Failure -> {
-
-            }
-
-            is Result.Exception -> {
-
+            else -> {
+                postSideEffect(WriteGoalSideEffect.ServerErrorPopup(ServerCallType.UPDATE_CELL, result))
             }
         }
 
@@ -156,29 +142,18 @@ class WriteGoalViewModel @Inject constructor(
         }
     }
 
-    fun intentDeleteCell(cellModel: ResCellModel) = intent {
+    fun intentDeleteCell(cellModel: CellModel) = intent {
         reduce {
             state.copy(updateCellLoading = true)
         }
 
-        val accessToken = getLocalUserTokenUseCase().firstOrNull()?.accessToken
-
-        val result = deleteMandalartCellUseCase(
-            accessToken = accessToken ?: "",
-            cellId = cellModel.id
-        )
-
-        when (result) {
-            is Result.Success -> {
+        when (val result = deleteMandalartCellUseCase(cellId = cellModel.id)) {
+            is ServerResult.Success -> {
                 postSideEffect(WriteGoalSideEffect.FinishResult(result.data))
             }
 
-            is Result.Failure -> {
-
-            }
-
-            is Result.Exception -> {
-
+            else -> {
+                postSideEffect(WriteGoalSideEffect.ServerErrorPopup(ServerCallType.DELETE_CELL, result))
             }
         }
 
@@ -187,13 +162,11 @@ class WriteGoalViewModel @Inject constructor(
         }
     }
 
-    fun intentGetMandalartCellDetail(cellModel: ResCellModel) = intent {
+    fun intentGetMandalartCellDetail(cellModel: CellModel) = intent {
         reduce { state.copy(getTodosLoading = true) }
 
-        val accessToken = getLocalUserTokenUseCase().firstOrNull()?.accessToken ?: ""
-
-        when (val result = getMandalartCellDetailUseCase(accessToken = accessToken, cellId = cellModel.id)) {
-            is Result.Success -> {
+        when (val result = getMandalartCellDetailUseCase(cellId = cellModel.id)) {
+            is ServerResult.Success -> {
                 reduce {
                     state.copy(
                         getTodosLoading = false,
@@ -203,17 +176,21 @@ class WriteGoalViewModel @Inject constructor(
                 }
             }
 
-            is Result.Failure -> {
-
-            }
-
-            is Result.Exception -> {
-
+            else -> {
+                postSideEffect(WriteGoalSideEffect.ServerErrorPopup(ServerCallType.GET_CELL_DETAIL, result))
             }
         }
     }
 
     fun intentSetDialogData(dialogData: DialogData?) = intent {
         reduce { state.copy(dialogData = dialogData) }
+    }
+
+    fun intentSetServerErrorData(serverErrorDialogData: ServerErrorDialogData?) = intent {
+        reduce { state.copy(serverErrorDialogData = serverErrorDialogData) }
+    }
+
+    fun intentClearLoginData() = intent {
+        setLocalUserTokenUseCase(null)
     }
 }

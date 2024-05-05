@@ -48,6 +48,8 @@ object RemoteSourceProvideModule {
     @Singleton
     @Provides
     fun provideKtorClient(): HttpClient = HttpClient(Android) {
+        expectSuccess = true
+
         install(Logging) {
             logger = object : io.ktor.client.plugins.logging.Logger {
                 override fun log(message: String) {
@@ -61,6 +63,7 @@ object RemoteSourceProvideModule {
             json(
                 Json {
                     prettyPrint = true
+                    ignoreUnknownKeys = true
                 }
             )
         }
@@ -79,6 +82,8 @@ object RemoteSourceProvideModule {
     @Singleton
     @Provides
     fun provideKtorTokenClient(localUserRepository: LocalUserRepository, @KtorClient ktorClient: HttpClient): HttpClient = HttpClient(Android) {
+        expectSuccess = true
+
         install(Logging) {
             logger = object : io.ktor.client.plugins.logging.Logger {
                 override fun log(message: String) {
@@ -92,6 +97,7 @@ object RemoteSourceProvideModule {
             json(
                 Json {
                     prettyPrint = true
+                    ignoreUnknownKeys = true
                 }
             )
         }
@@ -101,6 +107,8 @@ object RemoteSourceProvideModule {
                 loadTokens {
                     val token = localUserRepository.userToken.firstOrNull()
 
+                    Logger.d("accessToken: $token")
+
                     BearerTokens(
                         accessToken = token?.accessToken ?: "",
                         refreshToken = token?.refreshToken ?: ""
@@ -108,27 +116,18 @@ object RemoteSourceProvideModule {
                 }
 
                 refreshTokens {
-                    try {
-                        val token = ktorClient.get {
-                            markAsRefreshTokenRequest()
-                            url("/token")
-                            bearerAuth(localUserRepository.userToken.firstOrNull()?.refreshToken ?: "")
-                        }.body<UserTokenModel>()
+                    val tokenResponse = ktorClient.get {
+                        markAsRefreshTokenRequest()
+                        url("/token")
+                        bearerAuth(localUserRepository.userToken.firstOrNull()?.refreshToken ?: "")
+                    }.body<UserTokenModel>()
 
-                        localUserRepository.setUserToken(token)
+                    localUserRepository.setUserToken(tokenResponse)
 
-                        BearerTokens(
-                            accessToken = token.accessToken,
-                            refreshToken = token.refreshToken,
-                        )
-                    } catch (e: Exception) {
-                        localUserRepository.setUserToken(null)
-
-                        BearerTokens(
-                            accessToken = "",
-                            refreshToken = "",
-                        )
-                    }
+                    BearerTokens(
+                        accessToken = tokenResponse.accessToken,
+                        refreshToken = tokenResponse.refreshToken,
+                    )
                 }
             }
         }

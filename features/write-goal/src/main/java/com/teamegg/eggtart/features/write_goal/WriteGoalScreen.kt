@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imeAnimationTarget
@@ -48,6 +49,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.teamegg.eggtart.common.feature.components.DialogData
 import com.teamegg.eggtart.common.feature.components.EggtartButton
@@ -56,13 +58,15 @@ import com.teamegg.eggtart.common.feature.components.EggtartButtonStyle
 import com.teamegg.eggtart.common.feature.components.EggtartIconButton
 import com.teamegg.eggtart.common.feature.components.EggtartPopup
 import com.teamegg.eggtart.common.feature.components.EggtartSelectionBox
+import com.teamegg.eggtart.common.feature.components.EggtartServerErrorPopup
 import com.teamegg.eggtart.common.feature.components.EggtartTextField
+import com.teamegg.eggtart.common.feature.components.ServerErrorDialogData
 import com.teamegg.eggtart.common.feature.types.DrawableResource
 import com.teamegg.eggtart.common.feature.types.StringResource
 import com.teamegg.eggtart.common.feature.util.Constants.GOAL_COLORS
 import com.teamegg.eggtart.common.util.Logger
-import com.teamegg.eggtart.domain.mandalart.model.ResCellModel
-import com.teamegg.eggtart.domain.mandalart.model.ResCellTodosModel
+import com.teamegg.eggtart.domain.mandalart.model.CellModel
+import com.teamegg.eggtart.domain.mandalart.model.CellTodosModel
 import com.teamegg.eggtart.features.write_goal.components.SelectColorBottomSheet
 import com.teamegg.eggtart.features.write_goal.components.WriteGoalAppBar
 import org.orbitmvi.orbit.compose.collectAsState
@@ -74,7 +78,7 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun WriteGoalScreen(navigateHome: (ResCellTodosModel?) -> Unit, cellModel: ResCellModel, viewModel: WriteGoalViewModel = hiltViewModel()) {
+fun WriteGoalScreen(navigateHome: (CellTodosModel?) -> Unit, cellModel: CellModel, viewModel: WriteGoalViewModel = hiltViewModel()) {
     val viewModelState = viewModel.collectAsState().value
     val focusManager = LocalFocusManager.current
     val todoFocusRequesters = remember { mutableStateMapOf<Int, FocusRequester>() }
@@ -253,7 +257,11 @@ fun WriteGoalScreen(navigateHome: (ResCellTodosModel?) -> Unit, cellModel: ResCe
             }
 
             if (viewModelState.getTodosLoading || viewModelState.updateCellLoading) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                Dialog(onDismissRequest = { }) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    }
+                }
             }
         }
 
@@ -262,6 +270,10 @@ fun WriteGoalScreen(navigateHome: (ResCellTodosModel?) -> Unit, cellModel: ResCe
 
         if (viewModelState.dialogData != null)
             EggtartPopup(dialogData = viewModelState.dialogData)
+
+        if (viewModelState.serverErrorDialogData != null) {
+            EggtartServerErrorPopup(serverErrorDialogData = viewModelState.serverErrorDialogData)
+        }
     }
 
     viewModel.collectSideEffect {
@@ -278,10 +290,10 @@ fun WriteGoalScreen(navigateHome: (ResCellTodosModel?) -> Unit, cellModel: ResCe
             }
 
             is WriteGoalSideEffect.PopupDialog -> {
-                when (it.dialogTypes) {
-                    is DialogTypes.DeleteCell -> @Composable {
-                        viewModel.intentSetDialogData(
-                            dialogData = DialogData(
+                viewModel.intentSetDialogData(
+                    when (it.popupType) {
+                        PopupType.DELETE_CELL -> {
+                            DialogData(
                                 title = context.getString(StringResource.popup_delete_title),
                                 content = context.getString(StringResource.popup_delete_content),
                                 confirm = context.getString(StringResource.com_yes),
@@ -293,12 +305,10 @@ fun WriteGoalScreen(navigateHome: (ResCellTodosModel?) -> Unit, cellModel: ResCe
                                     viewModel.intentDeleteCell(cellModel)
                                 }
                             )
-                        )
-                    }
+                        }
 
-                    is DialogTypes.UnSaveFinish -> {
-                        viewModel.intentSetDialogData(
-                            dialogData = DialogData(
+                        PopupType.WITHOUT_SAVE_FINISH -> {
+                            DialogData(
                                 title = context.getString(StringResource.popup_finish_without_save_title),
                                 content = context.getString(StringResource.popup_finish_without_save_content),
                                 confirm = context.getString(StringResource.com_yes),
@@ -310,19 +320,34 @@ fun WriteGoalScreen(navigateHome: (ResCellTodosModel?) -> Unit, cellModel: ResCe
                                     navigateHome(null)
                                 }
                             )
-                        )
+                        }
                     }
+                )
+            }
 
-                    is DialogTypes.ServerError -> {
-
-                    }
-                }
+            is WriteGoalSideEffect.ServerErrorPopup -> {
+                viewModel.intentSetServerErrorData(
+                    ServerErrorDialogData(
+                        serverResult = it.serverResult,
+                        onConfirm = {
+                            if (it.type == ServerCallType.GET_CELL_DETAIL) {
+                                navigateHome(null)
+                            }
+                        },
+                        onDismiss = {
+                            viewModel.intentSetServerErrorData(null)
+                        },
+                        onClearLoginData = {
+                            viewModel.intentClearLoginData()
+                        }
+                    )
+                )
             }
         }
     }
 }
 
-private fun checkChanged(cellModel: ResCellModel, origTodo: List<String>, goalColor: Color?, goalString: String, todoList: List<String>): Boolean {
+private fun checkChanged(cellModel: CellModel, origTodo: List<String>, goalColor: Color?, goalString: String, todoList: List<String>): Boolean {
     val isNull = goalString.isNotEmpty() && goalColor != null
     val goalChanged = cellModel.goal != goalString
     val colorChanged = goalColor != cellModel.color?.let { Color(android.graphics.Color.parseColor("#${cellModel.color}")) }
@@ -335,6 +360,6 @@ private fun checkChanged(cellModel: ResCellModel, origTodo: List<String>, goalCo
 @Composable
 private fun PreviewWriteGoalScreen() {
     com.teamegg.eggtart.common.feature.theme.EggtartTheme {
-        WriteGoalScreen(cellModel = ResCellModel(0, 0), navigateHome = {})
+        WriteGoalScreen(cellModel = CellModel(0, 0), navigateHome = {})
     }
 }

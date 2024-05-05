@@ -1,7 +1,7 @@
 package com.teamegg.eggtart.domain.mandalart.usecases.cell
 
-import com.teamegg.eggtart.common.util.Result
-import com.teamegg.eggtart.domain.mandalart.model.ResCellTodosModel
+import com.teamegg.eggtart.common.util.ServerResult
+import com.teamegg.eggtart.domain.mandalart.model.CellTodosModel
 import com.teamegg.eggtart.domain.mandalart.repository.MandalartRemoteRepository
 import javax.inject.Inject
 
@@ -11,5 +11,5 @@ import javax.inject.Inject
 
 class GetMandalartCellDetailUseCase @Inject constructor(private val mandalartRepository: MandalartRemoteRepository) {
 
-    suspend operator fun invoke(accessToken: String, cellId: Long): Result<ResCellTodosModel> = mandalartRepository.getCellDetail(accessToken, cellId)
+    suspend operator fun invoke(cellId: Long): ServerResult<CellTodosModel> = mandalartRepository.getCellDetail(cellId)
 }

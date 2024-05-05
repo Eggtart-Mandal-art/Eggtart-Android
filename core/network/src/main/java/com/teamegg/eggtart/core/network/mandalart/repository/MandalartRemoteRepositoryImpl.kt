@@ -1,115 +1,66 @@
 package com.teamegg.eggtart.core.network.mandalart.repository
 
-import com.teamegg.eggtart.common.util.Result
-import com.teamegg.eggtart.common.util.ServerErrorModel
+import com.teamegg.eggtart.common.util.ServerResult
 import com.teamegg.eggtart.core.network.mandalart.datasource.MandalartRemoteSource
-import com.teamegg.eggtart.core.network.mandalart.entities.ResponseCreateSheetEntity
+import com.teamegg.eggtart.core.network.mandalart.entities.ResCellEntity
+import com.teamegg.eggtart.core.network.mandalart.mapper.toCellModel
+import com.teamegg.eggtart.core.network.mandalart.mapper.toCellTodosModel
 import com.teamegg.eggtart.core.network.mandalart.mapper.toPatchCellEntity
-import com.teamegg.eggtart.domain.mandalart.model.ResCellModel
-import com.teamegg.eggtart.domain.mandalart.model.ResCellTodosModel
+import com.teamegg.eggtart.domain.mandalart.model.CellModel
+import com.teamegg.eggtart.domain.mandalart.model.CellTodosModel
 import com.teamegg.eggtart.domain.mandalart.model.UpdateCellModel
 import com.teamegg.eggtart.domain.mandalart.repository.MandalartRemoteRepository
-import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 /**
  *  Created by wonjin on 2024/04/18
  **/
 class MandalartRemoteRepositoryImpl @Inject constructor(private val mandalartRemoteSource: MandalartRemoteSource) : MandalartRemoteRepository {
-    override suspend fun getSheets(accessToken: String): Result<List<Long>> {
-        var response = ""
+    override suspend fun getSheets(): ServerResult<List<Long>> = try {
+        val response = mandalartRemoteSource.getSheets()
 
-        return try {
-            response = mandalartRemoteSource.getSheets(accessToken)
-
-            Result.Success(Json.decodeFromString<List<Long>>(response))
-        } catch (e: Exception) {
-            try {
-                Result.Failure(Json.decodeFromString<ServerErrorModel>(response))
-            } catch (e: Exception) {
-                Result.Exception(e)
-            }
-        }
+        ServerResult.Success(response)
+    } catch (e: Exception) {
+        ServerResult.parseException(e)
     }
 
-    override suspend fun postCreateSheet(accessToken: String, sheetName: String): Result<Long> {
-        var response = ""
+    override suspend fun postCreateSheet(sheetName: String): ServerResult<Long> = try {
+        val response = mandalartRemoteSource.postCreateSheet(sheetName)
 
-        return try {
-            response = mandalartRemoteSource.postCreateSheet(accessToken, sheetName)
-
-            val result = Json.decodeFromString<ResponseCreateSheetEntity>(response)
-            Result.Success(result.sheetId)
-        } catch (e: Exception) {
-            try {
-                Result.Failure(Json.decodeFromString<ServerErrorModel>(response))
-            } catch (e: Exception) {
-                Result.Exception(e)
-            }
-        }
+        ServerResult.Success(response)
+    } catch (e: Exception) {
+        ServerResult.parseException(e)
     }
 
-    override suspend fun getCells(accessToken: String, sheetId: Long, depth: Int, parentOrder: Int): Result<List<ResCellModel>> {
-        var response = ""
+    override suspend fun getCells(sheetId: Long, depth: Int, parentOrder: Int): ServerResult<List<CellModel>> = try {
+        val response = mandalartRemoteSource.getCells(sheetId, depth, parentOrder)
 
-        return try {
-            response = mandalartRemoteSource.getCells(accessToken, sheetId, depth, parentOrder)
-
-            Result.Success(Json.decodeFromString<List<ResCellModel>>(response))
-        } catch (e: Exception) {
-            try {
-                Result.Failure(Json.decodeFromString<ServerErrorModel>(response))
-            } catch (e: Exception) {
-                Result.Exception(e)
-            }
-        }
+        ServerResult.Success(response.map(ResCellEntity::toCellModel))
+    } catch (e: Exception) {
+        ServerResult.parseException(e)
     }
 
-    override suspend fun patchCell(accessToken: String, cellId: Long, body: UpdateCellModel): Result<ResCellTodosModel> {
-        var response = ""
+    override suspend fun patchCell(cellId: Long, body: UpdateCellModel): ServerResult<CellTodosModel> = try {
+        val response = mandalartRemoteSource.patchCell(cellId, body.toPatchCellEntity())
 
-        return try {
-            response = mandalartRemoteSource.patchCell(accessToken, cellId, body.toPatchCellEntity())
-
-            Result.Success(Json.decodeFromString<ResCellTodosModel>(response))
-        } catch (e: Exception) {
-            try {
-                Result.Failure(Json.decodeFromString<ServerErrorModel>(response))
-            } catch (e: Exception) {
-                Result.Exception(e)
-            }
-        }
+        ServerResult.Success(response.toCellTodosModel())
+    } catch (e: Exception) {
+        ServerResult.parseException(e)
     }
 
-    override suspend fun deleteCell(accessToken: String, cellId: Long): Result<ResCellTodosModel> {
-        var response = ""
+    override suspend fun deleteCell(cellId: Long): ServerResult<CellTodosModel> = try {
+        val response = mandalartRemoteSource.deleteCell(cellId)
 
-        return try {
-            response = mandalartRemoteSource.deleteCell(accessToken, cellId)
-
-            Result.Success(Json.decodeFromString<ResCellTodosModel>(response))
-        } catch (e: Exception) {
-            try {
-                Result.Failure(Json.decodeFromString<ServerErrorModel>(response))
-            } catch (e: Exception) {
-                Result.Exception(e)
-            }
-        }
+        ServerResult.Success(response.toCellTodosModel())
+    } catch (e: Exception) {
+        ServerResult.parseException(e)
     }
 
-    override suspend fun getCellDetail(accessToken: String, cellId: Long): Result<ResCellTodosModel> {
-        var response = ""
+    override suspend fun getCellDetail(cellId: Long): ServerResult<CellTodosModel> = try {
+        val response = mandalartRemoteSource.getCellDetail(cellId)
 
-        return try {
-            response = mandalartRemoteSource.getCellDetail(accessToken, cellId)
-
-            Result.Success(Json.decodeFromString<ResCellTodosModel>(response))
-        } catch (e: Exception) {
-            try {
-                Result.Failure(Json.decodeFromString<ServerErrorModel>(response))
-            } catch (e: Exception) {
-                Result.Exception(e)
-            }
-        }
+        ServerResult.Success(response.toCellTodosModel())
+    } catch (e: Exception) {
+        ServerResult.parseException(e)
     }
 }

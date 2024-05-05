@@ -40,6 +40,8 @@ android {
 }
 
 dependencies {
+    implementation(project(":common:util"))
+
     implementation(libs.core.ktx)
     implementation(libs.material3)
     implementation(platform(libs.compose.bom))

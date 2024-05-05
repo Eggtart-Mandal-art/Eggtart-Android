@@ -16,18 +16,40 @@ android {
         consumerProguardFiles("consumer-rules.pro")
     }
 
+    flavorDimensions += "tokenExpired"
+
+    productFlavors {
+        create("shortExpired") {
+            dimension = "tokenExpired"
+
+            buildConfigField("Boolean", "SHORT_EXPIRED", "true")
+        }
+
+        create("normalExpired") {
+            dimension = "tokenExpired"
+
+            buildConfigField("Boolean", "SHORT_EXPIRED", "false")
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = "1.8"
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 }
 

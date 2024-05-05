@@ -10,7 +10,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class UserInfoModel(
     val id: Long,
-    @SerialName("social_provider")
     val socialProvider: String,
     val nickname: String
 )

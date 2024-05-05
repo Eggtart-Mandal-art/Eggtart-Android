@@ -11,7 +11,6 @@ import kotlinx.serialization.Serializable
 data class UpdateCellModel(
     val color: String? = null,
     val goal: String? = null,
-    @SerialName("is_completed")
     val isCompleted: Boolean = false,
     val todos: List<String> = listOf()
 )

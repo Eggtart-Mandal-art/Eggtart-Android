@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
  **/
 
 @Serializable
-data class ResponseCreateSheetEntity(
+data class ResCreateSheetEntity(
     @SerialName("sheet_id")
     val sheetId: Long
 )

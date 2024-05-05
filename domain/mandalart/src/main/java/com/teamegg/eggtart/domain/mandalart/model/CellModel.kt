@@ -8,11 +8,10 @@ import kotlinx.serialization.Serializable
  **/
 
 @Serializable
-data class ResCellModel(
+data class CellModel(
     val step: Int,
     val id: Long,
     val color: String? = null,
     val goal: String? = null,
-    @SerialName("is_completed")
     val isCompleted: Boolean = false
 )
