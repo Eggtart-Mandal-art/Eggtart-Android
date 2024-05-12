@@ -12,5 +12,6 @@ data class MandalartScreenState(
     val mandalartLoading: Boolean = false,
     val sheetIds: List<Long> = listOf(),
     val mandalartCellList: List<CellModel> = listOf(),
+    val childCellList : List<CellModel> = listOf(),
     val serverErrorDialogData: ServerErrorDialogData? = null
 )

@@ -1,8 +1,13 @@
 package com.teamegg.eggtart.features.home
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -20,32 +25,44 @@ import com.teamegg.eggtart.features.home.settings.SettingsScreen
  *  Created by wonjin on 2024/04/04
  **/
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun HomeScreen(
     navigateWriteGoal: (CellModel) -> Unit,
     sheetIds: List<Long>,
     cellModel: CellTodosModel?,
-    navHostController: NavHostController = rememberNavController()) {
+    navHostController: NavHostController = rememberNavController(),
+    navSharedTransitionScope: SharedTransitionScope,
+    navAnimatedVisibilityScope: AnimatedVisibilityScope
+) {
     Scaffold(
         bottomBar = {
             HomeBottomBar(navHostController = navHostController)
         }
     ) { paddingValues ->
-        NavHost(contentAlignment = Alignment.TopStart, navController = navHostController, startDestination = HomeRoutes.Mandalart.route, route = RootRoutes.HOME) {
+        NavHost(
+            modifier = Modifier.padding(paddingValues),
+            contentAlignment = Alignment.TopStart,
+            navController = navHostController,
+            startDestination = HomeRoutes.Mandalart.route,
+            route = RootRoutes.HOME
+        ) {
             composable(HomeRoutes.Mandalart.route) {
                 MandalartScreen(
                     navigateWriteGoal = navigateWriteGoal,
                     sheetIds = sheetIds,
                     cellModel = cellModel,
-                    homePaddingValues = paddingValues)
+                    navSharedTransitionScope = navSharedTransitionScope,
+                    navAnimatedVisibilityScope = navAnimatedVisibilityScope
+                )
             }
 
             composable(HomeRoutes.Calendar.route) {
-                CalendarScreen(homePaddingValues = paddingValues)
+                CalendarScreen()
             }
 
             composable(HomeRoutes.Settings.route) {
-                SettingsScreen(homePaddingValues = paddingValues)
+                SettingsScreen()
             }
         }
     }

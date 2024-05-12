@@ -6,6 +6,8 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -59,6 +61,7 @@ class MainActivity : ComponentActivity() {
         MainViewModel.create(mainViewModelFactory, kakaoLoginUseCase)
     }
 
+    @OptIn(ExperimentalSharedTransitionApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -104,21 +107,27 @@ class MainActivity : ComponentActivity() {
                         .windowInsetsPadding(if (currentRoute == RootRoutes.LOGIN) WindowInsets(top = 0.dp, bottom = 0.dp) else WindowInsets.systemBars.only(WindowInsetsSides.Vertical))
                         .imePadding()
                 ) {
-                    NavHost(navController = navController, startDestination = RootRoutes.SPLASH, route = RootRoutes.ROOT) {
-                        composable(RootRoutes.SPLASH) {
-                            Box(modifier = Modifier.fillMaxSize())
+                    SharedTransitionLayout {
+                        NavHost(navController = navController, startDestination = RootRoutes.SPLASH, route = RootRoutes.ROOT) {
+                            composable(RootRoutes.SPLASH) {
+                                Box(modifier = Modifier.fillMaxSize())
 
-                            LaunchedEffect(Unit) {
-                                viewModel.intentGetLocalUserToken()
+                                LaunchedEffect(Unit) {
+                                    viewModel.intentGetLocalUserToken()
+                                }
                             }
+                            homeScreen(
+                                navigateWriteGoal = viewModel::intentNavigateWriteGoal,
+                                navSharedTransitionScope = this@SharedTransitionLayout
+                            )
+                            writeGoalScreen(
+                                navigateHome = viewModel::intentNavigateHome,
+                                navSharedTransitionScope = this@SharedTransitionLayout
+                            )
+                            loginScreen(
+                                startKakaoLogin = viewModel::intentKakaoLogin,
+                            )
                         }
-                        homeScreen(
-                            navigateWriteGoal = viewModel::intentNavigateWriteGoal
-                        )
-                        writeGoalScreen(navigateHome = viewModel::intentNavigateHome)
-                        loginScreen(
-                            startKakaoLogin = viewModel::intentKakaoLogin,
-                        )
                     }
                 }
 

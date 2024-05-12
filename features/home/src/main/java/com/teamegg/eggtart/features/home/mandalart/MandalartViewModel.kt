@@ -7,6 +7,7 @@ import com.teamegg.eggtart.common.util.Logger
 import com.teamegg.eggtart.common.util.ServerResult
 import com.teamegg.eggtart.domain.mandalart.model.CellModel
 import com.teamegg.eggtart.domain.mandalart.model.CellTodosModel
+import com.teamegg.eggtart.domain.mandalart.usecases.cell.GetMandalartCellChildrenUseCase
 import com.teamegg.eggtart.domain.mandalart.usecases.cell.GetMandalartCellUseCase
 import com.teamegg.eggtart.domain.user.usecase.SetLocalUserTokenUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,6 +26,7 @@ import javax.inject.Inject
 class MandalartViewModel @Inject constructor(
     private val getMandalartCellUseCase: GetMandalartCellUseCase,
     private val setLocalUserTokenUseCase: SetLocalUserTokenUseCase,
+    private val getMandalartCellChildrenUseCase: GetMandalartCellChildrenUseCase
 ) : ContainerHost<MandalartScreenState, MandalartSideEffect>, ViewModel() {
 
     override val container = container<MandalartScreenState, MandalartSideEffect>(MandalartScreenState())
@@ -40,37 +42,55 @@ class MandalartViewModel @Inject constructor(
     }
 
     fun intentUpdateCellModel(cellModel: CellTodosModel) = intent {
-        val prevIndex = state.mandalartCellList.indexOfFirst { it.id == cellModel.id }
-        val newCellModel = CellModel(cellModel.step, cellModel.id, cellModel.color, cellModel.goal, cellModel.isCompleted)
+        val rootPrevIndex = state.mandalartCellList.indexOfFirst { it.id == cellModel.id }
+        val childPrevIndex = state.childCellList.indexOfFirst { it.id == cellModel.id }
 
-        if (state.mandalartCellList[prevIndex] != newCellModel) {
-            if (cellModel.goal == null) {
-                postSideEffect(MandalartSideEffect.SnackBarRes(StringResource.toast_goal_deleted))
-            } else {
-                postSideEffect(MandalartSideEffect.SnackBarRes(StringResource.toast_goal_saved))
+        val newCell = CellModel(cellModel.step, cellModel.id, cellModel.color, cellModel.goal, cellModel.isCompleted)
+
+        if (rootPrevIndex >= 0) {
+            if (state.mandalartCellList.getOrNull(rootPrevIndex) != newCell) {
+                if (cellModel.goal == null) {
+                    postSideEffect(MandalartSideEffect.SnackBarRes(StringResource.toast_goal_deleted))
+                } else {
+                    postSideEffect(MandalartSideEffect.SnackBarRes(StringResource.toast_goal_saved))
+                }
+
+                reduce {
+                    state.copy(
+                        mandalartCellList = state.mandalartCellList.toMutableList().apply {
+                            set(rootPrevIndex, CellModel(cellModel.step, cellModel.id, cellModel.color, cellModel.goal, cellModel.isCompleted))
+                        }
+                    )
+                }
             }
+        }
 
-            reduce {
-                state.copy(
-                    mandalartCellList = state.mandalartCellList.toMutableList().apply {
-                        set(prevIndex, CellModel(cellModel.step, cellModel.id, cellModel.color, cellModel.goal, cellModel.isCompleted))
-                    }
-                )
+        if (childPrevIndex >= 0) {
+            if (state.childCellList.getOrNull(childPrevIndex) != newCell) {
+                if (cellModel.goal == null) {
+                    postSideEffect(MandalartSideEffect.SnackBarRes(StringResource.toast_goal_deleted))
+                } else {
+                    postSideEffect(MandalartSideEffect.SnackBarRes(StringResource.toast_goal_saved))
+                }
+
+                reduce {
+                    state.copy(
+                        childCellList = state.childCellList.toMutableList().apply {
+                            set(childPrevIndex, CellModel(cellModel.step, cellModel.id, cellModel.color, cellModel.goal, cellModel.isCompleted))
+                        }
+                    )
+                }
             }
         }
     }
 
-    fun intentGetMandalartCells(sheetIds: List<Long>, depth: Int = 1, parentOrder: Int = 0) = intent {
+    fun intentGetMandalartCells(sheetIds: List<Long>) = intent {
         Logger.d("getMandalartCells Call")
         reduce {
             state.copy(mandalartLoading = true, sheetIds = sheetIds)
         }
 
-        val mandalartCellsResult = getMandalartCellUseCase(
-            sheetId = sheetIds.first(),
-            depth = depth,
-            parentOrder = parentOrder
-        )
+        val mandalartCellsResult = getMandalartCellUseCase(sheetId = sheetIds.first())
 
         Logger.d("manadalartCellsResult: $mandalartCellsResult")
 
@@ -83,6 +103,34 @@ class MandalartViewModel @Inject constructor(
 
             else -> {
                 postSideEffect(MandalartSideEffect.ServerErrorPopup(ServerCallType.GET_CELL_DATA, mandalartCellsResult))
+                reduce {
+                    state.copy(mandalartLoading = false)
+                }
+            }
+        }
+    }
+
+    fun intentClearChildCellList() = intent {
+        reduce {
+            state.copy(childCellList = listOf())
+        }
+    }
+
+    fun intentGetChildCellList(cellId: Long) = intent {
+        reduce {
+            state.copy(mandalartLoading = true)
+        }
+
+        when (val childCellListResult = getMandalartCellChildrenUseCase(cellId = cellId)) {
+            is ServerResult.Success -> {
+                reduce {
+                    state.copy(mandalartLoading = false, childCellList = childCellListResult.data)
+                }
+
+            }
+
+            else -> {
+                postSideEffect(MandalartSideEffect.ServerErrorPopup(ServerCallType.GET_CELL_CHILDREN, childCellListResult))
                 reduce {
                     state.copy(mandalartLoading = false)
                 }

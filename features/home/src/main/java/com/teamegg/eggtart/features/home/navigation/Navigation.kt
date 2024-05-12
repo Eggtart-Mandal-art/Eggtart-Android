@@ -1,5 +1,7 @@
 package com.teamegg.eggtart.features.home.navigation
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
@@ -14,8 +16,10 @@ import kotlinx.serialization.json.Json
  *  Created by wonjin on 2024/04/09
  **/
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 fun NavGraphBuilder.homeScreen(
-    navigateWriteGoal: (CellModel) -> Unit
+    navigateWriteGoal: (CellModel) -> Unit,
+    navSharedTransitionScope: SharedTransitionScope
 ) {
     composable(route = RootRoutes.HOME, listOf(navArgument("sheetIds") {
         defaultValue = ""
@@ -29,6 +33,6 @@ fun NavGraphBuilder.homeScreen(
         }
 
         Logger.d("homescreen cellModel: $cellModel")
-        HomeScreen(navigateWriteGoal, cellModel = cellModel, sheetIds = sheetIds)
+        HomeScreen(navigateWriteGoal, cellModel = cellModel, sheetIds = sheetIds, navSharedTransitionScope = navSharedTransitionScope, navAnimatedVisibilityScope = this@composable)
     }
 }

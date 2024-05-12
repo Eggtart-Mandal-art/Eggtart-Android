@@ -1,5 +1,8 @@
 package com.teamegg.eggtart.features.write_goal.components
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -23,18 +26,27 @@ import com.teamegg.eggtart.domain.mandalart.model.CellModel
  *  Created by wonjin on 2024/04/05
  **/
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
-fun WriteGoalAppBar(onBackClicked: () -> Unit, onDeleteClicked: () -> Unit, cellModel: CellModel) {
+fun WriteGoalAppBar(
+    onBackClicked: () -> Unit,
+    onDeleteClicked: () -> Unit,
+    cellModel: CellModel,
+    navSharedTransitionScope: SharedTransitionScope,
+    navAnimatedVisibilityScope: AnimatedVisibilityScope,
+) {
     CenterAlignedTopAppBar(
         modifier = Modifier.heightIn(max = 56.dp),
         title = {
-            Text(
-                text = if (cellModel.goal.isNullOrEmpty()) stringResource(id = StringResource.write_goal_title) else cellModel.goal!!,
-                style = MaterialTheme.typography.titleMedium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            with(navSharedTransitionScope) {
+                Text(
+                    modifier = Modifier.sharedElement(state = rememberSharedContentState(key = "goal-${cellModel.id}"), animatedVisibilityScope = navAnimatedVisibilityScope),
+                    text = if (cellModel.goal.isNullOrEmpty()) stringResource(id = StringResource.write_goal_title) else cellModel.goal!!,
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
         },
         navigationIcon = {
             EggtartIconButton(onClick = onBackClicked, buttonSize = EggtartButtonSize.MEDIUM) {

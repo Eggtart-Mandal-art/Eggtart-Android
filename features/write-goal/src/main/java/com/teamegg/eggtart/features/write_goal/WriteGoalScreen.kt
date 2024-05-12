@@ -1,6 +1,9 @@
 package com.teamegg.eggtart.features.write_goal
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -76,9 +79,15 @@ import org.orbitmvi.orbit.compose.collectSideEffect
  * Created by 노원진 on 2024.03.31
  */
 
-@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
-fun WriteGoalScreen(navigateHome: (CellTodosModel?) -> Unit, cellModel: CellModel, viewModel: WriteGoalViewModel = hiltViewModel()) {
+fun WriteGoalScreen(
+    navigateHome: (CellTodosModel?) -> Unit,
+    cellModel: CellModel,
+    navSharedTransitionScope: SharedTransitionScope,
+    navAnimatedVisibilityScope: AnimatedVisibilityScope,
+    viewModel: WriteGoalViewModel = hiltViewModel()
+) {
     val viewModelState = viewModel.collectAsState().value
     val focusManager = LocalFocusManager.current
     val todoFocusRequesters = remember { mutableStateMapOf<Int, FocusRequester>() }
@@ -107,15 +116,21 @@ fun WriteGoalScreen(navigateHome: (CellTodosModel?) -> Unit, cellModel: CellMode
 
     Scaffold(
         topBar = {
-            WriteGoalAppBar(onBackClicked = {
-                if (isChanged) {
-                    viewModel.postUnSaveFinish()
-                } else {
-                    navigateHome(null)
-                }
-            }, onDeleteClicked = {
-                viewModel.postDeleteCell()
-            }, cellModel = cellModel)
+            WriteGoalAppBar(
+                onBackClicked = {
+                    if (isChanged) {
+                        viewModel.postUnSaveFinish()
+                    } else {
+                        navigateHome(null)
+                    }
+                },
+                onDeleteClicked = {
+                    viewModel.postDeleteCell()
+                },
+                cellModel = cellModel,
+                navSharedTransitionScope = navSharedTransitionScope,
+                navAnimatedVisibilityScope = navAnimatedVisibilityScope
+            )
         }
     ) { paddingValues ->
         Box(modifier = Modifier
@@ -356,10 +371,11 @@ private fun checkChanged(cellModel: CellModel, origTodo: List<String>, goalColor
     return isNull && (goalChanged || colorChanged || todoChanged)
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun PreviewWriteGoalScreen() {
     com.teamegg.eggtart.common.feature.theme.EggtartTheme {
-        WriteGoalScreen(cellModel = CellModel(0, 0), navigateHome = {})
+//        WriteGoalScreen(cellModel = CellModel(0, 0), navigateHome = {})
     }
 }
