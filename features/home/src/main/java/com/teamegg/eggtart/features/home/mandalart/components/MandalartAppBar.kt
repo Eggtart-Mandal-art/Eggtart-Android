@@ -1,5 +1,6 @@
 package com.teamegg.eggtart.features.home.mandalart.components
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.heightIn
@@ -31,38 +32,39 @@ import org.orbitmvi.orbit.compose.collectAsState
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MandalartAppBar(viewModel: MandalartViewModel = hiltViewModel()) {
-    val childCells = viewModel.collectAsState().value.childCellList
-    TopAppBar(
-        modifier = Modifier.heightIn(max = 56.dp),
-        title = {
-            Box(modifier = Modifier.fillMaxHeight()) {
-                Text(
-                    modifier = Modifier.align(Alignment.Center),
-                    text = if (childCells.getOrNull(4) != null) {
-                        childCells[4].goal.toString()
-                    } else {
-                        stringResource(id = StringResource.app_name)
-                    },
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.Transparent,
-            titleContentColor = MaterialTheme.colorScheme.primary
-        ),
-        navigationIcon = {
-            if (viewModel.collectAsState().value.childCellList.isNotEmpty())
+    AnimatedContent(targetState = viewModel.collectAsState().value.childCellList, label = "") { childCells ->
+        TopAppBar(
+            modifier = Modifier.heightIn(max = 56.dp),
+            title = {
                 Box(modifier = Modifier.fillMaxHeight()) {
-                    EggtartIconButton(
+                    Text(
                         modifier = Modifier.align(Alignment.Center),
-                        onClick = {
-                            viewModel.intentClearChildCellList()
-                        }, buttonSize = EggtartButtonSize.MEDIUM
-                    ) {
-                        Icon(painter = painterResource(id = DrawableResource.ic_arrow_back), contentDescription = null)
-                    }
+                        text = if (childCells.getOrNull(4) != null) {
+                            childCells[4].goal ?: ""
+                        } else {
+                            stringResource(id = StringResource.app_name)
+                        },
+                        style = MaterialTheme.typography.titleMedium
+                    )
                 }
-        }
-    )
+            },
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = Color.Transparent,
+                titleContentColor = MaterialTheme.colorScheme.primary
+            ),
+            navigationIcon = {
+                if (viewModel.collectAsState().value.childCellList.isNotEmpty())
+                    Box(modifier = Modifier.fillMaxHeight()) {
+                        EggtartIconButton(
+                            modifier = Modifier.align(Alignment.Center),
+                            onClick = {
+                                viewModel.intentClearChildCellList()
+                            }, buttonSize = EggtartButtonSize.MEDIUM
+                        ) {
+                            Icon(painter = painterResource(id = DrawableResource.ic_arrow_back), contentDescription = null)
+                        }
+                    }
+            }
+        )
+    }
 }

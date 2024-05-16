@@ -40,7 +40,7 @@ fun WriteGoalAppBar(
         title = {
             with(navSharedTransitionScope) {
                 Text(
-                    modifier = Modifier.sharedElement(state = rememberSharedContentState(key = "goal-${cellModel.id}"), animatedVisibilityScope = navAnimatedVisibilityScope),
+                    modifier = Modifier.sharedElement(state = rememberSharedContentState(key = "goal-${cellModel.id}"), animatedVisibilityScope = navAnimatedVisibilityScope).skipToLookaheadSize(),
                     text = if (cellModel.goal.isNullOrEmpty()) stringResource(id = StringResource.write_goal_title) else cellModel.goal!!,
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
