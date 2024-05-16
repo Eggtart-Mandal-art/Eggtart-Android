@@ -308,18 +308,33 @@ fun WriteGoalScreen(
                 viewModel.intentSetDialogData(
                     when (it.popupType) {
                         PopupType.DELETE_CELL -> {
-                            DialogData(
-                                title = context.getString(StringResource.popup_delete_title),
-                                content = context.getString(StringResource.popup_delete_content),
-                                confirm = context.getString(StringResource.com_yes),
-                                dismiss = context.getString(StringResource.com_no),
-                                onDismiss = {
-                                    viewModel.intentSetDialogData(null)
-                                },
-                                onConfirm = {
-                                    viewModel.intentDeleteCell(cellModel)
-                                }
-                            )
+                            if (cellModel.step == 2) {
+                                DialogData(
+                                    title = context.getString(StringResource.popup_delete_2step_title),
+                                    content = context.getString(StringResource.popup_delete_2step_content),
+                                    confirm = context.getString(StringResource.com_yes),
+                                    dismiss = context.getString(StringResource.com_no),
+                                    onDismiss = {
+                                        viewModel.intentSetDialogData(null)
+                                    },
+                                    onConfirm = {
+                                        viewModel.intentDeleteCell(cellModel)
+                                    }
+                                )
+                            } else {
+                                DialogData(
+                                    title = context.getString(StringResource.popup_delete_title),
+                                    content = context.getString(StringResource.popup_delete_content),
+                                    confirm = context.getString(StringResource.com_yes),
+                                    dismiss = context.getString(StringResource.com_no),
+                                    onDismiss = {
+                                        viewModel.intentSetDialogData(null)
+                                    },
+                                    onConfirm = {
+                                        viewModel.intentDeleteCell(cellModel)
+                                    }
+                                )
+                            }
                         }
 
                         PopupType.WITHOUT_SAVE_FINISH -> {

@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -38,7 +39,13 @@ fun EggtartButton(
     enabled: Boolean = true,
 ) {
     Button(
-        modifier = modifier,
+        modifier = modifier.height(
+            when (buttonSize) {
+                EggtartButtonSize.LARGE -> 56.dp
+                EggtartButtonSize.MEDIUM -> 44.dp
+                EggtartButtonSize.SMALL -> 30.dp
+            }
+        ),
         onClick = onClick,
         enabled = enabled,
         colors = when (buttonStyle) {
