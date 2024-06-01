@@ -6,10 +6,15 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.systemBars
@@ -17,9 +22,11 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
@@ -30,13 +37,16 @@ import androidx.navigation.compose.rememberNavController
 import com.teamegg.eggtart.common.feature.components.EggtartServerErrorPopup
 import com.teamegg.eggtart.common.feature.components.ServerErrorDialogData
 import com.teamegg.eggtart.common.feature.routes.root.RootRoutes
+import com.teamegg.eggtart.common.feature.theme.ColorYellow500
 import com.teamegg.eggtart.common.feature.theme.EggtartTheme
+import com.teamegg.eggtart.common.feature.types.DrawableResource
 import com.teamegg.eggtart.common.util.Logger
 import com.teamegg.eggtart.domain.kakao.usecase.KakaoLoginUseCase
 import com.teamegg.eggtart.features.home.navigation.homeScreen
 import com.teamegg.eggtart.features.login.navigation.loginScreen
 import com.teamegg.eggtart.features.write_goal.navigation.writeGoalScreen
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.orbitmvi.orbit.compose.collectAsState
@@ -64,12 +74,7 @@ class MainActivity : ComponentActivity() {
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        installSplashScreen().apply {
-            setKeepOnScreenCondition {
-                Logger.d("${viewModel.container.stateFlow.value.initialized}")
-                !viewModel.container.stateFlow.value.initialized
-            }
-        }
+        installSplashScreen()
 
         setContent {
             EggtartTheme {
@@ -77,8 +82,8 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
-                if (currentRoute == RootRoutes.LOGIN) {
-                    val color = Color.Transparent.toArgb()
+                if (currentRoute == RootRoutes.LOGIN || currentRoute == RootRoutes.SPLASH) {
+                    val color = if (currentRoute == RootRoutes.LOGIN) Color.Transparent.toArgb() else ColorYellow500.toArgb()
 
                     enableEdgeToEdge(
                         statusBarStyle = SystemBarStyle.dark(scrim = color),
@@ -106,12 +111,23 @@ class MainActivity : ComponentActivity() {
                 ) {
                     NavHost(navController = navController, startDestination = RootRoutes.SPLASH, route = RootRoutes.ROOT) {
                         composable(RootRoutes.SPLASH) {
-                            Box(modifier = Modifier.fillMaxSize())
+                            Column(
+                                modifier = Modifier
+                                    .background(ColorYellow500)
+                                    .fillMaxSize(),
+                                horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center
+                            ) {
+                                Image(painter = painterResource(id = DrawableResource.ic_splash_title), contentDescription = "")
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Image(painter = painterResource(id = DrawableResource.ic_splash_des), contentDescription = "")
+                            }
 
                             LaunchedEffect(Unit) {
+                                delay(1000L)
                                 viewModel.intentGetLocalUserToken()
                             }
                         }
+
                         homeScreen(
                             navigateWriteGoal = viewModel::intentNavigateWriteGoal
                         )
