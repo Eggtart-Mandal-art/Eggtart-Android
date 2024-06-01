@@ -73,12 +73,20 @@ class MandalartViewModel @Inject constructor(
                     postSideEffect(MandalartSideEffect.SnackBarRes(StringResource.toast_goal_saved))
                 }
 
-                reduce {
-                    state.copy(
-                        childCellList = state.childCellList.toMutableList().apply {
-                            set(childPrevIndex, CellModel(cellModel.step, cellModel.id, cellModel.color, cellModel.goal, cellModel.isCompleted))
-                        }
-                    )
+                if (cellModel.step == 2) {
+                    reduce {
+                        state.copy(
+                            childCellList = emptyList()
+                        )
+                    }
+                } else {
+                    reduce {
+                        state.copy(
+                            childCellList = state.childCellList.toMutableList().apply {
+                                set(childPrevIndex, CellModel(cellModel.step, cellModel.id, cellModel.color, cellModel.goal, cellModel.isCompleted))
+                            }
+                        )
+                    }
                 }
             }
         }
