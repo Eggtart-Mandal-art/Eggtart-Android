@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.teamegg.eggtart.features.login"
+    namespace = "com.baker.eggtart.features.login"
     compileSdk = 34
 
     defaultConfig {

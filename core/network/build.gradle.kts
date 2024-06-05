@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.teamegg.eggtart.core.network"
+    namespace = "com.baker.eggtart.core.network"
     compileSdk = 34
 
     defaultConfig {
