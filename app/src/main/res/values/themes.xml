@@ -2,4 +2,10 @@
 <resources>
 
     <style name="Theme.Eggtart" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.Eggtart.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#F4AB1D</item>
+        <item name="windowSplashScreenAnimatedIcon">@android:color/transparent</item>
+        <item name="postSplashScreenTheme">@style/Theme.Eggtart</item>
+    </style>
 </resources>
