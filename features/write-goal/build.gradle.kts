@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.teamegg.eggtart.features.write_goal"
+    namespace = "com.baker.eggtart.features.write_goal"
     compileSdk = 34
 
     defaultConfig {

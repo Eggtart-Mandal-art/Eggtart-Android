@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.teamegg.eggtart.datastore"
+    namespace = "com.baker.eggtart.datastore"
     compileSdk = 34
 
     defaultConfig {

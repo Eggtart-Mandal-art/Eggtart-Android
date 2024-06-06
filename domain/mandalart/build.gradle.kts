@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.teamegg.eggtart.domain.mandalart"
+    namespace = "com.baker.eggtart.domain.mandalart"
     compileSdk = 34
 
     defaultConfig {
