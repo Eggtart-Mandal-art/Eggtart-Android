@@ -32,8 +32,8 @@ class MandalartRemoteRepositoryImpl @Inject constructor(private val mandalartRem
         ServerResult.parseException(e)
     }
 
-    override suspend fun getCells(sheetId: Long, depth: Int, parentOrder: Int): ServerResult<List<CellModel>> = try {
-        val response = mandalartRemoteSource.getCells(sheetId, depth, parentOrder)
+    override suspend fun getCells(sheetId: Long): ServerResult<List<CellModel>> = try {
+        val response = mandalartRemoteSource.getCells(sheetId)
 
         ServerResult.Success(response.map(ResCellEntity::toCellModel))
     } catch (e: Exception) {
@@ -60,6 +60,14 @@ class MandalartRemoteRepositoryImpl @Inject constructor(private val mandalartRem
         val response = mandalartRemoteSource.getCellDetail(cellId)
 
         ServerResult.Success(response.toCellTodosModel())
+    } catch (e: Exception) {
+        ServerResult.parseException(e)
+    }
+
+    override suspend fun getCellChildren(cellId: Long): ServerResult<List<CellModel>> = try {
+        val response = mandalartRemoteSource.getCellChildren(cellId)
+
+        ServerResult.Success(response.map(ResCellEntity::toCellModel))
     } catch (e: Exception) {
         ServerResult.parseException(e)
     }

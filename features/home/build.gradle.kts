@@ -51,6 +51,8 @@ dependencies {
     implementation(libs.material3)
     implementation(libs.ui.tooling)
     implementation(libs.ui.tooling.preview)
+    implementation(libs.compose.animation)
+    implementation(libs.ui)
 
     // Hilt
     implementation(libs.hilt.navigation.compose)

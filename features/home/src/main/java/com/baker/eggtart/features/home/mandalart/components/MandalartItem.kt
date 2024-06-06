@@ -1,5 +1,9 @@
 package com.baker.eggtart.features.home.mandalart.components
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -19,17 +23,30 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.baker.eggtart.common.feature.theme.ColorGray50
 import com.baker.eggtart.common.feature.types.DrawableResource
 import com.baker.eggtart.common.feature.types.StringResource
 import com.baker.eggtart.domain.mandalart.model.CellModel
+import com.baker.eggtart.features.home.mandalart.MandalartViewModel
 
 /**
  *  Created by wonjin on 2024/04/05
  **/
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun MandalartItem(navigateWriteGoal: (CellModel) -> Unit, cellData: CellModel?, index: Int) {
+fun MandalartItem(
+    navigateWriteGoal: (CellModel) -> Unit,
+    cellData: CellModel?,
+    isChild: Boolean,
+    index: Int,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope,
+    navSharedTransitionScope: SharedTransitionScope,
+    navAnimatedVisibilityScope: AnimatedVisibilityScope,
+    viewModel: MandalartViewModel = hiltViewModel()
+) {
     val isRootCell = index == 4
 
     if (cellData == null) {
@@ -40,34 +57,47 @@ fun MandalartItem(navigateWriteGoal: (CellModel) -> Unit, cellData: CellModel?, 
                 .background(ColorGray50)
         )
     } else {
-        Box(
-            modifier = Modifier
-                .aspectRatio(1f)
-                .clip(RoundedCornerShape(12.dp))
-                .background(
-                    if (cellData.color == null) {
-                        ColorGray50
-                    } else {
-                        Color(android.graphics.Color.parseColor("#${cellData.color}"))
+        with(sharedTransitionScope) {
+            Box(
+                modifier = Modifier
+                    .sharedElement(
+                        state = rememberSharedContentState(key = cellData.id),
+                        animatedVisibilityScope = animatedContentScope
+                    )
+                    .aspectRatio(1f)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(
+                        if (cellData.color == null) {
+                            ColorGray50
+                        } else {
+                            Color(android.graphics.Color.parseColor("#${cellData.color}"))
+                        }
+                    )
+                    .clickable {
+                        if (isChild || isRootCell || cellData.goal.isNullOrEmpty()) {
+                            navigateWriteGoal(cellData)
+                        } else {
+                            viewModel.intentGetChildCellList(cellData.id)
+                        }
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                if (isRootCell || cellData.goal.isNullOrEmpty().not()) {
+                    with(navSharedTransitionScope) {
+                        Text(
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp)
+                                .wrapContentSize()
+                                .sharedElement(animatedVisibilityScope = navAnimatedVisibilityScope, state = rememberSharedContentState(key = "goal-${cellData.id}")),
+                            text = if (cellData.goal.isNullOrEmpty()) stringResource(id = StringResource.enter_final_goal_first) else cellData.goal.toString(),
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
                     }
-                )
-                .clickable {
-                    navigateWriteGoal(cellData)
-                },
-            contentAlignment = Alignment.Center
-        ) {
-            if (isRootCell || cellData.goal.isNullOrEmpty().not()) {
-                Text(
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp)
-                        .wrapContentSize(),
-                    text = if (cellData.goal.isNullOrEmpty()) stringResource(id = StringResource.enter_final_goal_first) else cellData.goal.toString(),
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-            } else {
-                Icon(painter = painterResource(id = DrawableResource.ic_add), contentDescription = "", tint = MaterialTheme.colorScheme.secondary)
+                } else {
+                    Icon(painter = painterResource(id = DrawableResource.ic_add), contentDescription = "", tint = MaterialTheme.colorScheme.secondary)
+                }
             }
         }
     }

@@ -10,7 +10,7 @@ navigation-compose = "2.7.7"
 espresso-core = "3.5.1"
 lifecycle-runtime-ktx = "2.7.0"
 activity-compose = "1.9.0"
-compose-bom = "2024.04.01"
+compose-bom = "2024.05.00"
 orbit = "7.1.0"
 android-hilt = "2.51.1"
 hilt = "1.2.0"
@@ -21,8 +21,9 @@ module-graph = "0.6.0"
 ktor = "2.3.10"
 kakao = "2.20.1"
 secrets-gradle = "2.0.1"
-androidx-datastore = "1.1.0"
+androidx-datastore = "1.1.1"
 auth0-jwt = "2.0.2"
+compose-animation = "1.7.0-alpha08"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -33,6 +34,7 @@ espresso-core = { group = "androidx.test.espresso", name = "espresso-core", vers
 lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle-runtime-ktx" }
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
+compose-animation = { group = "androidx.compose.animation", name = "animation", version.ref = "compose-animation"}
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation-compose" }
 ui = { group = "androidx.compose.ui", name = "ui" }
 ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }

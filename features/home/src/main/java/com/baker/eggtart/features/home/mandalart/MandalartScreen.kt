@@ -1,9 +1,14 @@
 package com.baker.eggtart.features.home.mandalart
 
 import android.app.Activity
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -34,12 +39,14 @@ import org.orbitmvi.orbit.compose.collectSideEffect
  * Created by 노원진 on 2024.03.24
  */
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MandalartScreen(
     navigateWriteGoal: (CellModel) -> Unit,
-    homePaddingValues: PaddingValues = PaddingValues(),
     sheetIds: List<Long>,
     cellModel: CellTodosModel?,
+    navSharedTransitionScope: SharedTransitionScope,
+    navAnimatedVisibilityScope: AnimatedVisibilityScope,
     viewModel: MandalartViewModel = hiltViewModel()
 ) {
     val viewModelState = viewModel.collectAsState().value
@@ -54,8 +61,11 @@ fun MandalartScreen(
         }
     }
 
+    BackHandler (viewModelState.childCellList.isNotEmpty()) {
+        viewModel.intentClearChildCellList()
+    }
+
     Scaffold(
-        modifier = Modifier.padding(homePaddingValues),
         topBar = {
             MandalartAppBar()
         },
@@ -63,22 +73,43 @@ fun MandalartScreen(
             EggtartSnackbar(modifier = Modifier.padding(bottom = 24.dp), hostState = snackBarHostState)
         }
     ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .padding(paddingValues)
-                .fillMaxSize()
-                .padding(16.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(3),
-                modifier = Modifier.fillMaxWidth(1f),
-                userScrollEnabled = false,
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(9) { index ->
-                    MandalartItem(navigateWriteGoal = navigateWriteGoal, cellData = viewModelState.mandalartCellList.getOrNull(index), index = index)
+        SharedTransitionLayout {
+            AnimatedContent(targetState = viewModelState.childCellList, label = "") {
+                Box(
+                    modifier = Modifier
+                        .padding(paddingValues)
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(3),
+                        modifier = Modifier.fillMaxWidth(1f),
+                        userScrollEnabled = false,
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(9) { index ->
+                            val isChild = it.isNotEmpty()
+
+                            val cells = if (isChild) {
+                                it
+                            } else {
+                                viewModelState.mandalartCellList
+                            }
+
+                            MandalartItem(
+                                navigateWriteGoal = navigateWriteGoal,
+                                cellData = cells.getOrNull(index),
+                                isChild = isChild,
+                                sharedTransitionScope = this@SharedTransitionLayout,
+                                animatedContentScope = this@AnimatedContent,
+                                navSharedTransitionScope = navSharedTransitionScope,
+                                navAnimatedVisibilityScope = navAnimatedVisibilityScope,
+                                index = index
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -107,6 +138,23 @@ fun MandalartScreen(
                                 serverResult = it.serverResult,
                                 onConfirm = {
                                     (context as? Activity)?.finish()
+                                },
+                                onDismiss = {
+                                    viewModel.intentSetServerErrorData(null)
+                                },
+                                onClearLoginData = {
+                                    viewModel.intentClearLoginData()
+                                }
+                            )
+                        )
+                    }
+
+                    ServerCallType.GET_CELL_CHILDREN -> {
+                        viewModel.intentSetServerErrorData(
+                            ServerErrorDialogData(
+                                serverResult = it.serverResult,
+                                onConfirm = {
+                                    viewModel.intentClearChildCellList()
                                 },
                                 onDismiss = {
                                     viewModel.intentSetServerErrorData(null)

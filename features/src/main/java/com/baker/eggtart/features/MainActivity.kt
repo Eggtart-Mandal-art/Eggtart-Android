@@ -6,6 +6,8 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -69,6 +71,7 @@ class MainActivity : ComponentActivity() {
         MainViewModel.create(mainViewModelFactory, kakaoLoginUseCase)
     }
 
+    @OptIn(ExperimentalSharedTransitionApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -109,32 +112,37 @@ class MainActivity : ComponentActivity() {
                         .windowInsetsPadding(if (currentRoute == RootRoutes.LOGIN) WindowInsets(top = 0.dp, bottom = 0.dp) else WindowInsets.systemBars.only(WindowInsetsSides.Vertical))
                         .imePadding()
                 ) {
-                    NavHost(navController = navController, startDestination = RootRoutes.SPLASH, route = RootRoutes.ROOT) {
-                        composable(RootRoutes.SPLASH) {
-                            Column(
-                                modifier = Modifier
-                                    .background(ColorYellow500)
-                                    .fillMaxSize(),
-                                horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center
-                            ) {
-                                Image(painter = painterResource(id = DrawableResource.ic_splash_title), contentDescription = "")
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Image(painter = painterResource(id = DrawableResource.ic_splash_des), contentDescription = "")
-                            }
+                    SharedTransitionLayout {
+                        NavHost(navController = navController, startDestination = RootRoutes.SPLASH, route = RootRoutes.ROOT) {
+                            composable(RootRoutes.SPLASH) {
+                                Column(
+                                    modifier = Modifier
+                                        .background(ColorYellow500)
+                                        .fillMaxSize(),
+                                    horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center
+                                ) {
+                                    Image(painter = painterResource(id = DrawableResource.ic_splash_title), contentDescription = "")
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Image(painter = painterResource(id = DrawableResource.ic_splash_des), contentDescription = "")
+                                }
 
-                            LaunchedEffect(Unit) {
-                                delay(1000L)
-                                viewModel.intentGetLocalUserToken()
+                                LaunchedEffect(Unit) {
+                                    delay(1000L)
+                                    viewModel.intentGetLocalUserToken()
+                                }
                             }
+                            homeScreen(
+                                navigateWriteGoal = viewModel::intentNavigateWriteGoal,
+                                navSharedTransitionScope = this@SharedTransitionLayout
+                            )
+                            writeGoalScreen(
+                                navigateHome = viewModel::intentNavigateHome,
+                                navSharedTransitionScope = this@SharedTransitionLayout
+                            )
+                            loginScreen(
+                                startKakaoLogin = viewModel::intentKakaoLogin,
+                            )
                         }
-
-                        homeScreen(
-                            navigateWriteGoal = viewModel::intentNavigateWriteGoal
-                        )
-                        writeGoalScreen(navigateHome = viewModel::intentNavigateHome)
-                        loginScreen(
-                            startKakaoLogin = viewModel::intentKakaoLogin,
-                        )
                     }
                 }
 

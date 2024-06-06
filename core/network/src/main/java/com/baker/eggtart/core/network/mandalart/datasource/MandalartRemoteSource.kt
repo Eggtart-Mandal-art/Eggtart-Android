@@ -13,11 +13,13 @@ interface MandalartRemoteSource {
 
     suspend fun postCreateSheet(sheetName: String = ""): Long
 
-    suspend fun getCells(sheetId: Long, depth: Int, parentOrder: Int = 0): List<ResCellEntity>
+    suspend fun getCells(sheetId: Long): List<ResCellEntity>
 
     suspend fun patchCell(cellId: Long, body: ReqUpdateCellEntity): ResCellTodosEntity
 
     suspend fun deleteCell(cellId: Long): ResCellTodosEntity
 
     suspend fun getCellDetail(cellId: Long): ResCellTodosEntity
+
+    suspend fun getCellChildren(cellId: Long): List<ResCellEntity>
 }

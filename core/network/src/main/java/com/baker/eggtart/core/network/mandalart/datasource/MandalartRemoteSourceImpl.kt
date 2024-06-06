@@ -9,7 +9,6 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
-import io.ktor.client.request.parameter
 import io.ktor.client.request.patch
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -20,8 +19,9 @@ import javax.inject.Inject
  **/
 class MandalartRemoteSourceImpl @Inject constructor(@KtorTokenClient private val ktorTokenClient: HttpClient) : MandalartRemoteSource {
     private val sheet = "/sheet"
-    private val getCells = "/sheet/{sheet_id}/cell"
+    private val getCells = "/sheet/{sheet_id}/cell/main"
     private val cell = "/cell/{cell_id}"
+    private val cellChildren = "/cell/{cell_id}/children"
 
     override suspend fun getSheets(): List<Long> = ktorTokenClient.get(sheet).body()
 
@@ -29,10 +29,7 @@ class MandalartRemoteSourceImpl @Inject constructor(@KtorTokenClient private val
         setBody(ReqCreateSheetEntity(sheetName))
     }.body()
 
-    override suspend fun getCells(sheetId: Long, depth: Int, parentOrder: Int): List<ResCellEntity> = ktorTokenClient.get(getCells.replace("{sheet_id}", sheetId.toString())) {
-        parameter("depth", depth)
-        parameter("parent_order", parentOrder)
-    }.body()
+    override suspend fun getCells(sheetId: Long): List<ResCellEntity> = ktorTokenClient.get(getCells.replace("{sheet_id}", sheetId.toString())).body()
 
     override suspend fun patchCell(cellId: Long, body: ReqUpdateCellEntity): ResCellTodosEntity = ktorTokenClient.patch(cell.replace("{cell_id}", cellId.toString())) {
         setBody(body)
@@ -41,4 +38,6 @@ class MandalartRemoteSourceImpl @Inject constructor(@KtorTokenClient private val
     override suspend fun deleteCell(cellId: Long): ResCellTodosEntity = ktorTokenClient.delete(cell.replace("{cell_id}", cellId.toString())).body()
 
     override suspend fun getCellDetail(cellId: Long): ResCellTodosEntity = ktorTokenClient.get(cell.replace("{cell_id}", cellId.toString())).body()
+
+    override suspend fun getCellChildren(cellId: Long): List<ResCellEntity> = ktorTokenClient.get(cellChildren.replace("{cell_id}", cellId.toString())).body()
 }

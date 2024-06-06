@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
@@ -50,7 +49,7 @@ fun EggtartPopup(
             ) {
                 Card(
                     modifier = Modifier
-                        .fillMaxWidth(0.9f)
+                        .padding(horizontal = 24.dp)
                         .widthIn(max = 312.dp)
                         .clickable(enabled = false) {},
                     colors = CardDefaults.elevatedCardColors(
@@ -118,7 +117,8 @@ fun EggtartPopup(
         },
         properties = DialogProperties(
             dismissOnBackPress = dialogData.dismiss != null,
-            dismissOnClickOutside = dialogData.dismiss != null
+            dismissOnClickOutside = dialogData.dismiss != null,
+            usePlatformDefaultWidth = false
         )
     )
 }

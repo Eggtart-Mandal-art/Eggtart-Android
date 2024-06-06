@@ -1,6 +1,9 @@
 package com.baker.eggtart.features.write_goal
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -61,6 +64,7 @@ import com.baker.eggtart.common.feature.components.EggtartSelectionBox
 import com.baker.eggtart.common.feature.components.EggtartServerErrorPopup
 import com.baker.eggtart.common.feature.components.EggtartTextField
 import com.baker.eggtart.common.feature.components.ServerErrorDialogData
+import com.baker.eggtart.common.feature.theme.EggtartTheme
 import com.baker.eggtart.common.feature.types.DrawableResource
 import com.baker.eggtart.common.feature.types.StringResource
 import com.baker.eggtart.common.feature.util.Constants.GOAL_COLORS
@@ -76,9 +80,15 @@ import org.orbitmvi.orbit.compose.collectSideEffect
  * Created by 노원진 on 2024.03.31
  */
 
-@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
-fun WriteGoalScreen(navigateHome: (CellTodosModel?) -> Unit, cellModel: CellModel, viewModel: WriteGoalViewModel = hiltViewModel()) {
+fun WriteGoalScreen(
+    navigateHome: (CellTodosModel?) -> Unit,
+    cellModel: CellModel,
+    navSharedTransitionScope: SharedTransitionScope,
+    navAnimatedVisibilityScope: AnimatedVisibilityScope,
+    viewModel: WriteGoalViewModel = hiltViewModel()
+) {
     val viewModelState = viewModel.collectAsState().value
     val focusManager = LocalFocusManager.current
     val todoFocusRequesters = remember { mutableStateMapOf<Int, FocusRequester>() }
@@ -107,15 +117,21 @@ fun WriteGoalScreen(navigateHome: (CellTodosModel?) -> Unit, cellModel: CellMode
 
     Scaffold(
         topBar = {
-            WriteGoalAppBar(onBackClicked = {
-                if (isChanged) {
-                    viewModel.postUnSaveFinish()
-                } else {
-                    navigateHome(null)
-                }
-            }, onDeleteClicked = {
-                viewModel.postDeleteCell()
-            }, cellModel = cellModel)
+            WriteGoalAppBar(
+                onBackClicked = {
+                    if (isChanged) {
+                        viewModel.postUnSaveFinish()
+                    } else {
+                        navigateHome(null)
+                    }
+                },
+                onDeleteClicked = {
+                    viewModel.postDeleteCell()
+                },
+                cellModel = cellModel,
+                navSharedTransitionScope = navSharedTransitionScope,
+                navAnimatedVisibilityScope = navAnimatedVisibilityScope
+            )
         }
     ) { paddingValues ->
         Box(modifier = Modifier
@@ -293,18 +309,33 @@ fun WriteGoalScreen(navigateHome: (CellTodosModel?) -> Unit, cellModel: CellMode
                 viewModel.intentSetDialogData(
                     when (it.popupType) {
                         PopupType.DELETE_CELL -> {
-                            DialogData(
-                                title = context.getString(StringResource.popup_delete_title),
-                                content = context.getString(StringResource.popup_delete_content),
-                                confirm = context.getString(StringResource.com_yes),
-                                dismiss = context.getString(StringResource.com_no),
-                                onDismiss = {
-                                    viewModel.intentSetDialogData(null)
-                                },
-                                onConfirm = {
-                                    viewModel.intentDeleteCell(cellModel)
-                                }
-                            )
+                            if (cellModel.step == 2) {
+                                DialogData(
+                                    title = context.getString(StringResource.popup_delete_2step_title),
+                                    content = context.getString(StringResource.popup_delete_2step_content),
+                                    confirm = context.getString(StringResource.com_yes),
+                                    dismiss = context.getString(StringResource.com_no),
+                                    onDismiss = {
+                                        viewModel.intentSetDialogData(null)
+                                    },
+                                    onConfirm = {
+                                        viewModel.intentDeleteCell(cellModel)
+                                    }
+                                )
+                            } else {
+                                DialogData(
+                                    title = context.getString(StringResource.popup_delete_title),
+                                    content = context.getString(StringResource.popup_delete_content),
+                                    confirm = context.getString(StringResource.com_yes),
+                                    dismiss = context.getString(StringResource.com_no),
+                                    onDismiss = {
+                                        viewModel.intentSetDialogData(null)
+                                    },
+                                    onConfirm = {
+                                        viewModel.intentDeleteCell(cellModel)
+                                    }
+                                )
+                            }
                         }
 
                         PopupType.WITHOUT_SAVE_FINISH -> {
@@ -359,7 +390,7 @@ private fun checkChanged(cellModel: CellModel, origTodo: List<String>, goalColor
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun PreviewWriteGoalScreen() {
-    com.baker.eggtart.common.feature.theme.EggtartTheme {
-        WriteGoalScreen(cellModel = CellModel(0, 0), navigateHome = {})
+    EggtartTheme {
+//        WriteGoalScreen(cellModel = CellModel(0, 0), navigateHome = {})
     }
 }

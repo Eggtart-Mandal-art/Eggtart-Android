@@ -15,6 +15,8 @@
     <!--  Popup Message  -->
     <string name="popup_delete_title">삭제하기</string>
     <string name="popup_delete_content">작성한 목표를 삭제하시겠습니까?</string>
+    <string name="popup_delete_2step_title">중간 목표 삭제</string>
+    <string name="popup_delete_2step_content">중간 목표에 등록된 모든 세부 목표가 삭제됩니다\n그래도 삭제하시겠습니까?</string>
     <string name="popup_finish_without_save_title">저장하지 않고 나가기</string>
     <string name="popup_finish_without_save_content">작성한 내용은 사라집니다\n그래도 나가겠습니까?</string>
 
